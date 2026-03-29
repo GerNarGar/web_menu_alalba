@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#000000" id="meta-color-tema">
+    <title>Menú Restaurante</title>
+
+    <!-- ======================================================================= -->
+    <!-- 🛠️ ENTORNO DE DESARROLLO (Descomentar para usar Tailwind CDN)          -->
+    <script src="https://cdn.tailwindcss.com"></script>                    
+    <!-- ======================================================================= -->
+
+    <!-- ======================================================================= -->
+    <!-- 🚀 ENTORNO DE PRODUCCIÓN (Descomentar para usar CSS Compilado Minificado)-->
+    <!-- <link href="tailwind-build.css" rel="stylesheet">                       -->
+    <!-- ======================================================================= -->
+
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="styles.css" rel="stylesheet">
+</head>
+
+<body class="antialiased min-h-screen flex flex-col area-segura-inferior">
+
+    <!-- CABECERA PRINCIPAL -->
+    <header id="cabecera-principal"
+        class="sticky top-0 z-40 cabecera-cristal border-b borde-estandar area-segura-superior transicion-vista vista-visible">
+        <div class="flex items-center justify-between px-4 py-3">
+            <button id="boton-inicio" class="flex flex-col items-center justify-center h-full texto-principal px-2 min-w-[64px]"
+                aria-label="Ir al inicio">
+                <!-- Wrapper oculto por defecto para evitar el parpadeo -->
+                <div id="wrapper-icono-inicio" class="hidden flex-col items-center">
+                    <svg class="w-6 h-6 mb-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6">
+                        </path>
+                    </svg>
+                    <span class="text-[10px] font-medium elemento-traducible" data-clave-traduccion="home">Inicio</span>
+                </div>
+                <!-- Imagen del logo dinámico (Oculta por defecto) -->
+                <img id="logo-restaurante-img" src="" alt="Logo" class="hidden nav-logo">
+            </button>
+            <div class="text-sm font-medium texto-secundario">
+                <span class="elemento-traducible" data-clave-traduccion="table">Mesa</span>: <span
+                    id="etiqueta-mesa-actual" class="texto-principal">...</span>
+            </div>
+            <div class="relative">
+                <button id="boton-selector-idioma"
+                    class="flex items-center space-x-1 texto-principal fondo-secundario rounded-full px-3 py-1.5 text-sm font-medium"
+                    aria-haspopup="true" aria-expanded="false">
+                    <span id="icono-bandera-idioma">🇪🇸</span> <span id="texto-codigo-idioma">ES</span>
+                    <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                    </svg>
+                </button>
+                <div id="panel-desplegable-idiomas"
+                    class="hidden absolute right-0 mt-2 w-32 panel-flotante shadow-2xl overflow-hidden z-50"
+                    role="menu">
+                    <button
+                        class="boton-opcion-idioma w-full text-left px-4 py-3 item-desplegable flex items-center space-x-2"
+                        data-codigo-idioma="es" role="menuitem"><span>🇪🇸</span><span>Español</span></button>
+                    <button
+                        class="boton-opcion-idioma w-full text-left px-4 py-3 item-desplegable flex items-center space-x-2"
+                        data-codigo-idioma="en" role="menuitem"><span>🇬🇧</span><span>English</span></button>
+                    <button
+                        class="boton-opcion-idioma w-full text-left px-4 py-3 item-desplegable flex items-center space-x-2"
+                        data-codigo-idioma="fr" role="menuitem"><span>🇫🇷</span><span>Français</span></button>
+                </div>
+            </div>
+        </div>
+        <div id="contenedor-pestanas-categorias" class="flex space-x-2 px-4 pb-3 overflow-x-auto ocultar-scrollbar"
+            role="tablist"></div>
+    </header>
+
+    <!-- CONTENEDOR PRINCIPAL (MODO LISTA) -->
+    <main id="contenedor-principal-platos" class="flex-1 px-4 py-4 space-y-4 pb-24 transicion-vista vista-visible"
+        role="main" aria-live="polite"></main>
+
+    <!-- CONTENEDOR SECUNDARIO (MODO VIDEO FEED) -->
+    <div id="contenedor-feed-videos" class="fixed inset-0 fondo-principal transicion-vista vista-oculta"
+        aria-hidden="true">
+        <div class="pestanas-nav-video area-segura-superior gradiente-nav-video pb-4">
+            <div id="contenedor-pestanas-video" class="flex space-x-2 px-4 pt-3 overflow-x-auto ocultar-scrollbar"
+                role="tablist"></div>
+        </div>
+        <div id="area-scroll-videos" class="contenedor-scroll-video"></div>
+    </div>
+
+    <!-- ESTADO VACÍO (CUANDO NO HAY PLATOS) -->
+    <div id="mensaje-estado-vacio" class="hidden flex-col items-center justify-center py-20 texto-secundario"
+        aria-hidden="true">
+        <svg class="w-16 h-16 mb-4 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10">
+            </path>
+        </svg>
+        <p class="text-lg font-medium elemento-traducible" data-clave-traduccion="empty_menu">No hay platos disponibles
+        </p>
+    </div>
+
+    <!-- TOAST INFORMATIVO DE ALÉRGENOS -->
+    <div id="capa-cierre-toast" class="hidden fixed inset-0 z-50"></div>
+    <div id="toast-alergenos" class="rounded-2xl borde-estandar p-4 shadow-2xl panel-toast" role="alert"
+        aria-live="assertive">
+        <h3 class="text-sm font-bold texto-principal mb-3 uppercase tracking-wider text-center shrink-0 elemento-traducible"
+            data-clave-traduccion="allergens">Alérgenos</h3>
+        <div id="contenedor-iconos-toast"
+            class="flex flex-wrap justify-center gap-2 overflow-y-auto pb-2 ocultar-scrollbar"></div>
+    </div>
+
+    <!-- MODAL DE DETALLE DEL PLATO -->
+    <div id="capa-modal-detalle" class="modal-contenedor-backdrop fixed inset-0 z-50" role="dialog" aria-modal="true"
+        aria-hidden="true">
+        <!-- El fondo oscuro ahora se separa del contenido para hacer un slide-up limpio -->
+        <div id="fondo-cierre-detalle" class="backdrop-oscuro"></div>
+        <div class="modal-contenido-deslizante relative h-full flex flex-col fondo-principal">
+            <button id="boton-cerrar-detalle"
+                class="absolute top-4 right-4 z-20 w-10 h-10 btn-circular rounded-full flex items-center justify-center borde-estandar"
+                aria-label="Cerrar detalle">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12">
+                    </path>
+                </svg>
+            </button>
+            <div id="area-contenido-detalle" class="flex-1 overflow-y-auto pb-32"></div>
+        </div>
+    </div>
+
+    <!-- MODAL DEL CARRITO / MI LISTA -->
+    <div id="capa-modal-carrito" class="modal-contenedor-backdrop fixed inset-0 z-50" role="dialog" aria-modal="true"
+        aria-hidden="true">
+        <div id="fondo-cierre-carrito" class="backdrop-oscuro"></div>
+        <div class="modal-contenido-deslizante relative h-full flex flex-col fondo-principal">
+            <div
+                class="flex items-center justify-between px-4 py-4 border-b borde-estandar area-segura-superior cabecera-cristal relative z-10">
+                <h2 class="text-xl font-bold texto-principal elemento-traducible" data-clave-traduccion="my_list">Mi
+                    lista</h2>
+                <button id="boton-cerrar-carrito" class="w-10 h-10 flex items-center justify-center texto-secundario"
+                    aria-label="Cerrar carrito">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12">
+                        </path>
+                    </svg>
+                </button>
+            </div>
+            <div id="area-contenido-carrito" class="flex-1 overflow-y-auto px-4 py-4 pb-32 relative z-10"></div>
+            <div id="area-pie-carrito"
+                class="fixed bottom-0 left-0 right-0 border-t borde-estandar p-4 area-segura-inferior cabecera-cristal z-20">
+                <div class="flex justify-between items-center mb-4">
+                    <span class="texto-secundario elemento-traducible" data-clave-traduccion="total">Total</span>
+                    <span id="etiqueta-precio-total" class="text-2xl font-bold texto-principal">0.00</span>
+                </div>
+                <button id="boton-enviar-pedido"
+                    class="w-full btn-primario font-bold py-4 rounded-2xl text-lg flex justify-center items-center">
+                    <span class="elemento-traducible" data-clave-traduccion="send_order">Enviar pedido</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- NAVEGACIÓN INFERIOR PRINCIPAL -->
+    <nav class="fixed bottom-0 left-0 right-0 nav-inferior-cristal area-segura-inferior z-40 pb-2"
+        aria-label="Navegación principal">
+        <div class="flex justify-around items-center h-16">
+            <button id="pestaña-nav-menu"
+                class="item-nav-inferior activa flex flex-col items-center justify-center w-full h-full space-y-1">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16">
+                    </path>
+                </svg>
+                <span class="text-xs font-medium elemento-traducible" data-clave-traduccion="menu">Menú</span>
+            </button>
+            <button id="pestaña-nav-video"
+                class="item-nav-inferior flex flex-col items-center justify-center w-full h-full space-y-1">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z">
+                    </path>
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+                <span class="text-xs font-medium">Video</span>
+            </button>
+            <button id="pestaña-nav-carrito"
+                class="item-nav-inferior flex flex-col items-center justify-center w-full h-full space-y-1 relative hidden">
+                <div class="relative">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2">
+                        </path>
+                    </svg>
+                    <span id="globo-notificacion-carrito"
+                        class="hidden absolute -top-2 -right-2 insignia-notificacion text-[10px] font-bold w-5 h-5 rounded-full flex items-center justify-center">0</span>
+                </div>
+                <span class="text-xs font-medium elemento-traducible" data-clave-traduccion="my_list">Mi lista</span>
+            </button>
+        </div>
+    </nav>
+
+    <!-- ======================================================================= -->
+    <!-- SISTEMA DE PLANTILLAS XSS SAFE (Template Engine Nativo)              -->
+    <!-- ======================================================================= -->
+
+    <!-- Plantilla: Tarjeta de Plato Estándar -->
+    <template id="plantilla-tarjeta-plato">
+        <article class="tarjeta-plato entrada-tarjeta" role="button" tabindex="0">
+            <div class="tarjeta-imagen-caja">
+                <img src="" alt="" class="tarjeta-imagen nodo-imagen-plato" loading="lazy">
+                <div class="nodo-etiqueta-chef etiqueta-chef-miniatura hidden">
+                    <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path
+                            d="M17 21a1 1 0 0 0 1-1v-5.35c0-.457.316-.844.727-1.041a4 4 0 0 0-2.134-7.589a5 5 0 0 0-9.186 0a4 4 0 0 0-2.134 7.588c.411.198.727.585.727 1.041V20a1 1 0 0 0 1 1ZM6 17h12" />
+                    </svg>
+                    <span>Chef</span>
+                </div>
+            </div>
+            <div class="flex-1 flex flex-col justify-between py-1 overflow-hidden">
+                <div>
+                    <h3
+                        class="font-semibold texto-principal text-base leading-tight mb-1 line-clamp-2 nodo-titulo-plato">
+                    </h3>
+                    <p class="text-lg font-bold texto-acento mb-2 nodo-precio-plato"></p>
+                    <div class="flex flex-wrap gap-1 mb-2 nodo-contenedor-alergenos"></div>
+                </div>
+                <div class="flex items-center justify-end contenedor-controles-cantidad"></div>
+            </div>
+        </article>
+    </template>
+
+    <!-- Plantilla: Botón Agregar Básico -->
+    <template id="plantilla-boton-agregar">
+        <button class="btn-agregar" aria-label="Añadir plato"></button>
+    </template>
+
+    <!-- Plantilla: Stepper de Cantidad -->
+    <template id="plantilla-control-cantidad">
+        <div class="caja-cantidad">
+            <button class="btn-cantidad boton-restar" aria-label="Quitar uno">−</button>
+            <span class="texto-principal font-semibold text-center flex-1 etiqueta-cantidad"></span>
+            <button class="btn-cantidad boton-sumar" aria-label="Añadir uno">+</button>
+        </div>
+    </template>
+
+    <!-- Plantilla: Alérgeno Icono Simple -->
+    <template id="plantilla-alergeno-icono">
+        <img src="" alt="" class="w-5 h-5 rounded-full fondo-principal p-0.5 borde-estandar nodo-icono-alergeno"
+            title="">
+    </template>
+
+    <!-- Script Principal Refactorizado -->
+    <script src="app.js"></script>
+</body>
+
+</html>

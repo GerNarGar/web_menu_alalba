@@ -1,0 +1,577 @@
+/* ==========================================================================
+   SISTEMA DE DISEÑO BASE Y VARIABLES NATIVAS
+   ========================================================================== */
+:root {
+    /* Variables dinámicas (El JS las sobrescribe leyendo el JSON) */
+    --color-fondo-principal: #000000;
+    --color-texto-principal: #ffffff;
+    --color-acento: #ff6a00;
+    --color-notificacion: #ef4444;
+    --color-fondo-add: #242933;
+
+    /* Variables derivadas mediante color-mix (Soportado por navegadores modernos) */
+    --color-fondo-tarjeta: color-mix(in srgb, var(--color-fondo-principal) 90%, #b1b1c2 16%);
+    --color-borde: color-mix(in srgb, var(--color-fondo-principal) 80%, #b1b1c2 21%);
+    --color-texto-suave: color-mix(in srgb, var(--color-texto-principal) 65%, transparent);
+    --color-fondo-boton: color-mix(in srgb, var(--color-fondo-principal) 50%, transparent);
+    --color-fondo-translucido: color-mix(in srgb, var(--color-fondo-principal) 85%, transparent);
+
+    /* Configuración Espacial y Efectos */
+    --redondeo-pequeno: 8px;
+    --redondeo-medio: 12px;
+    --redondeo-grande: 16px;
+    --redondeo-pildora: 9999px;
+    
+    --efecto-cristal: 12px;
+}
+
+/* ==========================================================================
+   RESET Y COMPORTAMIENTOS GENERALES
+   ========================================================================== */
+* {
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    -webkit-tap-highlight-color: transparent;
+    box-sizing: border-box;
+}
+
+body {
+    background-color: var(--color-fondo-principal);
+    color: var(--color-texto-principal);
+    overscroll-behavior-y: none;
+    /* Previene rebotes extraños en iOS */
+}
+
+.area-segura-superior {
+    padding-top: env(safe-area-inset-top, 0px);
+}
+
+.area-segura-inferior {
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+.ocultar-scrollbar::-webkit-scrollbar {
+    display: none;
+}
+
+.ocultar-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+
+/* ==========================================================================
+   CLASES SEMÁNTICAS (Colores y Bordes)
+   ========================================================================== */
+.fondo-principal {
+    background-color: var(--color-fondo-principal);
+}
+
+.fondo-secundario {
+    background-color: var(--color-fondo-tarjeta);
+}
+
+.texto-principal {
+    color: var(--color-texto-principal);
+}
+
+.texto-secundario {
+    color: var(--color-texto-suave);
+}
+
+.texto-acento {
+    color: var(--color-acento);
+}
+
+.borde-estandar {
+    border-color: var(--color-borde);
+    border-width: 0px;
+}
+
+/* ==========================================================================
+   COMPONENTES UI AISLADOS
+   ========================================================================== */
+.icono-sugerencia-chef {
+    width: 0.8rem;
+    height: 0.8rem;
+}
+
+.nav-logo {
+    object-fit: contain;
+    height: 38px;
+    max-width: 110px;
+}
+
+/* Cabeceras y Navegación */
+.cabecera-cristal,
+.nav-inferior-cristal {
+    background-color: var(--color-fondo-principal);
+}
+
+.item-nav-inferior {
+    color: var(--color-texto-suave);
+    transition: color 0.2s;
+}
+
+.item-nav-inferior.activa {
+    color: var(--color-texto-principal);
+}
+
+/* Pestañas (Tabs) */
+.pestana-categoria {
+    color: var(--color-texto-suave);
+    transition: background-color 0.2s, color 0.2s;
+}
+
+.pestana-categoria.activa {
+    background-color: var(--color-fondo-tarjeta);
+    color: var(--color-texto-principal);
+}
+
+.pestana-categoria-video {
+    background-color: color-mix(in srgb, var(--color-fondo-principal), transparent 40%);;
+    border: 0px solid var(--color-borde);
+    color: color-mix(in srgb, var(--color-texto-suave), black 20%);
+    transition: all 0.2s ease-in-out;
+}
+
+.pestana-categoria-video.activa {
+    background-color: color-mix(in srgb, var(--color-fondo-add), transparent 10%);
+    color: var(--color-texto-principal);
+}
+
+/* Paneles, Flotantes y Formularios */
+.backdrop-oscuro {
+    background-color: rgb(0 0 0 / 0.8);
+    position: absolute;
+    inset: 0;
+}
+
+.panel-flotante,
+.tarjeta-carrito {
+    background-color: var(--color-fondo-tarjeta);
+    border: 1px solid var(--color-borde);
+    border-radius: var(--redondeo-grande);
+}
+
+.panel-toast {
+    background-color: var(--color-fondo-translucido);
+    backdrop-filter: blur(var(--efecto-cristal));
+    -webkit-backdrop-filter: blur(var(--efecto-cristal));
+    border: 1px solid var(--color-borde);
+}
+
+.item-desplegable {
+    color: var(--color-texto-principal);
+    transition: background-color 0.1s;
+}
+
+.item-desplegable:active {
+    background-color: var(--color-borde);
+}
+
+.input-formulario {
+    background-color: var(--color-fondo-principal);
+    color: var(--color-texto-principal);
+    border: 1px solid var(--color-borde);
+    transition: border-color 0.2s;
+}
+
+.input-formulario:focus {
+    border-color: var(--color-acento);
+    outline: none;
+}
+
+/* Botones */
+.btn-primario {
+    background-color: var(--color-acento);
+    color: var(--color-fondo-principal);
+    /* Contraste automático */
+    transition: transform 0.1s;
+}
+
+.btn-primario:active {
+    transform: scale(0.97);
+}
+
+.btn-secundario{
+    background-color: var(--color-fondo-add);
+    color: var(--color-texto-principal);
+    transition: background-color 0.1s;
+}
+
+.btn-secundario:active {
+    background-color: var(--color-borde);
+}
+
+.btn-circular {
+    background-color: var(--color-fondo-boton);
+    color: var(--color-texto-principal);
+    transition: background-color 0.1s;
+}
+
+.btn-circular:active {
+    background-color: var(--color-borde);
+}
+
+.insignia-notificacion {
+    background-color: var(--color-notificacion);
+    color: white;
+}
+
+/* ==========================================================================
+   COMPONENTES DE DOMINIO (Platos y Video)
+   ========================================================================== */
+
+/* Tarjetas de Menú Estándar */
+.tarjeta-plato {
+    display: flex;
+    gap: 1rem;
+    background-color: var(--color-fondo-tarjeta);
+    border: 1px solid var(--color-borde);
+    border-radius: var(--redondeo-grande);
+    padding: 0.75rem 0.75rem 0.25rem 0.75rem;
+    cursor: pointer;
+    transition: transform 0.1s ease-out;
+}
+
+.tarjeta-plato:active {
+    transform: scale(0.98);
+}
+
+.tarjeta-imagen-caja {
+    position: relative;
+    width: 7rem;
+    height: 7rem;
+    flex-shrink: 0;
+}
+
+.tarjeta-imagen {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: var(--redondeo-medio);
+    background-color: var(--color-fondo-principal);
+}
+
+.etiqueta-chef-miniatura {
+    position: absolute;
+    bottom: 0.5rem;
+    left: 0.5rem;
+    background-color: var(--color-fondo-boton);
+    backdrop-filter: blur(var(--efecto-cristal));
+    -webkit-backdrop-filter: blur(var(--efecto-cristal));
+    color: var(--color-acento);
+    padding: 0.15rem 0.4rem;
+    border-radius: var(--redondeo-grande);
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    font-size: 12px;
+    font-weight: 600;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+.etiqueta-chef-detalle {
+    background-color: transparent;
+    color: var(--color-acento);
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+/* Controles de Cantidad (Stepper) */
+.caja-cantidad {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background-color: color-mix(in srgb, var(--color-fondo-add) 80%, white 10%);
+    border-radius: var(--redondeo-pildora);
+    padding: 0.25rem;   
+    border: 1px solid var(--color-borde);
+    height: 2.5rem;
+    width: 110px;
+}
+
+.btn-cantidad {
+    width: 2rem;
+    height: 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--color-texto-principal);
+    font-weight: bold;
+    font-size: 1.125rem;
+    border-radius: var(--redondeo-pildora);
+}
+
+.btn-cantidad:active {
+    background-color: var(--color-borde);
+}
+
+.btn-agregar {
+    height: 2.5rem;
+    width: 110px;
+    background-color: var(--color-fondo-add);
+    color: var(--color-texto-principal);
+    border-radius: var(--redondeo-pildora);
+    font-size: 0.875rem;
+    font-weight: 500;
+    border: 1px solid var(--color-borde);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.btn-agregar:active {
+    background-color: var(--color-borde);
+}
+
+.interfaz-video .caja-cantidad,
+.interfaz-video .btn-agregar {
+    height: 2.2rem;
+    width: 110px;
+    /* Fondo negro al 40% de opacidad para que se vea el vídeo de fondo */
+    background-color: color-mix(in srgb, var(--color-fondo-add) 40%, transparent);
+
+    /* Borde sutil blanquecino/grisáceo para que resalte un poco */
+    border: 1px solid color-mix(in srgb, var(--color-texto-principal) 20%, transparent);
+
+    /* Al ser un botón pequeñito, aquí un blur no penaliza el rendimiento */
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+}
+
+.icono-alergeno-tarjeta {
+    background-color: var(--color-fondo-add);
+    border-radius: var(--redondeo-pildora);
+    padding: 2px;
+    object-fit: contain;
+}
+
+.icono-alergeno-modal {
+    background-color: var(--color-fondo-tarjeta);
+    border-radius: var(--redondeo-pildora);
+    padding: 2px;
+    object-fit: contain;
+}
+
+/* Modo Feed (Estilo TikTok) */
+.gradiente-video {
+    background: linear-gradient(to top, var(--color-fondo-principal) 0%, color-mix(in srgb, var(--color-fondo-principal) 50%, transparent) 60%, transparent 100%);
+}
+
+.gradiente-nav-video {
+    background: linear-gradient(to bottom, var(--color-fondo-principal) 0%, transparent 100%);
+}
+
+.contenedor-video {
+    position: relative;
+    width: 100%;
+    height: 100dvh;
+    overflow: hidden;
+    scroll-snap-align: start;
+    scroll-snap-stop: always;
+    background-color: var(--color-fondo-principal);
+}
+
+.contenedor-video .elemento-video,
+.contenedor-video .superposicion-poster,
+.contenedor-video .img-respaldo {
+    transition: opacity 0.3s ease-out;
+    opacity: 0.3;
+}
+
+.contenedor-video.esta-activo .elemento-video,
+.contenedor-video.esta-activo .superposicion-poster,
+.contenedor-video.esta-activo .img-respaldo {
+    opacity: 1;
+}
+
+.contenedor-video.esta-activo .superposicion-poster.desvanecer {
+    opacity: 0;
+}
+
+.elemento-video,
+.img-respaldo,
+.superposicion-poster {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    position: absolute;
+    inset: 0;
+}
+
+.superposicion-poster {
+    z-index: 2;
+    transition: opacity 0.05s ease-out;
+    pointer-events: none;
+}
+
+.img-respaldo {
+    animation: efectoKenBurns 20s ease-out infinite alternate;
+    z-index: 1;
+}
+
+.interfaz-video {
+    position: absolute;
+    bottom: 66px;
+    left: 0;
+    right: 0;
+    padding: 0 20px;
+    z-index: 10;
+}
+
+.contenedor-scroll-video {
+    height: 100dvh;
+    overflow-y: scroll;
+    scroll-snap-type: y mandatory;
+    scroll-behavior: auto;
+}
+
+.contenedor-scroll-video::-webkit-scrollbar {
+    display: none;
+}
+
+.texto-expandible {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    transition: all 0.3s ease;
+}
+
+.texto-expandible.expandido {
+    -webkit-line-clamp: unset;
+}
+
+.pestanas-nav-video {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 20;
+    padding-top: env(safe-area-inset-top);
+}
+
+.etiqueta-chef-video {
+    background-color: transparent;
+    color: var(--color-acento);
+}
+
+.superposicion-reproducir {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0, 0, 0, 0.3);
+    z-index: 50;
+    cursor: pointer;
+}
+
+/* ==========================================================================
+   ANIMACIONES, MODALES Y TRANSICIONES ACELERADAS
+   ========================================================================== */
+
+/* Transiciones entre Vistas (Menú <-> Video) */
+.transicion-vista {
+    transition: opacity 0.3s ease-in-out;
+}
+
+.vista-oculta {
+    opacity: 0;
+    pointer-events: none;
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    visibility: hidden;
+}
+
+.vista-visible {
+    opacity: 1;
+    position: relative;
+    z-index: 10;
+    visibility: visible;
+}
+
+#feed-video.vista-visible {
+    position: fixed;
+    z-index: 30;
+}
+
+/* Entrada de Tarjetas (Lista Platos) */
+.entrada-tarjeta {
+    animation: deslizarArriba 0.3s cubic-bezier(0.25, 1, 0.5, 1) both;
+    animation-delay: var(--retraso, 0s);
+}
+@keyframes deslizarArriba {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes efectoKenBurns {
+    from {
+        transform: scale(1);
+    }
+
+    to {
+        transform: scale(1.1);
+    }
+}
+
+/* --------------------------------------------------------------------------
+   SISTEMA DE MODALES (Transiciones Nativas Aceleradas por GPU)
+   -------------------------------------------------------------------------- */
+.modal-contenedor-backdrop {
+    opacity: 0;
+    visibility: hidden;
+    /* La transición de visibility espera a que termine la opacidad antes de ocultarse */
+    transition: opacity 0.3s ease-out, visibility 0.3s ease-out;
+}
+
+.modal-contenedor-backdrop.mostrar {
+    opacity: 1;
+    visibility: visible;
+}
+
+.modal-contenido-deslizante {
+    transform: translateY(100%);
+    transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.modal-contenedor-backdrop.mostrar .modal-contenido-deslizante {
+    transform: translateY(0);
+}
+
+/* --------------------------------------------------------------------------
+   SISTEMA DE TOAST (Alérgenos)
+   -------------------------------------------------------------------------- */
+#toast-alergenos {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(0.9);
+    opacity: 0;
+    visibility: hidden;
+    z-index: 60;
+    transition: opacity 0.2s ease-out, transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    width: 85%;
+    max-width: 260px;
+    max-height: 50vh;
+    display: flex;
+    flex-direction: column;
+}
+
+#toast-alergenos.mostrar {
+    opacity: 1;
+    visibility: visible;
+    transform: translate(-50%, -50%) scale(1);
+}
