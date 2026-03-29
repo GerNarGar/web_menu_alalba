@@ -1,0 +1,31 @@
+# Credenciales y secretos
+scripts/credentials.json
+scripts/.env
+
+# Ignore all files in the .idea folder
+.idea/
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Backups locales (opcional, ya que los backups son útiles en repo)
+# backups/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+ToDo.md
+NOTES.md
+# SETUP.md
+.vscode
+node_modules/
+
+# Logs y temporales
+npm-debug.log*
+.eslintcache
+/referencias/
+scripts/error_telegram.txt
