@@ -229,6 +229,8 @@ const InterfazDOM = {
 
       const imagenPlato = nodoClonado.querySelector(".nodo-imagen-plato");
       imagenPlato.setAttribute("src", plato.image);
+      imagenPlato.setAttribute("draggable", "false");
+      imagenPlato.setAttribute("oncontextmenu", "return false;");
       imagenPlato.addEventListener(
         "error",
         () => (imagenPlato.style.display = "none"),
@@ -725,14 +727,25 @@ const ControladorApp = {
     const textos = Traductor.extraerTextoPlato(objetoPlato);
 
     const contImagen = InterfazDOM.crearNodo("div", "relative h-96");
-    contImagen.appendChild(
-      InterfazDOM.crearNodo(
-        "img",
-        "w-full h-full object-cover rounded-b-[2rem]",
-        null,
-        { src: objetoPlato.image },
-      ),
+
+    // Crear el nodo imagen con protecciones adicionales (draggable, oncontextmenu)
+    const imgModal = InterfazDOM.crearNodo(
+      "img",
+      "w-full h-full object-cover rounded-b-[2rem]",
+      null,
+      {
+        src: objetoPlato.image,
+        draggable: "false", // Evita arrastrar en PC
+        oncontextmenu: "return false;", // Evita pulsación larga/clic derecho
+      },
     );
+
+    // Protección extra para iOS/Android modernos: evitar selección de la imagen
+    imgModal.style.webkitTouchCallout = "none";
+    imgModal.style.userSelect = "none";
+    imgModal.style.pointerEvents = "none"; // Deshabilita cualquier interacción táctil sobre la imagen
+
+    contImagen.appendChild(imgModal);
 
     const cuerpoInfo = InterfazDOM.crearNodo("div", "px-6 py-6 pb-2");
     cuerpoInfo.appendChild(
@@ -1193,14 +1206,14 @@ const ControladorApp = {
       );
 
       if (item.video) {
-        divContenedorVideo.innerHTML += `<video class="elemento-video" src="${item.video.src}" loop playsinline muted preload="none"></video>`;
+        divContenedorVideo.innerHTML += `<video class="elemento-video" src="${item.video.src}" loop playsinline muted preload="none" oncontextmenu="return false;" disablePictureInPicture controlsList="nodownload"></video>`;
         divContenedorVideo.innerHTML += `<img class="superposicion-poster" src="${item.video.poster}" alt="">`;
         divContenedorVideo.innerHTML += `<div class="superposicion-reproducir hidden"><svg class="w-16 h-16 texto-principal opacity-80" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div>`;
       } else {
         divContenedorVideo.innerHTML += `<img class="img-respaldo" src="${item.image}" alt="">`;
       }
 
-      divContenedorVideo.innerHTML += `<div class="gradiente-video absolute bottom-0 left-0 right-0 h-[65%] z-[3] pointer-events-none"></div>`;
+      divContenedorVideo.innerHTML += `<div class="gradiente-video absolute bottom-0 left-0 right-0 h-[55%] z-[3] pointer-events-none"></div>`;
 
       const divInterfaz = InterfazDOM.crearNodo("div", "interfaz-video");
       const divInfo = InterfazDOM.crearNodo("div", "mb-4");
@@ -1319,7 +1332,10 @@ const ControladorApp = {
         boton.addEventListener("click", (e) => {
           const video = e.currentTarget.parentElement.querySelector("video");
           if (video) video.play();
+
+          // Ocultar agresivamente al hacer clic manual
           e.currentTarget.classList.add("hidden");
+          e.currentTarget.style.display = "none";
         });
       });
 
@@ -1342,17 +1358,38 @@ const ControladorApp = {
 
           if (entrada.isIntersecting && entrada.intersectionRatio > 0.6) {
             contenedor.classList.add("esta-activo");
+
             if (video) {
               video.preload = "auto";
+
+              // Evento nativo cuando el vídeo realmente está escupiendo frames
               video.onplaying = () => {
                 if (poster) poster.classList.add("desvanecer");
-                if (superposicion) superposicion.classList.add("hidden");
+                // Forzar ocultación agresiva
+                if (superposicion) {
+                  superposicion.classList.add("hidden");
+                  superposicion.style.display = "none";
+                }
               };
+
+              // Intentar reproducir
               const promesa = video.play();
               if (promesa !== undefined) {
-                promesa.catch(() => {
-                  if (superposicion) superposicion.classList.remove("hidden");
-                });
+                promesa
+                  .then(() => {
+                    // Éxito: El Autoplay funcionó
+                    if (superposicion) {
+                      superposicion.classList.add("hidden");
+                      superposicion.style.display = "none";
+                    }
+                  })
+                  .catch(() => {
+                    // Fallo: El navegador bloqueó el Autoplay (Mostrar el botón)
+                    if (superposicion) {
+                      superposicion.classList.remove("hidden");
+                      superposicion.style.display = "flex";
+                    }
+                  });
               }
             }
 
@@ -1363,10 +1400,16 @@ const ControladorApp = {
               this.renderizarPestanasVideo();
             }
           } else {
+            // Fuera de pantalla
             contenedor.classList.remove("esta-activo");
             if (video) video.pause();
             if (poster) poster.classList.remove("desvanecer");
-            if (superposicion) superposicion.classList.add("hidden");
+
+            // Restablecer el botón de Play a su estado oculto por defecto
+            if (superposicion) {
+              superposicion.classList.add("hidden");
+              superposicion.style.display = ""; // Limpiar el estilo inline
+            }
           }
         });
       },

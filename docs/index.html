@@ -9,17 +9,18 @@
 
     <!-- ======================================================================= -->
     <!-- 🛠️ ENTORNO DE DESARROLLO (Descomentar para usar Tailwind CDN)          -->
-    <script src="https://cdn.tailwindcss.com"></script>                    
+    <!-- <script src="https://cdn.tailwindcss.com"></script>                     -->
     <!-- ======================================================================= -->
 
     <!-- ======================================================================= -->
     <!-- 🚀 ENTORNO DE PRODUCCIÓN (Descomentar para usar CSS Compilado Minificado)-->
-    <!-- <link href="tailwind-build.css" rel="stylesheet">                       -->
+    <link href="tailwind-build.css" rel="stylesheet">
     <!-- ======================================================================= -->
 
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link href="styles.css" rel="stylesheet">
-</head>
+    <!-- ¡IMPORTANTE! Eliminar o comentar la línea de styles.css en producción
+             ya que tailwind-build.css ahora incluye también todo tu código personalizado -->
+    <!-- <link href="styles.css" rel="stylesheet"></head> -->
 
 <body class="antialiased min-h-screen flex flex-col area-segura-inferior">
 
@@ -27,7 +28,8 @@
     <header id="cabecera-principal"
         class="sticky top-0 z-40 cabecera-cristal border-b borde-estandar area-segura-superior transicion-vista vista-visible">
         <div class="flex items-center justify-between px-4 py-3">
-            <button id="boton-inicio" class="flex flex-col items-center justify-center h-full texto-principal px-2 min-w-[64px]"
+            <button id="boton-inicio"
+                class="flex flex-col items-center justify-center h-full texto-principal px-2 min-w-[64px]"
                 aria-label="Ir al inicio">
                 <!-- Wrapper oculto por defecto para evitar el parpadeo -->
                 <div id="wrapper-icono-inicio" class="hidden flex-col items-center">

@@ -14,15 +14,15 @@ jobs:
 
     steps:
       - name: Clonar repositorio
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Configurar Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6
         with:
           python-version: "3.10"
 
       - name: Caché de dependencias PIP
-        uses: actions/cache@v3
+        uses: actions/cache@v5
         with:
           path: ~/.cache/pip
           key: ${{ runner.os }}-pip-${{ hashFiles('scripts/requirements.txt') }}
@@ -54,16 +54,14 @@ jobs:
       # ----------------------------------------------------------------------------------
       # OPTIMIZACIÓN CSS (Tailwind): Descomenta estas líneas antes de pasar a producción
       # ----------------------------------------------------------------------------------
-      # - name: ️ Setup Node.js
-      #   uses: actions/setup-node@v4
-      #   with:
-      #     node-version: '20'
-      # - name:  Compilar Tailwind CSS
-      #   run: |
-      #     npm install -g tailwindcss
-      #     npx tailwindcss -i docs/styles.css -o docs/tailwind-build.css --minify
+      - name: 🏗️ Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: "24 "
+      - name: 🎨 Compilar Tailwind CSS
+        run: |
+          npx tailwindcss@3 -i docs/styles.css -o docs/tailwind-build.css --content "docs/**/*.{html,js}" --minify
       # ----------------------------------------------------------------------------------
-
       - name: Commit y Push de Cambios
         run: |
           git config --local user.email "action@github.com"

@@ -1,3 +1,7 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
 /* ==========================================================================
    SISTEMA DE DISEÑO BASE Y VARIABLES NATIVAS
    ========================================================================== */
@@ -21,7 +25,7 @@
     --redondeo-medio: 12px;
     --redondeo-grande: 16px;
     --redondeo-pildora: 9999px;
-    
+
     --efecto-cristal: 12px;
 }
 
@@ -32,6 +36,20 @@
     font-family: 'Inter', system-ui, -apple-system, sans-serif;
     -webkit-tap-highlight-color: transparent;
     box-sizing: border-box;
+}
+
+/* Bloquear interacciones directas con medios para evitar descargas */
+img,
+video {
+    -webkit-user-drag: none;
+    -khtml-user-drag: none;
+    -moz-user-drag: none;
+    -o-user-drag: none;
+    user-drag: none;
+    -webkit-touch-callout: none;
+    /* Desactiva el menú de "Guardar imagen" en iPhone/iPad */
+    user-select: none;
+    -webkit-user-select: none;
 }
 
 body {
@@ -96,8 +114,17 @@ body {
 
 .nav-logo {
     object-fit: contain;
-    height: 38px;
-    max-width: 110px;
+    height: 42px;
+    /* Un poco más alto para compensar el margen interior */
+    max-width: 130px;
+    background-color: var(--color-fondo-tarjeta);
+    /* Usa el color de las tarjetas */
+    padding: 4px 8px;
+    /* Margen interior para que el logo respire */
+    border-radius: var(--redondeo-pequeno);
+    /* Esquinas un poco redondeadas */
+    border: 1px solid var(--color-borde);
+    /* Un borde súper sutil para enmarcarlo */
 }
 
 /* Cabeceras y Navegación */
@@ -127,7 +154,8 @@ body {
 }
 
 .pestana-categoria-video {
-    background-color: color-mix(in srgb, var(--color-fondo-principal), transparent 40%);;
+    background-color: color-mix(in srgb, var(--color-fondo-principal), transparent 40%);
+    ;
     border: 0px solid var(--color-borde);
     color: color-mix(in srgb, var(--color-texto-suave), black 20%);
     transition: all 0.2s ease-in-out;
@@ -192,7 +220,7 @@ body {
     transform: scale(0.97);
 }
 
-.btn-secundario{
+.btn-secundario {
     background-color: var(--color-fondo-add);
     color: var(--color-texto-principal);
     transition: background-color 0.1s;
@@ -287,7 +315,7 @@ body {
     justify-content: space-between;
     background-color: color-mix(in srgb, var(--color-fondo-add) 80%, white 10%);
     border-radius: var(--redondeo-pildora);
-    padding: 0.25rem;   
+    padding: 0.25rem;
     border: 1px solid var(--color-borde);
     height: 2.5rem;
     width: 110px;
@@ -358,11 +386,15 @@ body {
 
 /* Modo Feed (Estilo TikTok) */
 .gradiente-video {
-    background: linear-gradient(to top, var(--color-fondo-principal) 0%, color-mix(in srgb, var(--color-fondo-principal) 50%, transparent) 60%, transparent 100%);
+    /* Va de abajo (to top). 
+       El primer valor es negro casi sólido (0.8 = 80%).
+       El segundo es negro a medias (0.4 = 40%) a mitad de camino (50%).
+       El tercero es transparente al llegar arriba (100%) */
+    background: linear-gradient(to top, rgba(0, 0, 0, 0.8) 0%, rgba(0, 0, 0, 0.55) 50%, transparent 100%);
 }
 
 .gradiente-nav-video {
-    background: linear-gradient(to bottom, var(--color-fondo-principal) 0%, transparent 100%);
+    background: linear-gradient(to bottom, rgba(0, 0, 0, 0.6) 0%, rgba(0, 0, 0, 0.35) 50%, transparent 100%);
 }
 
 .contenedor-video {
@@ -466,7 +498,7 @@ body {
     align-items: center;
     justify-content: center;
     background: rgba(0, 0, 0, 0.3);
-    z-index: 50;
+    z-index: 15;
     cursor: pointer;
 }
 
@@ -495,8 +527,10 @@ body {
     visibility: visible;
 }
 
-#feed-video.vista-visible {
+#contenedor-feed-videos.vista-visible {
     position: fixed;
+    inset: 0;
+    /* Añadimos esto para forzar que ocupe la pantalla completa */
     z-index: 30;
 }
 
@@ -505,6 +539,7 @@ body {
     animation: deslizarArriba 0.3s cubic-bezier(0.25, 1, 0.5, 1) both;
     animation-delay: var(--retraso, 0s);
 }
+
 @keyframes deslizarArriba {
     from {
         opacity: 0;
