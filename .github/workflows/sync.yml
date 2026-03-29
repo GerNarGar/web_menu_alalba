@@ -1,0 +1,100 @@
+name: Sincronización Menú QR
+
+on:
+  workflow_dispatch:
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    env:
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
+    steps:
+      - name: Clonar repositorio
+        uses: actions/checkout@v4
+
+      - name: Configurar Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"
+
+      - name: Caché de dependencias PIP
+        uses: actions/cache@v3
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('scripts/requirements.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-
+
+      - name: Instalar dependencias Python
+        run: |
+          pip install -r scripts/requirements.txt
+
+      - name: Configurar FFmpeg
+        uses: FedericoCarboni/setup-ffmpeg@v3
+        with:
+          ffmpeg-version: "6.1.0"
+
+      - name: Generar credenciales de Google
+        env:
+          GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }}
+        run: |
+          mkdir -p scripts
+          echo "$GOOGLE_CREDENTIALS" > scripts/credentials.json
+
+      - name: Ejecutar Sincronizar con Google Sheets
+        env:
+          SHEET_ID: ${{ secrets.SHEET_ID }}
+        run: |
+          python scripts/sync.py
+
+      # ----------------------------------------------------------------------------------
+      # OPTIMIZACIÓN CSS (Tailwind): Descomenta estas líneas antes de pasar a producción
+      # ----------------------------------------------------------------------------------
+      # - name: ️ Setup Node.js
+      #   uses: actions/setup-node@v4
+      #   with:
+      #     node-version: '20'
+      # - name:  Compilar Tailwind CSS
+      #   run: |
+      #     npm install -g tailwindcss
+      #     npx tailwindcss -i docs/styles.css -o docs/tailwind-build.css --minify
+      # ----------------------------------------------------------------------------------
+
+      - name: Commit y Push de Cambios
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action Bot"
+
+          # Usamos --all para rastrear archivos nuevos PERO TAMBIÉN archivos borrados (Huérfanos)
+          git add --all docs/ backups/ scripts/image_hashes.json
+
+          # Solo hacemos commit si hay cambios reales
+          git diff --quiet && git diff --staged --quiet || git commit -m "Actualización automática de Menú $(date +'%Y-%m-%d %H:%M')"
+          git push
+
+      - name: Notificar Error Crítico a Telegram
+        if: failure()
+        run: |
+          ERROR_MSG="Error desconocido. Revisa los logs en la pestaña Actions de GitHub."
+          if [ -f error_telegram.txt ]; then
+            ERROR_MSG=$(cat error_telegram.txt)
+          fi
+
+          jq -n --arg chat_id "${{ secrets.TELEGRAM_CHAT_ID }}" \
+                --arg text "❌ *Error Crítico en el Menú QR* ❌
+
+          El script de sincronización en GitHub Actions ha fallado. La web mantiene la versión anterior.
+
+          *Detalle técnico:*
+          \`\`\`
+          $ERROR_MSG
+          \`\`\`" \
+                '{chat_id: $chat_id, text: $text, parse_mode: "Markdown"}' > payload.json
+
+          curl -s -X POST "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage" \
+               -H "Content-Type: application/json" \
+               -d @payload.json
