@@ -1,12 +1,14 @@
 {
   "meta": {
-    "restaurant": "Al Daniel Restaurant",
+    "restaurant": "Restaurante Al Alba",
+    "restaurant_url": "https://hotelalalba.com/restaurante/",
+    "restaurant_logo": "https://RitaLee79.github.io/menu-restaurante-qr/img/logo_restaurante.webp",
     "currency": "DH",
     "currency_position": "derecha",
     "default_lang": "es",
     "default_table": "No",
     "theme_primary": "#ff6a00",
-    "theme_background": "#ffffff",
+    "theme_background": "#000000",
     "theme_text": "#ffffff",
     "theme_notification": "#f43131",
     "allow_orders": false,
@@ -14,7 +16,7 @@
     "toast_timeout": 4,
     "vibrar_al_enviar": true,
     "swipe_margen_seguridad": 30,
-    "generated_at": "2026-03-28T22:45:44.876608",
+    "generated_at": "2026-03-29T18:48:36.655199",
     "base_url": "https://RitaLee79.github.io/menu-restaurante-qr"
   },
   "categories": [
@@ -181,9 +183,33 @@
       "price": 65.0,
       "is_chef_choice": true,
       "allergens": [
-        1,
-        9,
-        12
+        {
+          "code": 1,
+          "name": {
+            "es": "Gluten",
+            "en": "Gluten",
+            "fr": "Gluten"
+          },
+          "icon": "https://RitaLee79.github.io/menu-restaurante-qr/img/icons/icons_small/gluten.png"
+        },
+        {
+          "code": 9,
+          "name": {
+            "es": "Lácteos",
+            "en": "Dairy / Milk",
+            "fr": "Produits laitiers"
+          },
+          "icon": "https://RitaLee79.github.io/menu-restaurante-qr/img/icons/icons_small/milk.png"
+        },
+        {
+          "code": 12,
+          "name": {
+            "es": "Cacahuetes",
+            "en": "Peanuts",
+            "fr": "Arachides"
+          },
+          "icon": "https://RitaLee79.github.io/menu-restaurante-qr/img/icons/icons_small/peanuts.png"
+        }
       ],
       "image": "https://RitaLee79.github.io/menu-restaurante-qr/img/platos/briuats1.webp",
       "video": {
@@ -212,15 +238,39 @@
       "price": 60.0,
       "is_chef_choice": true,
       "allergens": [
-        1,
-        3,
-        9
+        {
+          "code": 1,
+          "name": {
+            "es": "Gluten",
+            "en": "Gluten",
+            "fr": "Gluten"
+          },
+          "icon": "https://RitaLee79.github.io/menu-restaurante-qr/img/icons/icons_small/gluten.png"
+        },
+        {
+          "code": 3,
+          "name": {
+            "es": "Frutos secos",
+            "en": "Nuts / Tree nuts",
+            "fr": "Fruits à coque"
+          },
+          "icon": "https://RitaLee79.github.io/menu-restaurante-qr/img/icons/icons_small/treenuts.png"
+        },
+        {
+          "code": 9,
+          "name": {
+            "es": "Lácteos",
+            "en": "Dairy / Milk",
+            "fr": "Produits laitiers"
+          },
+          "icon": "https://RitaLee79.github.io/menu-restaurante-qr/img/icons/icons_small/milk.png"
+        }
       ],
       "image": "https://RitaLee79.github.io/menu-restaurante-qr/img/platos/veloute.webp",
       "video": {
-        "src": "https://RitaLee79.github.io/menu-restaurante-qr/img/videos/veloute.mp4",
-        "poster": "https://RitaLee79.github.io/menu-restaurante-qr/img/videos/veloute_poster.webp",
-        "duration": 0.0
+        "src": "https://RitaLee79.github.io/menu-restaurante-qr/img/videos/vid2_25fps.mp4",
+        "poster": "https://RitaLee79.github.io/menu-restaurante-qr/img/videos/vid2_25fps_poster.webp",
+        "duration": 11.5
       },
       "i18n": {
         "es": {
@@ -243,8 +293,24 @@
       "price": 65.0,
       "is_chef_choice": false,
       "allergens": [
-        3,
-        6
+        {
+          "code": 3,
+          "name": {
+            "es": "Frutos secos",
+            "en": "Nuts / Tree nuts",
+            "fr": "Fruits à coque"
+          },
+          "icon": "https://RitaLee79.github.io/menu-restaurante-qr/img/icons/icons_small/treenuts.png"
+        },
+        {
+          "code": 6,
+          "name": {
+            "es": "Sésamo",
+            "en": "Sesame",
+            "fr": "Sésame"
+          },
+          "icon": "https://RitaLee79.github.io/menu-restaurante-qr/img/icons/icons_small/sesame.png"
+        }
       ],
       "image": "https://RitaLee79.github.io/menu-restaurante-qr/img/platos/zalouk.webp",
       "video": {
@@ -273,9 +339,33 @@
       "price": 75.0,
       "is_chef_choice": true,
       "allergens": [
-        1,
-        6,
-        9
+        {
+          "code": 1,
+          "name": {
+            "es": "Gluten",
+            "en": "Gluten",
+            "fr": "Gluten"
+          },
+          "icon": "https://RitaLee79.github.io/menu-restaurante-qr/img/icons/icons_small/gluten.png"
+        },
+        {
+          "code": 6,
+          "name": {
+            "es": "Sésamo",
+            "en": "Sesame",
+            "fr": "Sésame"
+          },
+          "icon": "https://RitaLee79.github.io/menu-restaurante-qr/img/icons/icons_small/sesame.png"
+        },
+        {
+          "code": 9,
+          "name": {
+            "es": "Lácteos",
+            "en": "Dairy / Milk",
+            "fr": "Produits laitiers"
+          },
+          "icon": "https://RitaLee79.github.io/menu-restaurante-qr/img/icons/icons_small/milk.png"
+        }
       ],
       "image": "https://RitaLee79.github.io/menu-restaurante-qr/img/platos/crepe1.webp",
       "video": {
@@ -304,9 +394,33 @@
       "price": 75.0,
       "is_chef_choice": false,
       "allergens": [
-        1,
-        9,
-        11
+        {
+          "code": 1,
+          "name": {
+            "es": "Gluten",
+            "en": "Gluten",
+            "fr": "Gluten"
+          },
+          "icon": "https://RitaLee79.github.io/menu-restaurante-qr/img/icons/icons_small/gluten.png"
+        },
+        {
+          "code": 9,
+          "name": {
+            "es": "Lácteos",
+            "en": "Dairy / Milk",
+            "fr": "Produits laitiers"
+          },
+          "icon": "https://RitaLee79.github.io/menu-restaurante-qr/img/icons/icons_small/milk.png"
+        },
+        {
+          "code": 11,
+          "name": {
+            "es": "Huevo",
+            "en": "Egg",
+            "fr": "Œuf"
+          },
+          "icon": "https://RitaLee79.github.io/menu-restaurante-qr/img/icons/icons_small/egg.png"
+        }
       ],
       "image": "https://RitaLee79.github.io/menu-restaurante-qr/img/platos/briuats2.webp",
       "video": {
@@ -335,7 +449,15 @@
       "price": 65.0,
       "is_chef_choice": false,
       "allergens": [
-        1
+        {
+          "code": 1,
+          "name": {
+            "es": "Gluten",
+            "en": "Gluten",
+            "fr": "Gluten"
+          },
+          "icon": "https://RitaLee79.github.io/menu-restaurante-qr/img/icons/icons_small/gluten.png"
+        }
       ],
       "image": "https://RitaLee79.github.io/menu-restaurante-qr/img/platos/crema.webp",
       "video": {
@@ -364,8 +486,24 @@
       "price": 140.0,
       "is_chef_choice": true,
       "allergens": [
-        1,
-        3
+        {
+          "code": 1,
+          "name": {
+            "es": "Gluten",
+            "en": "Gluten",
+            "fr": "Gluten"
+          },
+          "icon": "https://RitaLee79.github.io/menu-restaurante-qr/img/icons/icons_small/gluten.png"
+        },
+        {
+          "code": 3,
+          "name": {
+            "es": "Frutos secos",
+            "en": "Nuts / Tree nuts",
+            "fr": "Fruits à coque"
+          },
+          "icon": "https://RitaLee79.github.io/menu-restaurante-qr/img/icons/icons_small/treenuts.png"
+        }
       ],
       "image": "https://RitaLee79.github.io/menu-restaurante-qr/img/platos/pastela_pollo.webp",
       "video": {
@@ -394,11 +532,51 @@
       "price": 140.0,
       "is_chef_choice": true,
       "allergens": [
-        1,
-        7,
-        9,
-        12,
-        13
+        {
+          "code": 1,
+          "name": {
+            "es": "Gluten",
+            "en": "Gluten",
+            "fr": "Gluten"
+          },
+          "icon": "https://RitaLee79.github.io/menu-restaurante-qr/img/icons/icons_small/gluten.png"
+        },
+        {
+          "code": 7,
+          "name": {
+            "es": "Pescado",
+            "en": "Fish",
+            "fr": "Poisson"
+          },
+          "icon": "https://RitaLee79.github.io/menu-restaurante-qr/img/icons/icons_small/fish.png"
+        },
+        {
+          "code": 9,
+          "name": {
+            "es": "Lácteos",
+            "en": "Dairy / Milk",
+            "fr": "Produits laitiers"
+          },
+          "icon": "https://RitaLee79.github.io/menu-restaurante-qr/img/icons/icons_small/milk.png"
+        },
+        {
+          "code": 12,
+          "name": {
+            "es": "Cacahuetes",
+            "en": "Peanuts",
+            "fr": "Arachides"
+          },
+          "icon": "https://RitaLee79.github.io/menu-restaurante-qr/img/icons/icons_small/peanuts.png"
+        },
+        {
+          "code": 13,
+          "name": {
+            "es": "Moluscos",
+            "en": "Molluscs",
+            "fr": "Mollusques"
+          },
+          "icon": "https://RitaLee79.github.io/menu-restaurante-qr/img/icons/icons_small/molluscs.png"
+        }
       ],
       "image": "https://RitaLee79.github.io/menu-restaurante-qr/img/platos/keftas.webp",
       "video": {
@@ -427,9 +605,33 @@
       "price": 160.0,
       "is_chef_choice": true,
       "allergens": [
-        1,
-        3,
-        13
+        {
+          "code": 1,
+          "name": {
+            "es": "Gluten",
+            "en": "Gluten",
+            "fr": "Gluten"
+          },
+          "icon": "https://RitaLee79.github.io/menu-restaurante-qr/img/icons/icons_small/gluten.png"
+        },
+        {
+          "code": 3,
+          "name": {
+            "es": "Frutos secos",
+            "en": "Nuts / Tree nuts",
+            "fr": "Fruits à coque"
+          },
+          "icon": "https://RitaLee79.github.io/menu-restaurante-qr/img/icons/icons_small/treenuts.png"
+        },
+        {
+          "code": 13,
+          "name": {
+            "es": "Moluscos",
+            "en": "Molluscs",
+            "fr": "Mollusques"
+          },
+          "icon": "https://RitaLee79.github.io/menu-restaurante-qr/img/icons/icons_small/molluscs.png"
+        }
       ],
       "image": "https://RitaLee79.github.io/menu-restaurante-qr/img/platos/pulpo.webp",
       "video": {
@@ -458,9 +660,33 @@
       "price": 130.0,
       "is_chef_choice": false,
       "allergens": [
-        1,
-        3,
-        7
+        {
+          "code": 1,
+          "name": {
+            "es": "Gluten",
+            "en": "Gluten",
+            "fr": "Gluten"
+          },
+          "icon": "https://RitaLee79.github.io/menu-restaurante-qr/img/icons/icons_small/gluten.png"
+        },
+        {
+          "code": 3,
+          "name": {
+            "es": "Frutos secos",
+            "en": "Nuts / Tree nuts",
+            "fr": "Fruits à coque"
+          },
+          "icon": "https://RitaLee79.github.io/menu-restaurante-qr/img/icons/icons_small/treenuts.png"
+        },
+        {
+          "code": 7,
+          "name": {
+            "es": "Pescado",
+            "en": "Fish",
+            "fr": "Poisson"
+          },
+          "icon": "https://RitaLee79.github.io/menu-restaurante-qr/img/icons/icons_small/fish.png"
+        }
       ],
       "image": "https://RitaLee79.github.io/menu-restaurante-qr/img/platos/pastela_marina.webp",
       "video": {
@@ -489,9 +715,33 @@
       "price": 170.0,
       "is_chef_choice": false,
       "allergens": [
-        3,
-        5,
-        6
+        {
+          "code": 3,
+          "name": {
+            "es": "Frutos secos",
+            "en": "Nuts / Tree nuts",
+            "fr": "Fruits à coque"
+          },
+          "icon": "https://RitaLee79.github.io/menu-restaurante-qr/img/icons/icons_small/treenuts.png"
+        },
+        {
+          "code": 5,
+          "name": {
+            "es": "Mostaza",
+            "en": "Mustard",
+            "fr": "Moutarde"
+          },
+          "icon": "https://RitaLee79.github.io/menu-restaurante-qr/img/icons/icons_small/mustard.png"
+        },
+        {
+          "code": 6,
+          "name": {
+            "es": "Sésamo",
+            "en": "Sesame",
+            "fr": "Sésame"
+          },
+          "icon": "https://RitaLee79.github.io/menu-restaurante-qr/img/icons/icons_small/sesame.png"
+        }
       ],
       "image": "https://RitaLee79.github.io/menu-restaurante-qr/img/platos/cordero.webp",
       "video": {
@@ -520,8 +770,24 @@
       "price": 170.0,
       "is_chef_choice": false,
       "allergens": [
-        3,
-        9
+        {
+          "code": 3,
+          "name": {
+            "es": "Frutos secos",
+            "en": "Nuts / Tree nuts",
+            "fr": "Fruits à coque"
+          },
+          "icon": "https://RitaLee79.github.io/menu-restaurante-qr/img/icons/icons_small/treenuts.png"
+        },
+        {
+          "code": 9,
+          "name": {
+            "es": "Lácteos",
+            "en": "Dairy / Milk",
+            "fr": "Produits laitiers"
+          },
+          "icon": "https://RitaLee79.github.io/menu-restaurante-qr/img/icons/icons_small/milk.png"
+        }
       ],
       "image": "https://RitaLee79.github.io/menu-restaurante-qr/img/platos/ternera.webp",
       "video": {
@@ -550,11 +816,51 @@
       "price": 55.0,
       "is_chef_choice": false,
       "allergens": [
-        1,
-        3,
-        8,
-        9,
-        11
+        {
+          "code": 1,
+          "name": {
+            "es": "Gluten",
+            "en": "Gluten",
+            "fr": "Gluten"
+          },
+          "icon": "https://RitaLee79.github.io/menu-restaurante-qr/img/icons/icons_small/gluten.png"
+        },
+        {
+          "code": 3,
+          "name": {
+            "es": "Frutos secos",
+            "en": "Nuts / Tree nuts",
+            "fr": "Fruits à coque"
+          },
+          "icon": "https://RitaLee79.github.io/menu-restaurante-qr/img/icons/icons_small/treenuts.png"
+        },
+        {
+          "code": 8,
+          "name": {
+            "es": "Soja",
+            "en": "Soy / Soya",
+            "fr": "Soja"
+          },
+          "icon": "https://RitaLee79.github.io/menu-restaurante-qr/img/icons/icons_small/soyabeans.png"
+        },
+        {
+          "code": 9,
+          "name": {
+            "es": "Lácteos",
+            "en": "Dairy / Milk",
+            "fr": "Produits laitiers"
+          },
+          "icon": "https://RitaLee79.github.io/menu-restaurante-qr/img/icons/icons_small/milk.png"
+        },
+        {
+          "code": 11,
+          "name": {
+            "es": "Huevo",
+            "en": "Egg",
+            "fr": "Œuf"
+          },
+          "icon": "https://RitaLee79.github.io/menu-restaurante-qr/img/icons/icons_small/egg.png"
+        }
       ],
       "image": "https://RitaLee79.github.io/menu-restaurante-qr/img/platos/chocolate.webp",
       "video": {
@@ -583,10 +889,42 @@
       "price": 50.0,
       "is_chef_choice": true,
       "allergens": [
-        1,
-        3,
-        6,
-        11
+        {
+          "code": 1,
+          "name": {
+            "es": "Gluten",
+            "en": "Gluten",
+            "fr": "Gluten"
+          },
+          "icon": "https://RitaLee79.github.io/menu-restaurante-qr/img/icons/icons_small/gluten.png"
+        },
+        {
+          "code": 3,
+          "name": {
+            "es": "Frutos secos",
+            "en": "Nuts / Tree nuts",
+            "fr": "Fruits à coque"
+          },
+          "icon": "https://RitaLee79.github.io/menu-restaurante-qr/img/icons/icons_small/treenuts.png"
+        },
+        {
+          "code": 6,
+          "name": {
+            "es": "Sésamo",
+            "en": "Sesame",
+            "fr": "Sésame"
+          },
+          "icon": "https://RitaLee79.github.io/menu-restaurante-qr/img/icons/icons_small/sesame.png"
+        },
+        {
+          "code": 11,
+          "name": {
+            "es": "Huevo",
+            "en": "Egg",
+            "fr": "Œuf"
+          },
+          "icon": "https://RitaLee79.github.io/menu-restaurante-qr/img/icons/icons_small/egg.png"
+        }
       ],
       "image": "https://RitaLee79.github.io/menu-restaurante-qr/img/platos/crepe2.webp",
       "video": {
@@ -615,10 +953,42 @@
       "price": 55.0,
       "is_chef_choice": true,
       "allergens": [
-        1,
-        3,
-        9,
-        11
+        {
+          "code": 1,
+          "name": {
+            "es": "Gluten",
+            "en": "Gluten",
+            "fr": "Gluten"
+          },
+          "icon": "https://RitaLee79.github.io/menu-restaurante-qr/img/icons/icons_small/gluten.png"
+        },
+        {
+          "code": 3,
+          "name": {
+            "es": "Frutos secos",
+            "en": "Nuts / Tree nuts",
+            "fr": "Fruits à coque"
+          },
+          "icon": "https://RitaLee79.github.io/menu-restaurante-qr/img/icons/icons_small/treenuts.png"
+        },
+        {
+          "code": 9,
+          "name": {
+            "es": "Lácteos",
+            "en": "Dairy / Milk",
+            "fr": "Produits laitiers"
+          },
+          "icon": "https://RitaLee79.github.io/menu-restaurante-qr/img/icons/icons_small/milk.png"
+        },
+        {
+          "code": 11,
+          "name": {
+            "es": "Huevo",
+            "en": "Egg",
+            "fr": "Œuf"
+          },
+          "icon": "https://RitaLee79.github.io/menu-restaurante-qr/img/icons/icons_small/egg.png"
+        }
       ],
       "image": "https://RitaLee79.github.io/menu-restaurante-qr/img/platos/tortada.webp",
       "video": {
@@ -647,15 +1017,39 @@
       "price": 60.0,
       "is_chef_choice": false,
       "allergens": [
-        1,
-        9,
-        11
+        {
+          "code": 1,
+          "name": {
+            "es": "Gluten",
+            "en": "Gluten",
+            "fr": "Gluten"
+          },
+          "icon": "https://RitaLee79.github.io/menu-restaurante-qr/img/icons/icons_small/gluten.png"
+        },
+        {
+          "code": 9,
+          "name": {
+            "es": "Lácteos",
+            "en": "Dairy / Milk",
+            "fr": "Produits laitiers"
+          },
+          "icon": "https://RitaLee79.github.io/menu-restaurante-qr/img/icons/icons_small/milk.png"
+        },
+        {
+          "code": 11,
+          "name": {
+            "es": "Huevo",
+            "en": "Egg",
+            "fr": "Œuf"
+          },
+          "icon": "https://RitaLee79.github.io/menu-restaurante-qr/img/icons/icons_small/egg.png"
+        }
       ],
       "image": "https://RitaLee79.github.io/menu-restaurante-qr/img/platos/tarta_queso.webp",
       "video": {
-        "src": "https://RitaLee79.github.io/menu-restaurante-qr/img/videos/vid3_50fps.mp4",
-        "poster": "https://RitaLee79.github.io/menu-restaurante-qr/img/videos/vid3_50fps_poster.webp",
-        "duration": 6.5
+        "src": "https://RitaLee79.github.io/menu-restaurante-qr/img/videos/vid2_25fps.mp4",
+        "poster": "https://RitaLee79.github.io/menu-restaurante-qr/img/videos/vid2_25fps_poster.webp",
+        "duration": 11.5
       },
       "i18n": {
         "es": {
@@ -678,8 +1072,24 @@
       "price": 50.0,
       "is_chef_choice": true,
       "allergens": [
-        1,
-        9
+        {
+          "code": 1,
+          "name": {
+            "es": "Gluten",
+            "en": "Gluten",
+            "fr": "Gluten"
+          },
+          "icon": "https://RitaLee79.github.io/menu-restaurante-qr/img/icons/icons_small/gluten.png"
+        },
+        {
+          "code": 9,
+          "name": {
+            "es": "Lácteos",
+            "en": "Dairy / Milk",
+            "fr": "Produits laitiers"
+          },
+          "icon": "https://RitaLee79.github.io/menu-restaurante-qr/img/icons/icons_small/milk.png"
+        }
       ],
       "image": "https://RitaLee79.github.io/menu-restaurante-qr/img/platos/pastela_pera.webp",
       "video": {
