@@ -119,11 +119,11 @@ body {
     max-width: 130px;
     background-color: var(--color-fondo-tarjeta);
     /* Usa el color de las tarjetas */
-    padding: 4px 8px;
+    /* padding: 4px 8px; */
     /* Margen interior para que el logo respire */
-    border-radius: var(--redondeo-pequeno);
+    /* border-radius: var(--redondeo-pequeno); */
     /* Esquinas un poco redondeadas */
-    border: 1px solid var(--color-borde);
+    /* border: 1px solid var(--color-borde); */
     /* Un borde súper sutil para enmarcarlo */
 }
 
