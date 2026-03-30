@@ -51,17 +51,6 @@ jobs:
         run: |
           python scripts/sync.py
 
-      # ----------------------------------------------------------------------------------
-      # OPTIMIZACIÓN CSS (Tailwind): Descomenta estas líneas antes de pasar a producción
-      # ----------------------------------------------------------------------------------
-      - name: 🏗️ Setup Node.js
-        uses: actions/setup-node@v6
-        with:
-          node-version: "24 "
-      - name: 🎨 Compilar Tailwind CSS
-        run: |
-          npx tailwindcss@3 -i docs/styles.css -o docs/tailwind-build.css --content "docs/**/*.{html,js}" --minify
-      # ----------------------------------------------------------------------------------
       - name: Commit y Push de Cambios
         run: |
           git config --local user.email "action@github.com"

@@ -1387,6 +1387,7 @@ const ControladorApp = {
                     // Fallo: El navegador bloqueó el Autoplay (Mostrar el botón)
                     if (superposicion) {
                       superposicion.classList.remove("hidden");
+                      superposicion.classList.add("forzar-mostrar"); // <-- Usa esta clase nueva
                       superposicion.style.display = "flex";
                     }
                   });
@@ -1408,6 +1409,7 @@ const ControladorApp = {
             // Restablecer el botón de Play a su estado oculto por defecto
             if (superposicion) {
               superposicion.classList.add("hidden");
+              superposicion.classList.remove("forzar-mostrar"); // <-- Límpialo
               superposicion.style.display = ""; // Limpiar el estilo inline
             }
           }

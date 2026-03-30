@@ -18,9 +18,8 @@ __pycache__/
 .DS_Store
 Thumbs.db
 
-ToDo.md
-NOTES.md
-# SETUP.md
+# NOTES.md
+SETUP.md
 .vscode
 node_modules/
 
@@ -29,3 +28,8 @@ npm-debug.log*
 .eslintcache
 /referencias/
 scripts/error_telegram.txt
+error_telegram.txt
+
+# Dependencias de Node.js
+node_modules/
+package-lock.json

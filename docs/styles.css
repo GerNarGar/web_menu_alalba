@@ -500,6 +500,18 @@ body {
     background: rgba(0, 0, 0, 0.3);
     z-index: 15;
     cursor: pointer;
+    opacity: 0;
+    /* Oculto visualmente por defecto */
+    pointer-events: none;
+    /* Inactivo por defecto */
+    transition: opacity 0.2s ease-in;
+    /* Suavizamos su entrada si hace falta */
+}
+
+/* Nueva clase para mostrarlo solo cuando JavaScript diga que ha fallado el Play */
+.superposicion-reproducir.forzar-mostrar {
+    opacity: 1;
+    pointer-events: auto;
 }
 
 /* ==========================================================================
