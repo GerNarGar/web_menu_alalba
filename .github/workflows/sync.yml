@@ -78,13 +78,8 @@ jobs:
             # Si viene de Sheets: solo nos importan los datos e imágenes
             git add --all docs/ backups/ scripts/image_hashes.json
             git diff --quiet && git diff --staged --quiet || git commit -m "Actualización automática de Menú $(date +'%Y-%m-%d %H:%M')"
-          else
-            # Si viene de Push (Dev): forzamos añadir el CSS compilado
-            git add -f docs/tailwind-build.css
-            git diff --quiet && git diff --staged --quiet || git commit -m "Compilación automática de Tailwind CSS"
+            git push
           fi
-
-          git push
 
       - name: Notificar Error a Telegram
         if: failure()
