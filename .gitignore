@@ -1,35 +1,33 @@
-# Credenciales y secretos
+#### Credenciales y secretos
 scripts/credentials.json
 scripts/.env
+scripts/_prj_to_ai.py
 
-# Ignore all files in the .idea folder
+#### Ignore IDE project folders
 .idea/
+# .vscode
 
-# Python cache
+#### Python cache
 __pycache__/
 *.pyc
 *.pyo
 *.pyd
 
-# Backups locales (opcional, ya que los backups son útiles en repo)
-# backups/
-
-# OS files
+#### OS files
 .DS_Store
 Thumbs.db
 
-# NOTES.md
-SETUP.md
-.vscode
-node_modules/
-
-# Logs y temporales
+#### Logs y temporales
 npm-debug.log*
 .eslintcache
 /referencias/
 scripts/error_telegram.txt
 error_telegram.txt
 
-# Dependencias de Node.js
+#### Dependencias de Node.js
 node_modules/
 package-lock.json
+
+#### Custom Files
+# NOTES.md
+# SETUP.md
