@@ -63,10 +63,10 @@ jobs:
       # ==========================================
       # BLOQUE 2: COMPILAR TAILWIND (Solo en push)
       # ==========================================
-      - name: Configurar Node.js a v24
-        uses: actions/setup-node@v4
+      - name: Configurar Node.js
+        uses: actions/setup-node@v6
         with:
-          node-version: "24" # Actualizado para evitar la deprecación
+          node-version: "24"
 
       - name: Instalar NPM y Compilar Tailwind
         run: |
@@ -77,12 +77,12 @@ jobs:
       # BLOQUE 3: DESPLIEGUE EN PAGES
       # ==========================================
       - name: Subir artefacto a Pages
-        uses: actions/upload-pages-artifact@v3
+        uses: actions/upload-pages-artifact@v4
         with:
           path: "./docs"
 
       - name: Desplegar en GitHub Pages
-        uses: actions/deploy-pages@v4
+        uses: actions/deploy-pages@v5
 
       # ==========================================
       # BLOQUE 4: NOTIFICACIONES
