@@ -8,18 +8,21 @@ on:
       - "docs/**"
       - "tailwind.config.js"
 
-jobs:
-  sync:
-    runs-on: ubuntu-latest
-    permissions:
-      contents: write
+# Permisos requeridos para desplegar en GitHub Pages
+permissions:
+  contents: write
+  pages: write
+  id-token: write
 
+jobs:
+  build_and_deploy:
+    runs-on: ubuntu-latest
     steps:
       - name: Clonar repositorio
         uses: actions/checkout@v6
 
       # ==========================================
-      # BLOQUE 1: PYTHON (Solo si viene de Sheets)
+      # BLOQUE 1: PYTHON (Solo en manual)
       # ==========================================
       - name: Configurar Python
         if: github.event_name == 'workflow_dispatch'
@@ -37,50 +40,52 @@ jobs:
         with:
           ffmpeg-version: "6.1.0"
 
-      - name: Generar credenciales de Google
-        if: github.event_name == 'workflow_dispatch'
-        env:
-          GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }}
-        run: |
-          mkdir -p scripts
-          echo "$GOOGLE_CREDENTIALS" > scripts/credentials.json
-
       - name: Ejecutar Sincronizar con Google Sheets
         if: github.event_name == 'workflow_dispatch'
         env:
+          GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }}
           SHEET_ID: ${{ secrets.SHEET_ID }}
-        run: python scripts/sync.py
+        run: |
+          mkdir -p scripts
+          echo "$GOOGLE_CREDENTIALS" > scripts/credentials.json
+          python scripts/sync.py
+
+      - name: Commit de datos de Sheets
+        if: github.event_name == 'workflow_dispatch'
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action Bot"
+          git add backups/ scripts/image_hashes.json docs/
+          git diff --quiet && git diff --staged --quiet || git commit -m "Actualización automática de Menú $(date +'%Y-%m-%d %H:%M')"
+          git push
 
       # ==========================================
-      # BLOQUE 2: TAILWIND (Solo si el Dev hace Push)
+      # BLOQUE 2: COMPILAR TAILWIND (Solo en push)
       # ==========================================
-      - name: Configurar Node.js
-        if: github.event_name == 'push'
+      - name: Configurar Node.js a v24
         uses: actions/setup-node@v4
         with:
-          node-version: "20"
+          node-version: "24" # Actualizado para evitar la deprecación
 
       - name: Instalar NPM y Compilar Tailwind
-        if: github.event_name == 'push'
         run: |
           npm install
           npm run build
 
       # ==========================================
-      # BLOQUE 3: COMMIT Y PUSH SEGÚN ORIGEN
+      # BLOQUE 3: DESPLIEGUE EN PAGES
       # ==========================================
-      - name: Commit y Push
-        run: |
-          git config --local user.email "action@github.com"
-          git config --local user.name "GitHub Action Bot"
+      - name: Subir artefacto a Pages
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: "./docs"
 
-          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
-            # Si viene de Sheets: solo nos importan los datos e imágenes
-            git add --all docs/ backups/ scripts/image_hashes.json
-            git diff --quiet && git diff --staged --quiet || git commit -m "Actualización automática de Menú $(date +'%Y-%m-%d %H:%M')"
-            git push
-          fi
+      - name: Desplegar en GitHub Pages
+        uses: actions/deploy-pages@v4
 
+      # ==========================================
+      # BLOQUE 4: NOTIFICACIONES
+      # ==========================================
       - name: Notificar Error a Telegram
         if: failure()
         run: |
