@@ -1,3 +1,8 @@
+IMPORTANTE:
+- GAS VALIDAR NUEVOS CAMPOS
+- VIDEO COMO HACE EL LOADING? precarga antes de play? el video no aparece entero como saber que dimensiones tengo que grabar o generar? carga todo el video aunque en la pantalla solo se vean X lineas de video?
+
+
 🚨 CÓMO FORZAR ERRORES TEMPORALMENTE PARA PROBAR:
 
     Para probar el error del Dev (Push a GitHub):

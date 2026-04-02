@@ -370,7 +370,7 @@ def ejecutar_sincronizacion_maestra():
                 'en': str(registro_alergeno.get('Nombre_En') or nombre_base_es).strip(),
                 'fr': str(registro_alergeno.get('Nombre_Fr') or nombre_base_es).strip(),
             },
-            'icon': f'{url_base_proyecto}/img/icons/icons_small/{registro_alergeno.get("Icono")}',
+            'icon': f'./img/icons/icons_small/{registro_alergeno.get("Icono")}',
         }
 
     diccionario_traducciones = {
@@ -409,7 +409,7 @@ def ejecutar_sincronizacion_maestra():
             llave_busqueda_imagen = nombre_archivo_imagen.lower()
             nombre_final_webp = f'{os.path.splitext(llave_busqueda_imagen)[0]}.webp'
             conjunto_imagenes_activas.add(nombre_final_webp)
-            url_imagen_plato = f'{url_base_proyecto}/img/platos/{nombre_final_webp}'
+            url_imagen_plato = f'./img/platos/{nombre_final_webp}'
 
             if llave_busqueda_imagen in mapa_archivos_nube:
                 metadatos_nube = mapa_archivos_nube[llave_busqueda_imagen]
@@ -484,16 +484,16 @@ def ejecutar_sincronizacion_maestra():
                     )
                     registro_hashes_locales[clave_hash_video] = metadatos_video_nube['md5Checksum']
                     estructura_datos_video = {
-                        'src': f'{url_base_proyecto}/img/videos/{nombre_final_mp4}',
-                        'poster': f'{url_base_proyecto}/img/videos/{nombre_final_poster}',
+                        'src': f'./img/videos/{nombre_final_mp4}',
+                        'poster': f'./img/videos/{nombre_final_poster}',
                         'duration': round(extraer_duracion_video_segundos(ruta_fisica_mp4), 1),
                     }
                 if ruta_video_temporal.exists():
                     ruta_video_temporal.unlink()
             else:
                 estructura_datos_video = {
-                    'src': f'{url_base_proyecto}/img/videos/{nombre_final_mp4}',
-                    'poster': f'{url_base_proyecto}/img/videos/{nombre_final_poster}',
+                    'src': f'./img/videos/{nombre_final_mp4}',
+                    'poster': f'./img/videos/{nombre_final_poster}',
                     'duration': round(extraer_duracion_video_segundos(ruta_fisica_mp4), 1),
                 }
 
@@ -604,7 +604,7 @@ def ejecutar_sincronizacion_maestra():
                 optimizar_imagen_webp(imagen_cruda, ruta_logo_local, 400, 95)
             registro_hashes_locales[f'logo_{llave_logo}'] = metadatos_logo['md5Checksum']
 
-        restaurant_logo = f'{url_base_proyecto}/img/{nombre_final_logo}'
+        restaurant_logo = f'./img/{nombre_final_logo}'
 
     # Compilar JSON Maestro
     estructura_datos_final = {
@@ -617,6 +617,7 @@ def ejecutar_sincronizacion_maestra():
             .strip()
             .lower(),
             'default_lang': configuracion_general.get('idioma_por_defecto', 'es'),
+            'order_lang': str(configuracion_general.get('idioma_comanda', 'fr')).strip().lower(),
             'default_table': configuracion_general.get('mesa_texto_por_defecto', 'No'),
             'theme_primary': configuracion_general.get('theme_primary', '#ff6a00'),
             'theme_background': configuracion_general.get('theme_background', '#000000'),

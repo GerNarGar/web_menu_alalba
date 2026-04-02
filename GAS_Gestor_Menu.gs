@@ -731,17 +731,21 @@ function doPost(e) {
       payload: JSON.stringify({
         chat_id: chatId,
         text: textoMensaje,
-        parse_mode: "HTML"
-      })
+        parse_mode: "HTML",
+      }),
     };
 
-    UrlFetchApp.fetch(`https://api.telegram.org/bot${tokenBot}/sendMessage`, opciones);
+    UrlFetchApp.fetch(
+      `https://api.telegram.org/bot${tokenBot}/sendMessage`,
+      opciones,
+    );
 
-    return ContentService.createTextOutput(JSON.stringify({ status: "success" }))
-      .setMimeType(ContentService.MimeType.JSON);
-
+    return ContentService.createTextOutput(
+      JSON.stringify({ status: "success" }),
+    ).setMimeType(ContentService.MimeType.JSON);
   } catch (error) {
-    return ContentService.createTextOutput(JSON.stringify({ status: "error", error: error.toString() }))
-      .setMimeType(ContentService.MimeType.JSON);
+    return ContentService.createTextOutput(
+      JSON.stringify({ status: "error", error: error.toString() }),
+    ).setMimeType(ContentService.MimeType.JSON);
   }
 }

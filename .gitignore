@@ -1,7 +1,6 @@
 #### Credenciales y secretos
 scripts/credentials.json
 scripts/.env
-scripts/_prj_to_ai.py
 
 #### Ignore IDE project folders
 .idea/

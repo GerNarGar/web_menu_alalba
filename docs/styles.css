@@ -63,10 +63,6 @@ body {
     padding-top: env(safe-area-inset-top, 0px);
 }
 
-.area-segura-inferior {
-    padding-bottom: env(safe-area-inset-bottom, 0px);
-}
-
 .ocultar-scrollbar::-webkit-scrollbar {
     display: none;
 }
@@ -380,8 +376,6 @@ body {
 .icono-alergeno-modal {
     background-color: var(--color-fondo-tarjeta);
     border-radius: var(--redondeo-pildora);
-    padding: 2px;
-    object-fit: contain;
 }
 
 /* Modo Feed (Estilo TikTok) */
@@ -534,8 +528,6 @@ body {
 
 .vista-visible {
     opacity: 1;
-    position: relative;
-    z-index: 10;
     visibility: visible;
 }
 

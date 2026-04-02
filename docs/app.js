@@ -42,6 +42,8 @@ const Traductor = {
       order_phone: "Tu teléfono",
       error_form: "Por favor, rellena tu nombre y teléfono.",
       order_error: "Error al enviar el pedido.",
+      success_msg: "Muchas gracias, en breve le atenderá un camarero.",
+      success_btn: "Cerrar",
     },
     en: {
       menu: "Menu",
@@ -63,6 +65,8 @@ const Traductor = {
       order_phone: "Your phone",
       error_form: "Please fill in your name and phone.",
       order_error: "Error sending the order.",
+      success_msg: "Thank you very much, a waiter will be with you shortly.",
+      success_btn: "Close",
     },
     fr: {
       menu: "Menu",
@@ -84,6 +88,8 @@ const Traductor = {
       order_phone: "Votre téléphone",
       error_form: "Veuillez indiquer votre nom et téléphone.",
       order_error: "Erreur lors de l'envoi de la commande.",
+      success_msg: "Merci beaucoup, un serveur s'occupera de vous sous peu.",
+      success_btn: "Fermer",
     },
   },
   obtenerTexto(clave) {
@@ -381,6 +387,7 @@ const GestorCarrito = {
     const globoNotificacion = document.getElementById(
       "globo-notificacion-carrito",
     );
+    const navBar = document.querySelector("nav.nav-inferior-cristal");
 
     if (EstadoApp.pedidosPermitidos) {
       botonNavCarrito.classList.remove("hidden");
@@ -394,6 +401,16 @@ const GestorCarrito = {
       }
     } else {
       botonNavCarrito.classList.add("hidden");
+    }
+
+    // Ocultar la barra inferior si NO hay pedidos y el video está desactivado
+    if (
+      !EstadoApp.pedidosPermitidos &&
+      EstadoApp.datosMenu?.meta?.enable_video_feed === false
+    ) {
+      navBar.classList.add("hidden");
+    } else {
+      navBar.classList.remove("hidden");
     }
   },
 };
@@ -788,7 +805,7 @@ const ControladorApp = {
         "div",
         "absolute inset-0 flex items-center justify-center transition-opacity duration-300",
       );
-      btnPlay.innerHTML = `<div class="w-16 h-16 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center border border-white/30 text-white shadow-xl"><svg class="w-8 h-8 drop-shadow-lg relative right-0.5" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div>`;
+      btnPlay.innerHTML = `<div class="w-16 h-16 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center border border-white/30 text-white shadow-xl"><svg class="w-8 h-8 drop-shadow-lg relative right-0.25" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div>`;
       contImagen.appendChild(btnPlay);
 
       // Vídeo en bucle y sin controles nativos (simula un GIF de alta calidad)
@@ -873,7 +890,7 @@ const ControladorApp = {
         // Corregido padding: px-4 py-2
         const badge = InterfazDOM.crearNodo(
           "div",
-          "flex items-center space-x-2 icono-alergeno-modal px-4 py-2 rounded-full borde-estandar",
+          "flex items-center space-x-2 icono-alergeno-modal px-2 py-1 rounded-full borde-estandar",
         );
         badge.appendChild(
           InterfazDOM.crearNodo("img", "w-5 h-5", null, {
@@ -902,7 +919,7 @@ const ControladorApp = {
     if (!barraInf) {
       barraInf = InterfazDOM.crearNodo(
         "div",
-        "fixed bottom-0 left-0 right-0 cabecera-cristal border-t borde-estandar p-4 area-segura-inferior z-10",
+        "fixed bottom-0 left-0 right-0 cabecera-cristal border-t borde-estandar p-4 z-10",
       );
       barraInf.id = "barra-dinamica-detalle";
       document
@@ -1145,22 +1162,22 @@ const ControladorApp = {
 
     const divResumen = InterfazDOM.crearNodo(
       "div",
-      "flex flex-col items-center text-center mt-2 w-full",
+      "flex flex-col items-center text-center mt-1 w-full",
     );
 
     // Total y precio arriba
-    const divTotalTop = InterfazDOM.crearNodo("div", "w-full text-center mb-6");
+    const divTotalTop = InterfazDOM.crearNodo("div", "w-full text-center mb-1");
     divTotalTop.appendChild(
       InterfazDOM.crearNodo(
         "p",
-        "texto-secundario text-lg",
+        "texto-secundario text-md",
         Traductor.obtenerTexto("total"),
       ),
     );
     divTotalTop.appendChild(
       InterfazDOM.crearNodo(
         "p",
-        "text-5xl font-bold texto-acento mt-2",
+        "text-2xl font-bold texto-acento mt-1",
         InterfazDOM.formatearMoneda(totalPedido),
       ),
     );
@@ -1169,7 +1186,7 @@ const ControladorApp = {
     // Lista de platos abajo
     const divLista = InterfazDOM.crearNodo(
       "div",
-      "w-full text-left bg-fondo-secundario rounded-2xl p-4 mb-6 border borde-estandar",
+      "w-full text-left bg-fondo-secundario rounded-2xl p-4 mb-2 border borde-estandar",
     );
 
     Object.entries(EstadoApp.cestaPedidos).forEach(([id, cantidad]) => {
@@ -1276,53 +1293,82 @@ const ControladorApp = {
     if (EstadoApp.datosMenu?.meta?.vibrar_al_enviar && navigator.vibrate)
       navigator.vibrate(40);
 
+    const idiomaComanda = EstadoApp.datosMenu?.meta?.order_lang || "es";
+    const sanitizarHtml = (texto) =>
+      texto.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+
     const resumenItems = Object.entries(EstadoApp.cestaPedidos)
       .map(([id, cantidad]) => {
         const i = EstadoApp.datosMenu.items.find((x) => x.id == id);
-        return i ? `• ${cantidad}x ${Traductor.extraerTextoPlato(i).name}` : "";
+        if (!i) return "";
+        const nombrePlato =
+          i.i18n[idiomaComanda]?.name || Traductor.extraerTextoPlato(i).name;
+        return `• ${cantidad}x ${sanitizarHtml(nombrePlato)}`;
       })
       .filter(Boolean)
       .join("\n");
 
+    const etiquetaMesa = idiomaComanda === "es" ? "MESA" : "TABLE";
     const clienteDestino = EstadoApp.modoParaLlevar
-      ? `TAKEAWAY\n👤 Nombre: ${nombre}\n📞 Tel: ${telefono}`
-      : `MESA: ${EstadoApp.identificadorMesa}`;
-    const textoTelegram = `<b>${clienteDestino}</b>\n⏰ ${new Date().toLocaleTimeString()}\n\n${resumenItems}\n\n💰 Total: <b>${InterfazDOM.formatearMoneda(totalPedido)}</b>`;
+      ? `🥡 TAKEAWAY\n👤 Nombre: ${sanitizarHtml(nombre)}\n📞 Tel: ${sanitizarHtml(telefono)}`
+      : `🍽️ ${etiquetaMesa}: ${sanitizarHtml(EstadoApp.identificadorMesa)}`;
+
+    // Eliminamos el cálculo del precio por seguridad (se gestiona en TPV)
+    const textoTelegram = `<b>${clienteDestino}</b>\n⏰ ${new Date().toLocaleTimeString()}\n\n${resumenItems}`;
 
     const urlGas = EstadoApp.datosMenu.meta.gas_webapp_url;
 
     if (!urlGas) {
-      alert(
-        "Falta configurar la URL de envío (gas_webapp_url) en Google Sheets.",
-      );
+      alert("Falta configurar la URL de envío en Google Sheets.");
       botonDOM.disabled = false;
       botonDOM.innerText = Traductor.obtenerTexto("confirm_order");
       return;
     }
 
     try {
-      // Envío robusto simulando un formulario (x-www-form-urlencoded) para evitar CORS en local y móviles
       const formData = new URLSearchParams();
       formData.append("mensaje", textoTelegram);
 
-      const response = await fetch(urlGas, {
-        method: "POST",
-        body: formData,
-      });
+      const response = await fetch(urlGas, { method: "POST", body: formData });
+      const contentType = response.headers.get("content-type");
+      if (
+        !response.ok ||
+        (contentType && contentType.indexOf("application/json") === -1)
+      ) {
+        throw new Error("Fallo de despliegue en Google Apps Script.");
+      }
 
       const resData = await response.json();
       if (resData.status === "error") throw new Error(resData.error);
 
-      // Éxito
+      // --- ÉXITO: PANTALLA DE AGRADECIMIENTO ---
       EstadoApp.cestaPedidos = {};
       GestorCarrito.guardarEnMemoria();
       GestorCarrito.refrescarInsigniasGlobales();
-      this.cerrarModalCarrito();
-      InterfazDOM.renderizarListaPlatos();
-      if (EstadoApp.vistaActual === "video") this.renderizarFeedVideo();
+
+      const contenedor = document.getElementById("area-contenido-carrito");
+      contenedor.innerHTML = `
+        <div class="flex flex-col items-center justify-center h-full text-center py-20 px-4 entrada-tarjeta">
+           <div class="w-24 h-24 bg-green-100 rounded-full flex items-center justify-center mb-6">
+               <svg class="w-12 h-12 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
+           </div>
+           <h2 class="text-2xl font-bold texto-principal mb-2 leading-tight">${Traductor.obtenerTexto("success_msg")}</h2>
+        </div>
+      `;
+
+      const areaPie = document.getElementById("area-pie-carrito");
+      areaPie.innerHTML = `<button id="btn-cerrar-exito" class="w-full btn-secundario font-bold py-4 rounded-2xl text-lg">${Traductor.obtenerTexto("success_btn")}</button>`;
+
+      document.getElementById("btn-cerrar-exito").onclick = () => {
+        this.cerrarModalCarrito();
+        InterfazDOM.renderizarListaPlatos();
+        if (EstadoApp.vistaActual === "video") this.renderizarFeedVideo();
+      };
     } catch (e) {
-      console.error(e);
-      alert(Traductor.obtenerTexto("order_error"));
+      console.error("Fallo crítico en envío:", e.message);
+      alert(
+        Traductor.obtenerTexto("order_error") + "\n[Debug: " + e.message + "]",
+      );
       botonDOM.disabled = false;
       botonDOM.innerText = Traductor.obtenerTexto("confirm_order");
     }

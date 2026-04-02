@@ -2,11 +2,10 @@
   "meta": {
     "restaurant": "Restaurante Al Alba",
     "restaurant_url": "https://hotelalalba.com/restaurante/",
-    "restaurant_logo": "./img/logo_restaurante.webp",
+    "restaurant_logo": "https://GerNarGar.github.io/web_menu_alalba/img/logo_restaurante.webp",
     "currency": "DH",
     "currency_position": "derecha",
     "default_lang": "es",
-    "order_lang": "fr",
     "default_table": "No",
     "theme_primary": "#ff6a00",
     "theme_background": "#000000",
@@ -17,7 +16,7 @@
     "toast_timeout": 4,
     "vibrar_al_enviar": true,
     "swipe_margen_seguridad": 30,
-    "generated_at": "2026-04-03T01:40:44.749633",
+    "generated_at": "2026-04-02T21:19:59.441370",
     "base_url": "https://GerNarGar.github.io/web_menu_alalba",
     "enable_video_feed": false,
     "modal_uses_video": true,
@@ -60,7 +59,7 @@
         "en": "Gluten",
         "fr": "Gluten"
       },
-      "icon": "./img/icons/icons_small/gluten.png"
+      "icon": "https://GerNarGar.github.io/web_menu_alalba/img/icons/icons_small/gluten.png"
     },
     {
       "code": 2,
@@ -69,7 +68,7 @@
         "en": "Crustaceans",
         "fr": "Crustacés"
       },
-      "icon": "./img/icons/icons_small/crustaceans.png"
+      "icon": "https://GerNarGar.github.io/web_menu_alalba/img/icons/icons_small/crustaceans.png"
     },
     {
       "code": 3,
@@ -78,7 +77,7 @@
         "en": "Nuts / Tree nuts",
         "fr": "Fruits à coque"
       },
-      "icon": "./img/icons/icons_small/treenuts.png"
+      "icon": "https://GerNarGar.github.io/web_menu_alalba/img/icons/icons_small/treenuts.png"
     },
     {
       "code": 4,
@@ -87,7 +86,7 @@
         "en": "Celery",
         "fr": "Céleri"
       },
-      "icon": "./img/icons/icons_small/celery.png"
+      "icon": "https://GerNarGar.github.io/web_menu_alalba/img/icons/icons_small/celery.png"
     },
     {
       "code": 5,
@@ -96,7 +95,7 @@
         "en": "Mustard",
         "fr": "Moutarde"
       },
-      "icon": "./img/icons/icons_small/mustard.png"
+      "icon": "https://GerNarGar.github.io/web_menu_alalba/img/icons/icons_small/mustard.png"
     },
     {
       "code": 6,
@@ -105,7 +104,7 @@
         "en": "Sesame",
         "fr": "Sésame"
       },
-      "icon": "./img/icons/icons_small/sesame.png"
+      "icon": "https://GerNarGar.github.io/web_menu_alalba/img/icons/icons_small/sesame.png"
     },
     {
       "code": 7,
@@ -114,7 +113,7 @@
         "en": "Fish",
         "fr": "Poisson"
       },
-      "icon": "./img/icons/icons_small/fish.png"
+      "icon": "https://GerNarGar.github.io/web_menu_alalba/img/icons/icons_small/fish.png"
     },
     {
       "code": 8,
@@ -123,7 +122,7 @@
         "en": "Soy / Soya",
         "fr": "Soja"
       },
-      "icon": "./img/icons/icons_small/soyabeans.png"
+      "icon": "https://GerNarGar.github.io/web_menu_alalba/img/icons/icons_small/soyabeans.png"
     },
     {
       "code": 9,
@@ -132,7 +131,7 @@
         "en": "Dairy / Milk",
         "fr": "Produits laitiers"
       },
-      "icon": "./img/icons/icons_small/milk.png"
+      "icon": "https://GerNarGar.github.io/web_menu_alalba/img/icons/icons_small/milk.png"
     },
     {
       "code": 10,
@@ -141,7 +140,7 @@
         "en": "Sulphites",
         "fr": "Sulfites"
       },
-      "icon": "./img/icons/icons_small/so2.png"
+      "icon": "https://GerNarGar.github.io/web_menu_alalba/img/icons/icons_small/so2.png"
     },
     {
       "code": 11,
@@ -150,7 +149,7 @@
         "en": "Egg",
         "fr": "Œuf"
       },
-      "icon": "./img/icons/icons_small/egg.png"
+      "icon": "https://GerNarGar.github.io/web_menu_alalba/img/icons/icons_small/egg.png"
     },
     {
       "code": 12,
@@ -159,7 +158,7 @@
         "en": "Peanuts",
         "fr": "Arachides"
       },
-      "icon": "./img/icons/icons_small/peanuts.png"
+      "icon": "https://GerNarGar.github.io/web_menu_alalba/img/icons/icons_small/peanuts.png"
     },
     {
       "code": 13,
@@ -168,7 +167,7 @@
         "en": "Molluscs",
         "fr": "Mollusques"
       },
-      "icon": "./img/icons/icons_small/molluscs.png"
+      "icon": "https://GerNarGar.github.io/web_menu_alalba/img/icons/icons_small/molluscs.png"
     },
     {
       "code": 14,
@@ -177,7 +176,7 @@
         "en": "Lupins",
         "fr": "Lupin"
       },
-      "icon": "./img/icons/icons_small/lupin.png"
+      "icon": "https://GerNarGar.github.io/web_menu_alalba/img/icons/icons_small/lupin.png"
     }
   ],
   "items": [
@@ -194,7 +193,7 @@
             "en": "Gluten",
             "fr": "Gluten"
           },
-          "icon": "./img/icons/icons_small/gluten.png"
+          "icon": "https://GerNarGar.github.io/web_menu_alalba/img/icons/icons_small/gluten.png"
         },
         {
           "code": 9,
@@ -203,7 +202,7 @@
             "en": "Dairy / Milk",
             "fr": "Produits laitiers"
           },
-          "icon": "./img/icons/icons_small/milk.png"
+          "icon": "https://GerNarGar.github.io/web_menu_alalba/img/icons/icons_small/milk.png"
         },
         {
           "code": 12,
@@ -212,13 +211,13 @@
             "en": "Peanuts",
             "fr": "Arachides"
           },
-          "icon": "./img/icons/icons_small/peanuts.png"
+          "icon": "https://GerNarGar.github.io/web_menu_alalba/img/icons/icons_small/peanuts.png"
         }
       ],
-      "image": "./img/platos/briuats1.webp",
+      "image": "https://GerNarGar.github.io/web_menu_alalba/img/platos/briuats1.webp",
       "video": {
-        "src": "./img/videos/vid4_30fps.mp4",
-        "poster": "./img/videos/vid4_30fps_poster.webp",
+        "src": "https://GerNarGar.github.io/web_menu_alalba/img/videos/vid4_30fps.mp4",
+        "poster": "https://GerNarGar.github.io/web_menu_alalba/img/videos/vid4_30fps_poster.webp",
         "duration": 7.1
       },
       "i18n": {
@@ -249,7 +248,7 @@
             "en": "Gluten",
             "fr": "Gluten"
           },
-          "icon": "./img/icons/icons_small/gluten.png"
+          "icon": "https://GerNarGar.github.io/web_menu_alalba/img/icons/icons_small/gluten.png"
         },
         {
           "code": 3,
@@ -258,7 +257,7 @@
             "en": "Nuts / Tree nuts",
             "fr": "Fruits à coque"
           },
-          "icon": "./img/icons/icons_small/treenuts.png"
+          "icon": "https://GerNarGar.github.io/web_menu_alalba/img/icons/icons_small/treenuts.png"
         },
         {
           "code": 9,
@@ -267,13 +266,13 @@
             "en": "Dairy / Milk",
             "fr": "Produits laitiers"
           },
-          "icon": "./img/icons/icons_small/milk.png"
+          "icon": "https://GerNarGar.github.io/web_menu_alalba/img/icons/icons_small/milk.png"
         }
       ],
-      "image": "./img/platos/veloute.webp",
+      "image": "https://GerNarGar.github.io/web_menu_alalba/img/platos/veloute.webp",
       "video": {
-        "src": "./img/videos/vid2_25fps.mp4",
-        "poster": "./img/videos/vid2_25fps_poster.webp",
+        "src": "https://GerNarGar.github.io/web_menu_alalba/img/videos/vid2_25fps.mp4",
+        "poster": "https://GerNarGar.github.io/web_menu_alalba/img/videos/vid2_25fps_poster.webp",
         "duration": 11.5
       },
       "i18n": {
@@ -304,7 +303,7 @@
             "en": "Nuts / Tree nuts",
             "fr": "Fruits à coque"
           },
-          "icon": "./img/icons/icons_small/treenuts.png"
+          "icon": "https://GerNarGar.github.io/web_menu_alalba/img/icons/icons_small/treenuts.png"
         },
         {
           "code": 6,
@@ -313,13 +312,13 @@
             "en": "Sesame",
             "fr": "Sésame"
           },
-          "icon": "./img/icons/icons_small/sesame.png"
+          "icon": "https://GerNarGar.github.io/web_menu_alalba/img/icons/icons_small/sesame.png"
         }
       ],
-      "image": "./img/platos/zalouk.webp",
+      "image": "https://GerNarGar.github.io/web_menu_alalba/img/platos/zalouk.webp",
       "video": {
-        "src": "./img/videos/vid1_25fps.mp4",
-        "poster": "./img/videos/vid1_25fps_poster.webp",
+        "src": "https://GerNarGar.github.io/web_menu_alalba/img/videos/vid1_25fps.mp4",
+        "poster": "https://GerNarGar.github.io/web_menu_alalba/img/videos/vid1_25fps_poster.webp",
         "duration": 9.3
       },
       "i18n": {
@@ -350,7 +349,7 @@
             "en": "Gluten",
             "fr": "Gluten"
           },
-          "icon": "./img/icons/icons_small/gluten.png"
+          "icon": "https://GerNarGar.github.io/web_menu_alalba/img/icons/icons_small/gluten.png"
         },
         {
           "code": 6,
@@ -359,7 +358,7 @@
             "en": "Sesame",
             "fr": "Sésame"
           },
-          "icon": "./img/icons/icons_small/sesame.png"
+          "icon": "https://GerNarGar.github.io/web_menu_alalba/img/icons/icons_small/sesame.png"
         },
         {
           "code": 9,
@@ -368,13 +367,13 @@
             "en": "Dairy / Milk",
             "fr": "Produits laitiers"
           },
-          "icon": "./img/icons/icons_small/milk.png"
+          "icon": "https://GerNarGar.github.io/web_menu_alalba/img/icons/icons_small/milk.png"
         }
       ],
-      "image": "./img/platos/crepe1.webp",
+      "image": "https://GerNarGar.github.io/web_menu_alalba/img/platos/crepe1.webp",
       "video": {
-        "src": "./img/videos/vid3_50fps.mp4",
-        "poster": "./img/videos/vid3_50fps_poster.webp",
+        "src": "https://GerNarGar.github.io/web_menu_alalba/img/videos/vid3_50fps.mp4",
+        "poster": "https://GerNarGar.github.io/web_menu_alalba/img/videos/vid3_50fps_poster.webp",
         "duration": 6.5
       },
       "i18n": {
@@ -405,7 +404,7 @@
             "en": "Gluten",
             "fr": "Gluten"
           },
-          "icon": "./img/icons/icons_small/gluten.png"
+          "icon": "https://GerNarGar.github.io/web_menu_alalba/img/icons/icons_small/gluten.png"
         },
         {
           "code": 9,
@@ -414,7 +413,7 @@
             "en": "Dairy / Milk",
             "fr": "Produits laitiers"
           },
-          "icon": "./img/icons/icons_small/milk.png"
+          "icon": "https://GerNarGar.github.io/web_menu_alalba/img/icons/icons_small/milk.png"
         },
         {
           "code": 11,
@@ -423,10 +422,10 @@
             "en": "Egg",
             "fr": "Œuf"
           },
-          "icon": "./img/icons/icons_small/egg.png"
+          "icon": "https://GerNarGar.github.io/web_menu_alalba/img/icons/icons_small/egg.png"
         }
       ],
-      "image": "./img/platos/briuats2.webp",
+      "image": "https://GerNarGar.github.io/web_menu_alalba/img/platos/briuats2.webp",
       "video": null,
       "i18n": {
         "es": {
@@ -456,10 +455,10 @@
             "en": "Gluten",
             "fr": "Gluten"
           },
-          "icon": "./img/icons/icons_small/gluten.png"
+          "icon": "https://GerNarGar.github.io/web_menu_alalba/img/icons/icons_small/gluten.png"
         }
       ],
-      "image": "./img/platos/crema.webp",
+      "image": "https://GerNarGar.github.io/web_menu_alalba/img/platos/crema.webp",
       "video": null,
       "i18n": {
         "es": {
@@ -489,7 +488,7 @@
             "en": "Gluten",
             "fr": "Gluten"
           },
-          "icon": "./img/icons/icons_small/gluten.png"
+          "icon": "https://GerNarGar.github.io/web_menu_alalba/img/icons/icons_small/gluten.png"
         },
         {
           "code": 3,
@@ -498,13 +497,13 @@
             "en": "Nuts / Tree nuts",
             "fr": "Fruits à coque"
           },
-          "icon": "./img/icons/icons_small/treenuts.png"
+          "icon": "https://GerNarGar.github.io/web_menu_alalba/img/icons/icons_small/treenuts.png"
         }
       ],
-      "image": "./img/platos/pastela_pollo.webp",
+      "image": "https://GerNarGar.github.io/web_menu_alalba/img/platos/pastela_pollo.webp",
       "video": {
-        "src": "./img/videos/vid4_30fps.mp4",
-        "poster": "./img/videos/vid4_30fps_poster.webp",
+        "src": "https://GerNarGar.github.io/web_menu_alalba/img/videos/vid4_30fps.mp4",
+        "poster": "https://GerNarGar.github.io/web_menu_alalba/img/videos/vid4_30fps_poster.webp",
         "duration": 7.1
       },
       "i18n": {
@@ -535,7 +534,7 @@
             "en": "Gluten",
             "fr": "Gluten"
           },
-          "icon": "./img/icons/icons_small/gluten.png"
+          "icon": "https://GerNarGar.github.io/web_menu_alalba/img/icons/icons_small/gluten.png"
         },
         {
           "code": 7,
@@ -544,7 +543,7 @@
             "en": "Fish",
             "fr": "Poisson"
           },
-          "icon": "./img/icons/icons_small/fish.png"
+          "icon": "https://GerNarGar.github.io/web_menu_alalba/img/icons/icons_small/fish.png"
         },
         {
           "code": 9,
@@ -553,7 +552,7 @@
             "en": "Dairy / Milk",
             "fr": "Produits laitiers"
           },
-          "icon": "./img/icons/icons_small/milk.png"
+          "icon": "https://GerNarGar.github.io/web_menu_alalba/img/icons/icons_small/milk.png"
         },
         {
           "code": 12,
@@ -562,7 +561,7 @@
             "en": "Peanuts",
             "fr": "Arachides"
           },
-          "icon": "./img/icons/icons_small/peanuts.png"
+          "icon": "https://GerNarGar.github.io/web_menu_alalba/img/icons/icons_small/peanuts.png"
         },
         {
           "code": 13,
@@ -571,13 +570,13 @@
             "en": "Molluscs",
             "fr": "Mollusques"
           },
-          "icon": "./img/icons/icons_small/molluscs.png"
+          "icon": "https://GerNarGar.github.io/web_menu_alalba/img/icons/icons_small/molluscs.png"
         }
       ],
-      "image": "./img/platos/keftas.webp",
+      "image": "https://GerNarGar.github.io/web_menu_alalba/img/platos/keftas.webp",
       "video": {
-        "src": "./img/videos/vid2_25fps.mp4",
-        "poster": "./img/videos/vid2_25fps_poster.webp",
+        "src": "https://GerNarGar.github.io/web_menu_alalba/img/videos/vid2_25fps.mp4",
+        "poster": "https://GerNarGar.github.io/web_menu_alalba/img/videos/vid2_25fps_poster.webp",
         "duration": 11.5
       },
       "i18n": {
@@ -608,7 +607,7 @@
             "en": "Gluten",
             "fr": "Gluten"
           },
-          "icon": "./img/icons/icons_small/gluten.png"
+          "icon": "https://GerNarGar.github.io/web_menu_alalba/img/icons/icons_small/gluten.png"
         },
         {
           "code": 3,
@@ -617,7 +616,7 @@
             "en": "Nuts / Tree nuts",
             "fr": "Fruits à coque"
           },
-          "icon": "./img/icons/icons_small/treenuts.png"
+          "icon": "https://GerNarGar.github.io/web_menu_alalba/img/icons/icons_small/treenuts.png"
         },
         {
           "code": 13,
@@ -626,13 +625,13 @@
             "en": "Molluscs",
             "fr": "Mollusques"
           },
-          "icon": "./img/icons/icons_small/molluscs.png"
+          "icon": "https://GerNarGar.github.io/web_menu_alalba/img/icons/icons_small/molluscs.png"
         }
       ],
-      "image": "./img/platos/pulpo.webp",
+      "image": "https://GerNarGar.github.io/web_menu_alalba/img/platos/pulpo.webp",
       "video": {
-        "src": "./img/videos/vid1_25fps.mp4",
-        "poster": "./img/videos/vid1_25fps_poster.webp",
+        "src": "https://GerNarGar.github.io/web_menu_alalba/img/videos/vid1_25fps.mp4",
+        "poster": "https://GerNarGar.github.io/web_menu_alalba/img/videos/vid1_25fps_poster.webp",
         "duration": 9.3
       },
       "i18n": {
@@ -663,7 +662,7 @@
             "en": "Gluten",
             "fr": "Gluten"
           },
-          "icon": "./img/icons/icons_small/gluten.png"
+          "icon": "https://GerNarGar.github.io/web_menu_alalba/img/icons/icons_small/gluten.png"
         },
         {
           "code": 3,
@@ -672,7 +671,7 @@
             "en": "Nuts / Tree nuts",
             "fr": "Fruits à coque"
           },
-          "icon": "./img/icons/icons_small/treenuts.png"
+          "icon": "https://GerNarGar.github.io/web_menu_alalba/img/icons/icons_small/treenuts.png"
         },
         {
           "code": 7,
@@ -681,13 +680,13 @@
             "en": "Fish",
             "fr": "Poisson"
           },
-          "icon": "./img/icons/icons_small/fish.png"
+          "icon": "https://GerNarGar.github.io/web_menu_alalba/img/icons/icons_small/fish.png"
         }
       ],
-      "image": "./img/platos/pastela_marina.webp",
+      "image": "https://GerNarGar.github.io/web_menu_alalba/img/platos/pastela_marina.webp",
       "video": {
-        "src": "./img/videos/vid3_50fps.mp4",
-        "poster": "./img/videos/vid3_50fps_poster.webp",
+        "src": "https://GerNarGar.github.io/web_menu_alalba/img/videos/vid3_50fps.mp4",
+        "poster": "https://GerNarGar.github.io/web_menu_alalba/img/videos/vid3_50fps_poster.webp",
         "duration": 6.5
       },
       "i18n": {
@@ -718,7 +717,7 @@
             "en": "Nuts / Tree nuts",
             "fr": "Fruits à coque"
           },
-          "icon": "./img/icons/icons_small/treenuts.png"
+          "icon": "https://GerNarGar.github.io/web_menu_alalba/img/icons/icons_small/treenuts.png"
         },
         {
           "code": 5,
@@ -727,7 +726,7 @@
             "en": "Mustard",
             "fr": "Moutarde"
           },
-          "icon": "./img/icons/icons_small/mustard.png"
+          "icon": "https://GerNarGar.github.io/web_menu_alalba/img/icons/icons_small/mustard.png"
         },
         {
           "code": 6,
@@ -736,13 +735,13 @@
             "en": "Sesame",
             "fr": "Sésame"
           },
-          "icon": "./img/icons/icons_small/sesame.png"
+          "icon": "https://GerNarGar.github.io/web_menu_alalba/img/icons/icons_small/sesame.png"
         }
       ],
-      "image": "./img/platos/cordero.webp",
+      "image": "https://GerNarGar.github.io/web_menu_alalba/img/platos/cordero.webp",
       "video": {
-        "src": "./img/videos/vid4_30fps.mp4",
-        "poster": "./img/videos/vid4_30fps_poster.webp",
+        "src": "https://GerNarGar.github.io/web_menu_alalba/img/videos/vid4_30fps.mp4",
+        "poster": "https://GerNarGar.github.io/web_menu_alalba/img/videos/vid4_30fps_poster.webp",
         "duration": 7.1
       },
       "i18n": {
@@ -773,7 +772,7 @@
             "en": "Nuts / Tree nuts",
             "fr": "Fruits à coque"
           },
-          "icon": "./img/icons/icons_small/treenuts.png"
+          "icon": "https://GerNarGar.github.io/web_menu_alalba/img/icons/icons_small/treenuts.png"
         },
         {
           "code": 9,
@@ -782,13 +781,13 @@
             "en": "Dairy / Milk",
             "fr": "Produits laitiers"
           },
-          "icon": "./img/icons/icons_small/milk.png"
+          "icon": "https://GerNarGar.github.io/web_menu_alalba/img/icons/icons_small/milk.png"
         }
       ],
-      "image": "./img/platos/ternera.webp",
+      "image": "https://GerNarGar.github.io/web_menu_alalba/img/platos/ternera.webp",
       "video": {
-        "src": "./img/videos/vid2_25fps.mp4",
-        "poster": "./img/videos/vid2_25fps_poster.webp",
+        "src": "https://GerNarGar.github.io/web_menu_alalba/img/videos/vid2_25fps.mp4",
+        "poster": "https://GerNarGar.github.io/web_menu_alalba/img/videos/vid2_25fps_poster.webp",
         "duration": 11.5
       },
       "i18n": {
@@ -819,7 +818,7 @@
             "en": "Gluten",
             "fr": "Gluten"
           },
-          "icon": "./img/icons/icons_small/gluten.png"
+          "icon": "https://GerNarGar.github.io/web_menu_alalba/img/icons/icons_small/gluten.png"
         },
         {
           "code": 3,
@@ -828,7 +827,7 @@
             "en": "Nuts / Tree nuts",
             "fr": "Fruits à coque"
           },
-          "icon": "./img/icons/icons_small/treenuts.png"
+          "icon": "https://GerNarGar.github.io/web_menu_alalba/img/icons/icons_small/treenuts.png"
         },
         {
           "code": 8,
@@ -837,7 +836,7 @@
             "en": "Soy / Soya",
             "fr": "Soja"
           },
-          "icon": "./img/icons/icons_small/soyabeans.png"
+          "icon": "https://GerNarGar.github.io/web_menu_alalba/img/icons/icons_small/soyabeans.png"
         },
         {
           "code": 9,
@@ -846,7 +845,7 @@
             "en": "Dairy / Milk",
             "fr": "Produits laitiers"
           },
-          "icon": "./img/icons/icons_small/milk.png"
+          "icon": "https://GerNarGar.github.io/web_menu_alalba/img/icons/icons_small/milk.png"
         },
         {
           "code": 11,
@@ -855,13 +854,13 @@
             "en": "Egg",
             "fr": "Œuf"
           },
-          "icon": "./img/icons/icons_small/egg.png"
+          "icon": "https://GerNarGar.github.io/web_menu_alalba/img/icons/icons_small/egg.png"
         }
       ],
-      "image": "./img/platos/chocolate.webp",
+      "image": "https://GerNarGar.github.io/web_menu_alalba/img/platos/chocolate.webp",
       "video": {
-        "src": "./img/videos/vid4_30fps.mp4",
-        "poster": "./img/videos/vid4_30fps_poster.webp",
+        "src": "https://GerNarGar.github.io/web_menu_alalba/img/videos/vid4_30fps.mp4",
+        "poster": "https://GerNarGar.github.io/web_menu_alalba/img/videos/vid4_30fps_poster.webp",
         "duration": 7.1
       },
       "i18n": {
@@ -892,7 +891,7 @@
             "en": "Gluten",
             "fr": "Gluten"
           },
-          "icon": "./img/icons/icons_small/gluten.png"
+          "icon": "https://GerNarGar.github.io/web_menu_alalba/img/icons/icons_small/gluten.png"
         },
         {
           "code": 3,
@@ -901,7 +900,7 @@
             "en": "Nuts / Tree nuts",
             "fr": "Fruits à coque"
           },
-          "icon": "./img/icons/icons_small/treenuts.png"
+          "icon": "https://GerNarGar.github.io/web_menu_alalba/img/icons/icons_small/treenuts.png"
         },
         {
           "code": 6,
@@ -910,7 +909,7 @@
             "en": "Sesame",
             "fr": "Sésame"
           },
-          "icon": "./img/icons/icons_small/sesame.png"
+          "icon": "https://GerNarGar.github.io/web_menu_alalba/img/icons/icons_small/sesame.png"
         },
         {
           "code": 11,
@@ -919,13 +918,13 @@
             "en": "Egg",
             "fr": "Œuf"
           },
-          "icon": "./img/icons/icons_small/egg.png"
+          "icon": "https://GerNarGar.github.io/web_menu_alalba/img/icons/icons_small/egg.png"
         }
       ],
-      "image": "./img/platos/crepe2.webp",
+      "image": "https://GerNarGar.github.io/web_menu_alalba/img/platos/crepe2.webp",
       "video": {
-        "src": "./img/videos/vid1_25fps.mp4",
-        "poster": "./img/videos/vid1_25fps_poster.webp",
+        "src": "https://GerNarGar.github.io/web_menu_alalba/img/videos/vid1_25fps.mp4",
+        "poster": "https://GerNarGar.github.io/web_menu_alalba/img/videos/vid1_25fps_poster.webp",
         "duration": 9.3
       },
       "i18n": {
@@ -956,7 +955,7 @@
             "en": "Gluten",
             "fr": "Gluten"
           },
-          "icon": "./img/icons/icons_small/gluten.png"
+          "icon": "https://GerNarGar.github.io/web_menu_alalba/img/icons/icons_small/gluten.png"
         },
         {
           "code": 3,
@@ -965,7 +964,7 @@
             "en": "Nuts / Tree nuts",
             "fr": "Fruits à coque"
           },
-          "icon": "./img/icons/icons_small/treenuts.png"
+          "icon": "https://GerNarGar.github.io/web_menu_alalba/img/icons/icons_small/treenuts.png"
         },
         {
           "code": 9,
@@ -974,7 +973,7 @@
             "en": "Dairy / Milk",
             "fr": "Produits laitiers"
           },
-          "icon": "./img/icons/icons_small/milk.png"
+          "icon": "https://GerNarGar.github.io/web_menu_alalba/img/icons/icons_small/milk.png"
         },
         {
           "code": 11,
@@ -983,13 +982,13 @@
             "en": "Egg",
             "fr": "Œuf"
           },
-          "icon": "./img/icons/icons_small/egg.png"
+          "icon": "https://GerNarGar.github.io/web_menu_alalba/img/icons/icons_small/egg.png"
         }
       ],
-      "image": "./img/platos/tortada.webp",
+      "image": "https://GerNarGar.github.io/web_menu_alalba/img/platos/tortada.webp",
       "video": {
-        "src": "./img/videos/vid3_50fps.mp4",
-        "poster": "./img/videos/vid3_50fps_poster.webp",
+        "src": "https://GerNarGar.github.io/web_menu_alalba/img/videos/vid3_50fps.mp4",
+        "poster": "https://GerNarGar.github.io/web_menu_alalba/img/videos/vid3_50fps_poster.webp",
         "duration": 6.5
       },
       "i18n": {
@@ -1020,7 +1019,7 @@
             "en": "Gluten",
             "fr": "Gluten"
           },
-          "icon": "./img/icons/icons_small/gluten.png"
+          "icon": "https://GerNarGar.github.io/web_menu_alalba/img/icons/icons_small/gluten.png"
         },
         {
           "code": 9,
@@ -1029,7 +1028,7 @@
             "en": "Dairy / Milk",
             "fr": "Produits laitiers"
           },
-          "icon": "./img/icons/icons_small/milk.png"
+          "icon": "https://GerNarGar.github.io/web_menu_alalba/img/icons/icons_small/milk.png"
         },
         {
           "code": 11,
@@ -1038,13 +1037,13 @@
             "en": "Egg",
             "fr": "Œuf"
           },
-          "icon": "./img/icons/icons_small/egg.png"
+          "icon": "https://GerNarGar.github.io/web_menu_alalba/img/icons/icons_small/egg.png"
         }
       ],
-      "image": "./img/platos/tarta_queso.webp",
+      "image": "https://GerNarGar.github.io/web_menu_alalba/img/platos/tarta_queso.webp",
       "video": {
-        "src": "./img/videos/vid2_25fps.mp4",
-        "poster": "./img/videos/vid2_25fps_poster.webp",
+        "src": "https://GerNarGar.github.io/web_menu_alalba/img/videos/vid2_25fps.mp4",
+        "poster": "https://GerNarGar.github.io/web_menu_alalba/img/videos/vid2_25fps_poster.webp",
         "duration": 11.5
       },
       "i18n": {
@@ -1075,7 +1074,7 @@
             "en": "Gluten",
             "fr": "Gluten"
           },
-          "icon": "./img/icons/icons_small/gluten.png"
+          "icon": "https://GerNarGar.github.io/web_menu_alalba/img/icons/icons_small/gluten.png"
         },
         {
           "code": 9,
@@ -1084,13 +1083,13 @@
             "en": "Dairy / Milk",
             "fr": "Produits laitiers"
           },
-          "icon": "./img/icons/icons_small/milk.png"
+          "icon": "https://GerNarGar.github.io/web_menu_alalba/img/icons/icons_small/milk.png"
         }
       ],
-      "image": "./img/platos/pastela_pera.webp",
+      "image": "https://GerNarGar.github.io/web_menu_alalba/img/platos/pastela_pera.webp",
       "video": {
-        "src": "./img/videos/vid4_30fps.mp4",
-        "poster": "./img/videos/vid4_30fps_poster.webp",
+        "src": "https://GerNarGar.github.io/web_menu_alalba/img/videos/vid4_30fps.mp4",
+        "poster": "https://GerNarGar.github.io/web_menu_alalba/img/videos/vid4_30fps_poster.webp",
         "duration": 7.1
       },
       "i18n": {

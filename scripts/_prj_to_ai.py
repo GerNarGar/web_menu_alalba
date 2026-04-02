@@ -1,3 +1,5 @@
+import csv
+import io
 import os
 import re
 import subprocess
@@ -72,6 +74,94 @@ def obtener_ref_desde_env():
     return None
 
 
+def obtener_sheet_id_desde_env():
+    """Busca SHEET_ID en el archivo scripts/.env tal como lo usa sync.py"""
+    ruta_env = os.path.join('scripts', '.env')
+    try:
+        with open(ruta_env, 'r', encoding='utf-8') as f:
+            for linea in f:
+                linea = linea.strip()
+                if not linea or linea.startswith('#'):
+                    continue
+                if 'SHEET_ID' in linea:
+                    return linea.split('=', 1)[1].strip('\'"')
+    except FileNotFoundError:
+        print('❌ Error: No se encontró el archivo scripts/.env')
+    return None
+
+
+def volcar_hojas_google_sheets(outfile):
+    """
+    Conecta con Google Sheets, lee todas las pestañas y las escribe
+    en formato CSV en el archivo de salida.
+    """
+    sheet_id = obtener_sheet_id_desde_env()
+    if not sheet_id:
+        print('⚠️ Saltando Google Sheets: No se encontró SHEET_ID en scripts/.env')
+        return
+
+    ruta_credenciales = os.path.join('scripts', 'credentials.json')
+    if not os.path.exists(ruta_credenciales):
+        print(f'⚠️ Saltando Google Sheets: No se encontró el archivo {ruta_credenciales}')
+        return
+
+    try:
+        from google.oauth2.service_account import Credentials
+        from googleapiclient.discovery import build
+    except ImportError:
+        print(
+            '⚠️ Saltando Google Sheets: Faltan las librerías `google-auth` o `google-api-python-client`.'
+        )
+        print('💡 Puedes instalarlas con: pip install google-auth google-api-python-client')
+        return
+
+    print('📊 Extrayendo datos de Google Sheets...')
+    try:
+        alcances_seguridad = ['https://www.googleapis.com/auth/spreadsheets.readonly']
+        credenciales = Credentials.from_service_account_file(
+            ruta_credenciales, scopes=alcances_seguridad
+        )
+        servicio = build('sheets', 'v4', credentials=credenciales)
+
+        # 1. Obtener la lista de todas las hojas del documento
+        metadatos = servicio.spreadsheets().get(spreadsheetId=sheet_id).execute()
+        hojas = metadatos.get('sheets', [])
+
+        for hoja in hojas:
+            nombre_hoja = hoja['properties']['title']
+            print(f'   -> Leyendo hoja: {nombre_hoja}')
+
+            # 2. Leer los datos de la hoja completa
+            resultado = (
+                servicio.spreadsheets()
+                .values()
+                .get(spreadsheetId=sheet_id, range=nombre_hoja)
+                .execute()
+            )
+            valores = resultado.get('values', [])
+
+            if not valores:
+                continue
+
+            # 3. Escribir la cabecera idéntica al formato de archivos
+            outfile.write(f'\n{"=" * 60}\n')
+            outfile.write(f'HOJA DE GOOGLE SHEETS: {nombre_hoja}\n')
+            outfile.write(f'{"=" * 60}\n\n')
+
+            # 4. Transformar la matriz a formato CSV
+            buffer_csv = io.StringIO()
+            escritor_csv = csv.writer(buffer_csv)
+            escritor_csv.writerows(valores)
+
+            outfile.write(buffer_csv.getvalue())
+            outfile.write('\n')
+
+        print('✅ Hojas de Google Sheets añadidas correctamente al archivo final.')
+
+    except Exception as e:
+        print(f'❌ Error al leer Google Sheets: {e}')
+
+
 def generar_backup_sql():
     """Configura Supabase y genera el dump de la base de datos."""
     print('⏳ Iniciando proceso de backup con Supabase...')
@@ -83,7 +173,7 @@ def generar_backup_sql():
     try:
         # 1. Login (Nota: Si ya estás logueado, este paso es rápido o se puede omitir)
         # Si prefieres no hacerlo interactivo cada vez, asegúrate de haber hecho 'supabase login' antes una vez.
-        print(f'🔑 Verificando sesión de Supabase...')
+        print('🔑 Verificando sesión de Supabase...')
         # Intentamos un comando simple para ver si hay sesión
         # subprocess.run(['supabase', 'login'], check=True)
 
@@ -167,6 +257,10 @@ def empaquetar_proyecto():
                         outfile.write(f'Error al leer archivo: {e}')
                     outfile.write('\n')
 
+        # --- NUEVA FUNCIÓN ---
+        # Volcamos las hojas de cálculo al final del archivo
+        volcar_hojas_google_sheets(outfile)
+
     print(f'✅ ¡Hecho! Se han empaquetado {count} archivos en: {OUTPUT_FILE}')
 
 
@@ -219,6 +313,6 @@ def generar_arbol(ruta_base='.', archivo_salida='estructura_proyecto.txt'):
 
 
 if __name__ == '__main__':
-    generar_arbol()
+    # generar_arbol()
     # generar_backup_sql()
     empaquetar_proyecto()

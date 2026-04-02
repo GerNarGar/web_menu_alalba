@@ -77,8 +77,14 @@ ESTRUCTURA DEL PROYECTO
         📄 sync.py
         📄 requirements.txt
         📄 image_hashes.json
+        📄 generate_repos.sh
     📁 .github/
         📁 workflows/
             📄 sync.yml
     📁 .vscode/
+        📄 settings.json
         📄 tasks.json
+    📁 backups/
+        📄 menu-data_20260402_190946.json
+        📄 menu-data_20260402_182819.json
+        📄 menu-data_20260402_195643.json

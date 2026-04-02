@@ -11,11 +11,11 @@
 
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
-<body class="antialiased min-h-screen flex flex-col area-segura-inferior">
+<body class="antialiased min-h-screen flex flex-col">
 
     <!-- CABECERA PRINCIPAL -->
     <header id="cabecera-principal"
-        class="sticky top-0 z-40 cabecera-cristal border-b borde-estandar area-segura-superior transicion-vista vista-visible">
+        class="sticky top-0 z-40 cabecera-cristal border-b borde-estandar transicion-vista vista-visible">
         <div class="flex items-center justify-between px-4 py-3">
             <button id="boton-inicio"
                 class="flex flex-col items-center justify-center h-full texto-principal px-2 min-w-[64px]"
@@ -30,7 +30,7 @@
                     <span class="text-[10px] font-medium elemento-traducible" data-clave-traduccion="home">Inicio</span>
                 </div>
                 <!-- Imagen del logo dinámico (Oculta por defecto) -->
-                <img id="logo-restaurante-img" src="" alt="Logo" class="hidden nav-logo">
+                <img id="logo-restaurante-img" src="" alt="Logo" class="hidden nav-logo shrink-0 w-auto">
             </button>
             <div class="text-sm font-medium texto-secundario">
                 <span class="elemento-traducible" data-clave-traduccion="table">Mesa</span>: <span
@@ -124,7 +124,7 @@
         <div id="fondo-cierre-carrito" class="backdrop-oscuro"></div>
         <div class="modal-contenido-deslizante relative h-full flex flex-col fondo-principal">
             <div
-                class="flex items-center justify-between px-4 py-4 border-b borde-estandar area-segura-superior cabecera-cristal relative z-10 mt-5">
+                class="flex items-center justify-between px-4 py-4 border-b borde-estandar cabecera-cristal relative z-10">
                 <h2 class="text-xl font-bold texto-principal elemento-traducible" data-clave-traduccion="my_list">Mi
                     lista</h2>
                 <button id="boton-cerrar-carrito" class="w-10 h-10 flex items-center justify-center texto-secundario"
@@ -137,7 +137,7 @@
             </div>
             <div id="area-contenido-carrito" class="flex-1 overflow-y-auto px-4 py-4 pb-32 relative z-10"></div>
             <div id="area-pie-carrito"
-                class="fixed bottom-0 left-0 right-0 border-t borde-estandar p-4 area-segura-inferior cabecera-cristal z-20">
+                class="fixed bottom-0 left-0 right-0 border-t borde-estandar p-4 cabecera-cristal z-20">
                 <div class="flex justify-between items-center mb-4">
                     <span class="texto-secundario elemento-traducible" data-clave-traduccion="total">Total</span>
                     <span id="etiqueta-precio-total" class="text-2xl font-bold texto-principal">0.00</span>
@@ -151,7 +151,7 @@
     </div>
 
     <!-- NAVEGACIÓN INFERIOR PRINCIPAL -->
-    <nav class="fixed bottom-0 left-0 right-0 nav-inferior-cristal area-segura-inferior z-40 pb-2"
+    <nav class="fixed bottom-0 left-0 right-0 nav-inferior-cristal z-40 pb-2"
         aria-label="Navegación principal">
         <div class="flex justify-around items-center h-16">
             <button id="pestaña-nav-menu"
@@ -174,7 +174,7 @@
                 <span class="text-xs font-medium">Video</span>
             </button>
             <button id="pestaña-nav-carrito"
-                class="item-nav-inferior flex flex-col items-center justify-center w-full h-full space-y-1 relative hidden">
+                class="item-nav-inferior flex-col items-center justify-center w-full h-full space-y-1 relative hidden">
                 <div class="relative">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -182,7 +182,7 @@
                         </path>
                     </svg>
                     <span id="globo-notificacion-carrito"
-                        class="hidden absolute -top-2 -right-2 insignia-notificacion text-[10px] font-bold w-5 h-5 rounded-full flex items-center justify-center">0</span>
+                        class="hidden absolute -top-2 -right-2 insignia-notificacion text-[10px] font-bold w-5 h-5 rounded-full items-center justify-center">0</span>
                 </div>
                 <span class="text-xs font-medium elemento-traducible" data-clave-traduccion="my_list">Mi lista</span>
             </button>
