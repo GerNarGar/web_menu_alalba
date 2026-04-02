@@ -16,11 +16,8 @@
     "toast_timeout": 4,
     "vibrar_al_enviar": true,
     "swipe_margen_seguridad": 30,
-    "generated_at": "2026-04-02T19:56:43.711483",
-    "base_url": "https://GerNarGar.github.io/web_menu_alalba",
-    "enable_video_feed": false,
-    "modal_uses_video": true,
-    "gas_webapp_url": "https://script.google.com/macros/s/AKfycbzoV7GDsarzug1vR8uZ6jmecRozrlOc5kDmFCmidnc1mBPXV8CDLwqLdoCzioojT_V-/exec"
+    "generated_at": "2026-03-29T19:08:07.640142",
+    "base_url": "https://GerNarGar.github.io/web_menu_alalba"
   },
   "categories": [
     {
@@ -426,7 +423,11 @@
         }
       ],
       "image": "https://GerNarGar.github.io/web_menu_alalba/img/platos/briuats2.webp",
-      "video": null,
+      "video": {
+        "src": "https://GerNarGar.github.io/web_menu_alalba/img/videos/vid4_30fps.mp4",
+        "poster": "https://GerNarGar.github.io/web_menu_alalba/img/videos/vid4_30fps_poster.webp",
+        "duration": 7.1
+      },
       "i18n": {
         "es": {
           "name": "Briuats de kefta especiado con salsa fresca de yogur a la menta",
@@ -459,7 +460,11 @@
         }
       ],
       "image": "https://GerNarGar.github.io/web_menu_alalba/img/platos/crema.webp",
-      "video": null,
+      "video": {
+        "src": "https://GerNarGar.github.io/web_menu_alalba/img/videos/vid2_25fps.mp4",
+        "poster": "https://GerNarGar.github.io/web_menu_alalba/img/videos/vid2_25fps_poster.webp",
+        "duration": 11.5
+      },
       "i18n": {
         "es": {
           "name": "Crema asada de calabaza con semillas tostadas y croûtons al romero",

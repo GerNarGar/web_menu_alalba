@@ -2,6 +2,11 @@ name: Sincronización Menú QR
 
 on:
   workflow_dispatch:
+  push:
+    branches: ["main"]
+    paths:
+      - "docs/**"
+      - "tailwind.config.js"
 
 jobs:
   sync:
@@ -9,36 +14,31 @@ jobs:
     permissions:
       contents: write
 
-    env:
-      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
-
     steps:
       - name: Clonar repositorio
         uses: actions/checkout@v6
 
+      # ==========================================
+      # BLOQUE 1: PYTHON (Solo si viene de Sheets)
+      # ==========================================
       - name: Configurar Python
+        if: github.event_name == 'workflow_dispatch'
         uses: actions/setup-python@v6
         with:
           python-version: "3.10"
 
-      - name: Caché de dependencias PIP
-        uses: actions/cache@v5
-        with:
-          path: ~/.cache/pip
-          key: ${{ runner.os }}-pip-${{ hashFiles('scripts/requirements.txt') }}
-          restore-keys: |
-            ${{ runner.os }}-pip-
-
       - name: Instalar dependencias Python
-        run: |
-          pip install -r scripts/requirements.txt
+        if: github.event_name == 'workflow_dispatch'
+        run: pip install -r scripts/requirements.txt
 
       - name: Configurar FFmpeg
+        if: github.event_name == 'workflow_dispatch'
         uses: FedericoCarboni/setup-ffmpeg@v3
         with:
           ffmpeg-version: "6.1.0"
 
       - name: Generar credenciales de Google
+        if: github.event_name == 'workflow_dispatch'
         env:
           GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }}
         run: |
@@ -46,42 +46,50 @@ jobs:
           echo "$GOOGLE_CREDENTIALS" > scripts/credentials.json
 
       - name: Ejecutar Sincronizar con Google Sheets
+        if: github.event_name == 'workflow_dispatch'
         env:
           SHEET_ID: ${{ secrets.SHEET_ID }}
-        run: |
-          python scripts/sync.py
+        run: python scripts/sync.py
 
-      - name: Commit y Push de Cambios
+      # ==========================================
+      # BLOQUE 2: TAILWIND (Solo si el Dev hace Push)
+      # ==========================================
+      - name: Configurar Node.js
+        if: github.event_name == 'push'
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Instalar NPM y Compilar Tailwind
+        if: github.event_name == 'push'
+        run: |
+          npm install
+          npm run build
+
+      # ==========================================
+      # BLOQUE 3: COMMIT Y PUSH SEGÚN ORIGEN
+      # ==========================================
+      - name: Commit y Push
         run: |
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action Bot"
 
-          # Usamos --all para rastrear archivos nuevos PERO TAMBIÉN archivos borrados (Huérfanos)
-          git add --all docs/ backups/ scripts/image_hashes.json
-
-          # Solo hacemos commit si hay cambios reales
-          git diff --quiet && git diff --staged --quiet || git commit -m "Actualización automática de Menú $(date +'%Y-%m-%d %H:%M')"
-          git push
-
-      - name: Notificar Error Crítico a Telegram
-        if: failure()
-        run: |
-          ERROR_MSG="Error desconocido. Revisa los logs en la pestaña Actions de GitHub."
-          if [ -f error_telegram.txt ]; then
-            ERROR_MSG=$(cat error_telegram.txt)
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            # Si viene de Sheets: solo nos importan los datos e imágenes
+            git add --all docs/ backups/ scripts/image_hashes.json
+            git diff --quiet && git diff --staged --quiet || git commit -m "Actualización automática de Menú $(date +'%Y-%m-%d %H:%M')"
+          else
+            # Si viene de Push (Dev): forzamos añadir el CSS compilado
+            git add -f docs/tailwind-build.css
+            git diff --quiet && git diff --staged --quiet || git commit -m "Compilación automática de Tailwind CSS"
           fi
 
-          jq -n --arg chat_id "${{ secrets.TELEGRAM_CHAT_ID }}" \
-                --arg text "❌ *Error Crítico en el Menú QR* ❌
+          git push
 
-          El script de sincronización en GitHub Actions ha fallado. La web mantiene la versión anterior.
-
-          *Detalle técnico:*
-          \`\`\`
-          $ERROR_MSG
-          \`\`\`" \
-                '{chat_id: $chat_id, text: $text, parse_mode: "Markdown"}' > payload.json
-
-          curl -s -X POST "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage" \
-               -H "Content-Type: application/json" \
-               -d @payload.json
+      - name: Notificar Error a Telegram
+        if: failure()
+        run: |
+          ERROR_MSG="Error en la acción (GitHub Actions). Revisa los logs."
+          [ -f error_telegram.txt ] && ERROR_MSG=$(cat error_telegram.txt)
+          jq -n --arg chat_id "${{ secrets.TELEGRAM_CHAT_ID }}" --arg text "❌ *Error Actualizando Web Menú*\n\`\`\`\n$ERROR_MSG\n\`\`\`" '{chat_id: $chat_id, text: $text, parse_mode: "Markdown"}' > payload.json
+          curl -s -X POST "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage" -H "Content-Type: application/json" -d @payload.json

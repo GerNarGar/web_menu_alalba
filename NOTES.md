@@ -1,4 +1,10 @@
+🚨 CÓMO FORZAR ERRORES TEMPORALMENTE PARA PROBAR:
 
+    Para probar el error del Dev (Push a GitHub):
+    En tu sync.yml, justo debajo de - name: Instalar NPM y Compilar Tailwind, añade una línea que diga run: exit 1. Haz push. El workflow fallará al llegar ahí y enviará el Telegram.
+
+    Para probar el error de GAS (Ejecutando Python):
+    En scripts/sync.py, en la línea 1 pon temporalmente raise Exception("Probando alerta de Telegram desde Python"). Al darle en Sheets a "Publicar", Python fallará, el error_telegram.txt capturará tu texto y te llegará el aviso exacto.
 
 ### ANALITICS DIY
 ### B.4) Analytics "DIY" Zero-Cookies con Google Sheets

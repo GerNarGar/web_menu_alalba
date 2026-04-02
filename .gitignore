@@ -18,7 +18,7 @@ __pycache__/
 Thumbs.db
 
 #### Logs y temporales
-npm-debug.log*
+npm-debug.log*  
 .eslintcache
 /referencias/
 scripts/error_telegram.txt
@@ -31,3 +31,8 @@ package-lock.json
 #### Custom Files
 # NOTES.md
 # SETUP.md
+
+# --- TAILWIND CSS GENERADO ---
+# Ignoramos el CSS compilado localmente para evitar conflictos.
+# GitHub Actions forzará su subida a la rama main tras compilar.
+docs/tailwind-build.css

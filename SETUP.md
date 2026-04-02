@@ -312,3 +312,7 @@ Activar Drive API en Google Apps Script (GAS):
     Selecciona la versión por defecto (v3) y haz clic en "Añadir".
 
     (Esto permite que el script lea el ancho de la imagen sin descargarla).
+
+
+Paso crítico manual: Ve a tu script de Google > Botón "Implementar" > "Nueva implementación" > Tipo: Aplicación Web. Ejecutar como: Tú. Quién tiene acceso: Cualquier persona. Copia la URL que te da y pégala en la pestaña Config de Sheets bajo la clave gas_webapp_url.
+⚠️ IMPORTANTE: Recuerda que en Apps Script, cada vez que cambias código, debes ir a Implementar > Nueva Implementación (no sirve con guardar, hay que crear una nueva versión).

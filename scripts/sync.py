@@ -36,6 +36,7 @@ def cargar_variables_entorno(ruta_archivo='.env'):
 
 # --- CONFIGURACIÓN DE RUTAS ---
 DIRECTORIO_BASE = Path(__file__).resolve().parent.parent
+ARCHIVO_ENV = DIRECTORIO_BASE / 'scripts' / '.env'
 DIRECTORIO_COPIAS_SEGURIDAD = DIRECTORIO_BASE / 'backups'
 ARCHIVO_JSON_SALIDA = DIRECTORIO_BASE / 'docs' / 'menu-data.json'
 ARCHIVO_JSON_TEMPORAL = DIRECTORIO_BASE / 'docs' / 'temp_menu-data.json'
@@ -45,7 +46,7 @@ ARCHIVO_REGISTRO_HASHES = DIRECTORIO_BASE / 'scripts' / 'image_hashes.json'
 DIRECTORIO_IMAGENES_PLATOS = DIRECTORIO_BASE / 'docs' / 'img' / 'platos'
 DIRECTORIO_VIDEOS_PLATOS = DIRECTORIO_BASE / 'docs' / 'img' / 'videos'
 
-cargar_variables_entorno()
+cargar_variables_entorno(ARCHIVO_ENV)
 IDENTIFICADOR_HOJA_CALCULO = os.environ.get('SHEET_ID')
 
 
@@ -634,6 +635,13 @@ def ejecutar_sincronizacion_maestra():
             ),
             'generated_at': datetime.now().isoformat(),
             'base_url': url_base_proyecto,
+            'enable_video_feed': evaluar_booleano(
+                configuracion_general.get('enable_video_feed', True)
+            ),
+            'modal_uses_video': evaluar_booleano(
+                configuracion_general.get('modal_uses_video', False)
+            ),
+            'gas_webapp_url': str(configuracion_general.get('gas_webapp_url', '')).strip(),
         },
         'categories': sorted(coleccion_categorias, key=lambda c: c['order']),
         'allergens': list(diccionario_maestro_alergenos.values()),

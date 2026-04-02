@@ -24,10 +24,12 @@ const Traductor = {
   diccionario: {
     es: {
       menu: "Menú",
-      my_list: "Mi lista",
+      my_list: "Mis platos",
       add: "Añadir",
       total: "Total",
-      send_order: "Enviar pedido",
+      complete_order: "Completar pedido",
+      modify: "Modificar",
+      confirm_order: "Confirmar",
       table: "Mesa",
       home: "Inicio",
       see_more: "Ver más",
@@ -39,13 +41,16 @@ const Traductor = {
       order_name: "Tu nombre",
       order_phone: "Tu teléfono",
       error_form: "Por favor, rellena tu nombre y teléfono.",
+      order_error: "Error al enviar el pedido.",
     },
     en: {
       menu: "Menu",
-      my_list: "My list",
+      my_list: "My dishes",
       add: "Add",
       total: "Total",
-      send_order: "Send order",
+      complete_order: "Complete order",
+      modify: "Modify",
+      confirm_order: "Confirm",
       table: "Table",
       home: "Home",
       see_more: "See more",
@@ -57,13 +62,16 @@ const Traductor = {
       order_name: "Your name",
       order_phone: "Your phone",
       error_form: "Please fill in your name and phone.",
+      order_error: "Error sending the order.",
     },
     fr: {
       menu: "Menu",
-      my_list: "Ma liste",
+      my_list: "Mes plats",
       add: "Ajouter",
       total: "Total",
-      send_order: "Envoyer",
+      complete_order: "Finaliser la commande",
+      modify: "Modifier",
+      confirm_order: "Confirmer",
       table: "Table",
       home: "Accueil",
       see_more: "Voir plus",
@@ -75,6 +83,7 @@ const Traductor = {
       order_name: "Votre nom",
       order_phone: "Votre téléphone",
       error_form: "Veuillez indiquer votre nom et téléphone.",
+      order_error: "Erreur lors de l'envoi de la commande.",
     },
   },
   obtenerTexto(clave) {
@@ -485,7 +494,6 @@ const GestorGestos = {
 
 // 🚀 CONTROLADOR PRINCIPAL (Orquestador)
 const ControladorApp = {
-  // NUEVA FUNCIÓN MÁGICA PARA RECORDAR LA MESA SIEMPRE EN LA URL
   obtenerURLActualizada(vistaDestino, categoriaDestino) {
     const url = new URL(window.location.origin + window.location.pathname);
     url.searchParams.set("view", vistaDestino);
@@ -516,15 +524,37 @@ const ControladorApp = {
           .classList.remove("hidden");
       }
 
+      if (metadatos.enable_video_feed === false) {
+        document.getElementById("pestaña-nav-video").classList.add("hidden");
+        document.getElementById("pestaña-nav-menu").classList.add("hidden");
+        const btnLista = document.getElementById("pestaña-nav-carrito");
+        btnLista.classList.remove("w-full");
+        btnLista.classList.add(
+          "mx-auto",
+          "w-1/2",
+          "bg-fondo-add",
+          "rounded-full",
+          "py-1",
+        );
+      }
+
       EstadoApp.identificadorMesa = parametrosURL.has("mesa")
         ? parametrosURL.get("mesa")
         : metadatos.default_table || "No";
+
+      // Ocultar la etiqueta "Mesa" si es "No"
+      if (EstadoApp.identificadorMesa === "No") {
+        const nodoMesa = document.getElementById("etiqueta-mesa-actual");
+        if (nodoMesa && nodoMesa.parentElement)
+          nodoMesa.parentElement.classList.add("hidden");
+      } else {
+        document.getElementById("etiqueta-mesa-actual").textContent =
+          EstadoApp.identificadorMesa;
+      }
+
       EstadoApp.modoParaLlevar = !parametrosURL.has("mesa");
       EstadoApp.pedidosPermitidos =
         metadatos.allow_orders || EstadoApp.identificadorMesa !== "No";
-      document.getElementById("etiqueta-mesa-actual").textContent =
-        EstadoApp.identificadorMesa;
-
       EstadoApp.idiomaActual = metadatos.default_lang || "es";
 
       this.configurarSelectorIdioma(EstadoApp.idiomaActual);
@@ -549,7 +579,6 @@ const ControladorApp = {
         "",
         this.obtenerURLActualizada(vistaInicial, EstadoApp.categoriaActiva),
       );
-
       this.cambiarVista(vistaInicial, true);
     } catch (errorFatal) {
       console.error(errorFatal);
@@ -593,11 +622,9 @@ const ControladorApp = {
 
     document.getElementById("boton-inicio").addEventListener("click", () => {
       const link = EstadoApp.datosMenu?.meta?.restaurant_url;
-      // Si hay un enlace y tenemos logo configurado, redirigimos
       if (link && link.trim() !== "") {
         window.location.href = link;
       } else {
-        // Fallback: Si no hay link, hace la función de la casita (ir arriba a la primera categoría)
         const primeraCategoria = EstadoApp.datosMenu.categories[0]?.id;
         if (primeraCategoria) {
           this.cambiarCategoriaPrincipal(primeraCategoria);
@@ -618,9 +645,6 @@ const ControladorApp = {
     document
       .getElementById("fondo-cierre-carrito")
       .addEventListener("click", () => this.cerrarModalCarrito());
-    document
-      .getElementById("boton-enviar-pedido")
-      .addEventListener("click", () => this.enviarPedido());
 
     document
       .getElementById("pestaña-nav-menu")
@@ -639,6 +663,12 @@ const ControladorApp = {
 
   cambiarVista(nombreVista, desdePopState = false) {
     if (EstadoApp.vistaActual === nombreVista && !desdePopState) return;
+    if (
+      nombreVista === "video" &&
+      EstadoApp.datosMenu?.meta?.enable_video_feed === false
+    )
+      return;
+
     EstadoApp.vistaActual = nombreVista;
 
     const navMenu = document.getElementById("pestaña-nav-menu");
@@ -648,6 +678,9 @@ const ControladorApp = {
     const contPrincipal = document.getElementById(
       "contenedor-principal-platos",
     );
+
+    // Fix: Forzar reset de scroll en el body por si un modal se quedó a medias
+    document.body.style.overflow = "";
 
     if (nombreVista === "menu") {
       navMenu.classList.add("activa");
@@ -707,7 +740,8 @@ const ControladorApp = {
     InterfazDOM.renderizarListaPlatos();
 
     if (!desdePopState) {
-      history.pushState(
+      // Usamos replaceState para no saturar el historial al hacer scroll/click de categorias
+      history.replaceState(
         { vista: EstadoApp.vistaActual, categoria: idCategoria },
         "",
         this.obtenerURLActualizada(EstadoApp.vistaActual, idCategoria),
@@ -726,26 +760,66 @@ const ControladorApp = {
     contModal.innerHTML = "";
     const textos = Traductor.extraerTextoPlato(objetoPlato);
 
-    const contImagen = InterfazDOM.crearNodo("div", "relative h-96");
+    const usaVideo =
+      EstadoApp.datosMenu.meta.modal_uses_video && objetoPlato.video;
+    const contImagen = InterfazDOM.crearNodo(
+      "div",
+      "relative h-96 bg-black rounded-b-[2rem] overflow-hidden " +
+        (usaVideo ? "cursor-pointer" : ""),
+    );
 
-    // Crear el nodo imagen con protecciones adicionales (draggable, oncontextmenu)
     const imgModal = InterfazDOM.crearNodo(
       "img",
-      "w-full h-full object-cover rounded-b-[2rem]",
+      "absolute inset-0 w-full h-full object-cover transition-opacity duration-300",
       null,
       {
         src: objetoPlato.image,
-        draggable: "false", // Evita arrastrar en PC
-        oncontextmenu: "return false;", // Evita pulsación larga/clic derecho
+        draggable: "false",
+        oncontextmenu: "return false;",
       },
     );
-
-    // Protección extra para iOS/Android modernos: evitar selección de la imagen
     imgModal.style.webkitTouchCallout = "none";
     imgModal.style.userSelect = "none";
-    imgModal.style.pointerEvents = "none"; // Deshabilita cualquier interacción táctil sobre la imagen
-
     contImagen.appendChild(imgModal);
+
+    if (usaVideo) {
+      // Se ha quitado bg-black/30, añadido drop-shadow al icono y movido a la izquierda (right-0.5)
+      const btnPlay = InterfazDOM.crearNodo(
+        "div",
+        "absolute inset-0 flex items-center justify-center transition-opacity duration-300",
+      );
+      btnPlay.innerHTML = `<div class="w-16 h-16 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center border border-white/30 text-white shadow-xl"><svg class="w-8 h-8 drop-shadow-lg relative right-0.5" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div>`;
+      contImagen.appendChild(btnPlay);
+
+      // Vídeo en bucle y sin controles nativos (simula un GIF de alta calidad)
+      const videoModal = InterfazDOM.crearNodo(
+        "video",
+        "w-full h-full object-cover hidden",
+        null,
+        {
+          src: objetoPlato.video.src,
+          playsinline: "true",
+          loop: "true",
+          oncontextmenu: "return false;",
+          disablePictureInPicture: "true",
+          controlsList: "nodownload",
+        },
+      );
+      contImagen.appendChild(videoModal);
+
+      contImagen.addEventListener("click", () => {
+        imgModal.style.opacity = "0";
+        btnPlay.style.opacity = "0";
+        setTimeout(() => {
+          imgModal.classList.add("hidden");
+          btnPlay.classList.add("hidden");
+          videoModal.classList.remove("hidden");
+          videoModal.play();
+        }, 300);
+      });
+    } else {
+      imgModal.style.pointerEvents = "none";
+    }
 
     const cuerpoInfo = InterfazDOM.crearNodo("div", "px-6 py-6 pb-2");
     cuerpoInfo.appendChild(
@@ -767,6 +841,7 @@ const ControladorApp = {
         InterfazDOM.formatearMoneda(objetoPlato.price),
       ),
     );
+
     if (objetoPlato.is_chef_choice) {
       const divChef = InterfazDOM.crearNodo("div", "etiqueta-chef-detalle");
       divChef.innerHTML = `<svg class="icono-sugerencia-chef" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17 21a1 1 0 0 0 1-1v-5.35c0-.457.316-.844.727-1.041a4 4 0 0 0-2.134-7.589a5 5 0 0 0-9.186 0a4 4 0 0 0-2.134 7.588c.411.198.727.585.727 1.041V20a1 1 0 0 0 1 1ZM6 17h12"/></svg><span class="ml-1">${Traductor.obtenerTexto("chef_suggestion")}</span>`;
@@ -795,17 +870,22 @@ const ControladorApp = {
         "flex flex-wrap gap-2",
       );
       objetoPlato.allergens.forEach((al) => {
+        // Corregido padding: px-4 py-2
         const badge = InterfazDOM.crearNodo(
           "div",
-          "flex items-center space-x-2 icono-alergeno-modal px-3 py-2 rounded-full borde-estandar",
+          "flex items-center space-x-2 icono-alergeno-modal px-4 py-2 rounded-full borde-estandar",
         );
         badge.appendChild(
-          InterfazDOM.crearNodo("img", "w-5 h-5", null, { src: al.icon }),
+          InterfazDOM.crearNodo("img", "w-5 h-5", null, {
+            src: al.icon,
+            oncontextmenu: "return false;",
+            draggable: "false",
+          }),
         );
         badge.appendChild(
           InterfazDOM.crearNodo(
             "span",
-            "text-sm texto-secundario",
+            "text-sm texto-secundario pr-1",
             al.name[EstadoApp.idiomaActual],
           ),
         );
@@ -913,13 +993,17 @@ const ControladorApp = {
   cerrarModalDetalle(desdePopState = false) {
     const modal = document.getElementById("capa-modal-detalle");
     modal.classList.remove("mostrar");
-    modal.classList.add("hidden"); // Sin setTimeout, corte directo
+    modal.classList.add("hidden");
+
+    const videoEnModal = modal.querySelector("video");
+    if (videoEnModal) videoEnModal.pause();
+
     document.body.style.overflow = "";
     if (!desdePopState) history.back();
   },
 
   // ----------------------------------------------------------------------------------
-  // CARRITO DE COMPRA
+  // CARRITO DE COMPRA Y PEDIDOS
   // ----------------------------------------------------------------------------------
   abrirModalCarrito() {
     this.renderizarCarrito();
@@ -940,6 +1024,10 @@ const ControladorApp = {
     const contenedor = document.getElementById("area-contenido-carrito");
     contenedor.innerHTML = "";
 
+    // Evita bugs visuales si el usuario canceló una confirmación y volvió al carrito
+    const areaPie = document.getElementById("area-pie-carrito");
+    areaPie.innerHTML = `<div class="flex justify-between items-center mb-4"><span class="texto-secundario elemento-traducible" data-clave-traduccion="total">${Traductor.obtenerTexto("total")}</span><span id="etiqueta-precio-total" class="text-2xl font-bold texto-principal">0.00</span></div><button id="boton-enviar-pedido" class="w-full btn-primario font-bold py-4 rounded-2xl text-lg flex justify-center items-center"><span class="elemento-traducible" data-clave-traduccion="complete_order">${Traductor.obtenerTexto("complete_order")}</span></button>`;
+
     const itemsEnCarrito = Object.entries(EstadoApp.cestaPedidos)
       .map(([id, cant]) => ({
         item: EstadoApp.datosMenu.items.find((i) => i.id == id),
@@ -955,48 +1043,11 @@ const ControladorApp = {
           Traductor.obtenerTexto("empty_menu"),
         ),
       );
-      document.getElementById("area-pie-carrito").classList.add("hidden");
+      areaPie.classList.add("hidden");
       return;
     }
 
-    document.getElementById("area-pie-carrito").classList.remove("hidden");
-
-    if (EstadoApp.modoParaLlevar) {
-      const divForm = InterfazDOM.crearNodo("div", "tarjeta-carrito p-4 mb-4");
-      divForm.appendChild(
-        InterfazDOM.crearNodo(
-          "h3",
-          "font-bold texto-principal mb-3",
-          "Tus datos",
-        ),
-      );
-      divForm.appendChild(
-        InterfazDOM.crearNodo(
-          "input",
-          "w-full input-formulario rounded-xl px-4 py-3 mb-2",
-          null,
-          {
-            type: "text",
-            id: "input-nombre-pedido",
-            placeholder: Traductor.obtenerTexto("order_name"),
-          },
-        ),
-      );
-      divForm.appendChild(
-        InterfazDOM.crearNodo(
-          "input",
-          "w-full input-formulario rounded-xl px-4 py-3",
-          null,
-          {
-            type: "tel",
-            id: "input-telefono-pedido",
-            placeholder: Traductor.obtenerTexto("order_phone"),
-          },
-        ),
-      );
-      contenedor.appendChild(divForm);
-    }
-
+    areaPie.classList.remove("hidden");
     let precioTotalCarrito = 0;
 
     itemsEnCarrito.forEach(({ item, cantidad }) => {
@@ -1012,7 +1063,7 @@ const ControladorApp = {
           "img",
           "w-20 h-20 object-cover rounded-xl fondo-principal flex-shrink-0",
           null,
-          { src: item.image },
+          { src: item.image, oncontextmenu: "return false;" },
         ),
       );
 
@@ -1083,64 +1134,198 @@ const ControladorApp = {
 
     document.getElementById("etiqueta-precio-total").textContent =
       InterfazDOM.formatearMoneda(precioTotalCarrito);
+
+    const btn = document.getElementById("boton-enviar-pedido");
+    btn.onclick = () => this.mostrarConfirmacionPedido(precioTotalCarrito);
   },
 
-  enviarPedido() {
+  mostrarConfirmacionPedido(totalPedido) {
+    const contenedor = document.getElementById("area-contenido-carrito");
+    contenedor.innerHTML = "";
+
+    const divResumen = InterfazDOM.crearNodo(
+      "div",
+      "flex flex-col items-center text-center mt-2 w-full",
+    );
+
+    // Total y precio arriba
+    const divTotalTop = InterfazDOM.crearNodo("div", "w-full text-center mb-6");
+    divTotalTop.appendChild(
+      InterfazDOM.crearNodo(
+        "p",
+        "texto-secundario text-lg",
+        Traductor.obtenerTexto("total"),
+      ),
+    );
+    divTotalTop.appendChild(
+      InterfazDOM.crearNodo(
+        "p",
+        "text-5xl font-bold texto-acento mt-2",
+        InterfazDOM.formatearMoneda(totalPedido),
+      ),
+    );
+    divResumen.appendChild(divTotalTop);
+
+    // Lista de platos abajo
+    const divLista = InterfazDOM.crearNodo(
+      "div",
+      "w-full text-left bg-fondo-secundario rounded-2xl p-4 mb-6 border borde-estandar",
+    );
+
+    Object.entries(EstadoApp.cestaPedidos).forEach(([id, cantidad]) => {
+      const item = EstadoApp.datosMenu.items.find((i) => i.id == id);
+      if (item) {
+        const fila = InterfazDOM.crearNodo(
+          "div",
+          "flex justify-between items-center py-2 border-b borde-estandar last:border-0",
+        );
+        const nombrePlato = InterfazDOM.crearNodo(
+          "span",
+          "texto-principal flex-1 pr-2",
+          `${cantidad}x ${Traductor.extraerTextoPlato(item).name}`,
+        );
+        const precioPlato = InterfazDOM.crearNodo(
+          "span",
+          "texto-secundario font-medium whitespace-nowrap",
+          InterfazDOM.formatearMoneda(item.price * cantidad),
+        );
+        fila.appendChild(nombrePlato);
+        fila.appendChild(precioPlato);
+        divLista.appendChild(fila);
+      }
+    });
+    divResumen.appendChild(divLista);
+
+    // Formulario para llevar
+    if (EstadoApp.modoParaLlevar) {
+      const divForm = InterfazDOM.crearNodo(
+        "div",
+        "tarjeta-carrito p-4 w-full text-left mb-6",
+      );
+      divForm.appendChild(
+        InterfazDOM.crearNodo(
+          "input",
+          "w-full input-formulario rounded-xl px-4 py-3 mb-3",
+          null,
+          {
+            type: "text",
+            id: "input-nombre-pedido",
+            placeholder: Traductor.obtenerTexto("order_name"),
+          },
+        ),
+      );
+      divForm.appendChild(
+        InterfazDOM.crearNodo(
+          "input",
+          "w-full input-formulario rounded-xl px-4 py-3",
+          null,
+          {
+            type: "tel",
+            id: "input-telefono-pedido",
+            placeholder: Traductor.obtenerTexto("order_phone"),
+          },
+        ),
+      );
+      divResumen.appendChild(divForm);
+    }
+
+    contenedor.appendChild(divResumen);
+
+    // Reconstruir Pie con Modificar / Enviar
+    const areaPie = document.getElementById("area-pie-carrito");
+    areaPie.innerHTML = "";
+
+    const divBotones = InterfazDOM.crearNodo("div", "flex space-x-3 w-full");
+
+    const btnModificar = InterfazDOM.crearNodo(
+      "button",
+      "flex-1 btn-secundario font-bold py-4 rounded-2xl text-lg",
+      Traductor.obtenerTexto("modify"),
+    );
+    btnModificar.onclick = () => this.renderizarCarrito(); // RenderizarCarrito restaura el pie original
+
+    const btnEnviar = InterfazDOM.crearNodo(
+      "button",
+      "flex-1 btn-primario font-bold py-4 rounded-2xl text-lg flex justify-center items-center",
+      Traductor.obtenerTexto("confirm_order"),
+    );
+    btnEnviar.onclick = () => this.enviarPedidoFinal(totalPedido, btnEnviar);
+
+    divBotones.appendChild(btnModificar);
+    divBotones.appendChild(btnEnviar);
+    areaPie.appendChild(divBotones);
+  },
+
+  async enviarPedidoFinal(totalPedido, botonDOM) {
     let nombre = "",
       telefono = "";
     if (EstadoApp.modoParaLlevar) {
       const inputNombre = document.getElementById("input-nombre-pedido");
-      const inputTelefono = document.getElementById("input-telefono-pedido");
+      const inputTel = document.getElementById("input-telefono-pedido");
       nombre = inputNombre ? inputNombre.value.trim() : "";
-      telefono = inputTelefono ? inputTelefono.value.trim() : "";
+      telefono = inputTel ? inputTel.value.trim() : "";
       if (!nombre || !telefono) {
         alert(Traductor.obtenerTexto("error_form"));
         return;
       }
     }
 
-    const btn = document.getElementById("boton-enviar-pedido");
-    btn.disabled = true;
-    btn.innerHTML = `<svg class="animate-spin -ml-1 mr-3 h-5 w-5 texto-principal inline-block" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg><span class="elemento-traducible" data-clave-traduccion="sending_order">${Traductor.obtenerTexto("sending_order")}</span>`;
+    botonDOM.disabled = true;
+    botonDOM.innerHTML = `<svg class="animate-spin -ml-1 mr-3 h-5 w-5 texto-principal inline-block" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg><span class="elemento-traducible" data-clave-traduccion="sending_order">${Traductor.obtenerTexto("sending_order")}</span>`;
+
     if (EstadoApp.datosMenu?.meta?.vibrar_al_enviar && navigator.vibrate)
       navigator.vibrate(40);
 
     const resumenItems = Object.entries(EstadoApp.cestaPedidos)
       .map(([id, cantidad]) => {
         const i = EstadoApp.datosMenu.items.find((x) => x.id == id);
-        return i
-          ? `• ${cantidad}x ${Traductor.extraerTextoPlato(i).name} - ${InterfazDOM.formatearMoneda(i.price * cantidad)}`
-          : "";
+        return i ? `• ${cantidad}x ${Traductor.extraerTextoPlato(i).name}` : "";
       })
       .filter(Boolean)
       .join("\n");
 
-    const totalPedido = Object.entries(EstadoApp.cestaPedidos).reduce(
-      (suma, [id, cantidad]) => {
-        const i = EstadoApp.datosMenu.items.find((x) => x.id == id);
-        return suma + (i ? i.price * cantidad : 0);
-      },
-      0,
-    );
-
     const clienteDestino = EstadoApp.modoParaLlevar
       ? `TAKEAWAY\n👤 Nombre: ${nombre}\n📞 Tel: ${telefono}`
       : `MESA: ${EstadoApp.identificadorMesa}`;
+    const textoTelegram = `<b>${clienteDestino}</b>\n⏰ ${new Date().toLocaleTimeString()}\n\n${resumenItems}\n\n💰 Total: <b>${InterfazDOM.formatearMoneda(totalPedido)}</b>`;
 
-    setTimeout(() => {
+    const urlGas = EstadoApp.datosMenu.meta.gas_webapp_url;
+
+    if (!urlGas) {
       alert(
-        `🔔 NUEVO PEDIDO - ${clienteDestino}\n⏰ ${new Date().toLocaleTimeString()}\n\n${resumenItems}\n\n💰 Total: ${InterfazDOM.formatearMoneda(totalPedido)}`,
+        "Falta configurar la URL de envío (gas_webapp_url) en Google Sheets.",
       );
+      botonDOM.disabled = false;
+      botonDOM.innerText = Traductor.obtenerTexto("confirm_order");
+      return;
+    }
+
+    try {
+      // Envío robusto simulando un formulario (x-www-form-urlencoded) para evitar CORS en local y móviles
+      const formData = new URLSearchParams();
+      formData.append("mensaje", textoTelegram);
+
+      const response = await fetch(urlGas, {
+        method: "POST",
+        body: formData,
+      });
+
+      const resData = await response.json();
+      if (resData.status === "error") throw new Error(resData.error);
+
+      // Éxito
       EstadoApp.cestaPedidos = {};
       GestorCarrito.guardarEnMemoria();
       GestorCarrito.refrescarInsigniasGlobales();
       this.cerrarModalCarrito();
       InterfazDOM.renderizarListaPlatos();
       if (EstadoApp.vistaActual === "video") this.renderizarFeedVideo();
-
-      btn.disabled = false;
-      btn.innerHTML = `<span class="elemento-traducible" data-clave-traduccion="send_order">${Traductor.obtenerTexto("send_order")}</span>`;
-    }, 1000);
+    } catch (e) {
+      console.error(e);
+      alert(Traductor.obtenerTexto("order_error"));
+      botonDOM.disabled = false;
+      botonDOM.innerText = Traductor.obtenerTexto("confirm_order");
+    }
   },
 
   // ----------------------------------------------------------------------------------
@@ -1207,10 +1392,10 @@ const ControladorApp = {
 
       if (item.video) {
         divContenedorVideo.innerHTML += `<video class="elemento-video" src="${item.video.src}" loop playsinline muted preload="none" oncontextmenu="return false;" disablePictureInPicture controlsList="nodownload"></video>`;
-        divContenedorVideo.innerHTML += `<img class="superposicion-poster" src="${item.video.poster}" alt="">`;
+        divContenedorVideo.innerHTML += `<img class="superposicion-poster" src="${item.video.poster}" alt="" oncontextmenu="return false;">`;
         divContenedorVideo.innerHTML += `<div class="superposicion-reproducir hidden"><svg class="w-16 h-16 texto-principal opacity-80" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div>`;
       } else {
-        divContenedorVideo.innerHTML += `<img class="img-respaldo" src="${item.image}" alt="">`;
+        divContenedorVideo.innerHTML += `<img class="img-respaldo" src="${item.image}" alt="" oncontextmenu="return false;">`;
       }
 
       divContenedorVideo.innerHTML += `<div class="gradiente-video absolute bottom-0 left-0 right-0 h-[55%] z-[3] pointer-events-none"></div>`;
@@ -1218,7 +1403,6 @@ const ControladorApp = {
       const divInterfaz = InterfazDOM.crearNodo("div", "interfaz-video");
       const divInfo = InterfazDOM.crearNodo("div", "mb-4");
 
-      // 1. Sugerencia chef (Más pequeña y encima del nombre)
       if (item.is_chef_choice) {
         const divChef = InterfazDOM.crearNodo(
           "div",
@@ -1228,7 +1412,6 @@ const ControladorApp = {
         divInfo.appendChild(divChef);
       }
 
-      // 2. Nombre del plato
       divInfo.appendChild(
         InterfazDOM.crearNodo(
           "h3",
@@ -1237,7 +1420,6 @@ const ControladorApp = {
         ),
       );
 
-      // 3. Fila de Precio y Controles (Añadir) en el mismo nivel
       const divPrecioControles = InterfazDOM.crearNodo(
         "div",
         "flex justify-between items-center mb-2",
@@ -1264,7 +1446,6 @@ const ControladorApp = {
       divPrecioControles.appendChild(divControles);
       divInfo.appendChild(divPrecioControles);
 
-      // 4. Descripción y Expandir
       const parrafoDesc = InterfazDOM.crearNodo(
         "div",
         "texto-expandible texto-principal text-sm leading-relaxed mb-1 drop-shadow-md",
@@ -1272,7 +1453,6 @@ const ControladorApp = {
       );
       divInfo.appendChild(parrafoDesc);
 
-      // 5. Alérgenos (Ocultos por defecto, se muestran al expandir)
       let contAlergenos = null;
       if (item.allergens.length > 0) {
         contAlergenos = InterfazDOM.crearNodo(
@@ -1286,23 +1466,20 @@ const ControladorApp = {
               "img",
               "w-7 h-7 rounded-full bg-black/40 p-1 pointer-events-none",
               null,
-              { src: al.icon },
+              { src: al.icon, oncontextmenu: "return false;" },
             ),
           );
         });
         divInfo.appendChild(contAlergenos);
       }
 
-      // 6. Botón Ver más / Ver menos
       const btnExpandir = InterfazDOM.crearNodo(
         "button",
         "texto-secundario text-xs font-medium mb-1 drop-shadow-md",
         Traductor.obtenerTexto("see_more"),
       );
       btnExpandir.onclick = () => {
-        const estaExpandido = parrafoDesc.classList.contains("expandido");
-        if (estaExpandido) {
-          // Contraer
+        if (parrafoDesc.classList.contains("expandido")) {
           parrafoDesc.classList.remove("expandido");
           if (contAlergenos) {
             contAlergenos.classList.add("hidden");
@@ -1310,7 +1487,6 @@ const ControladorApp = {
           }
           btnExpandir.textContent = Traductor.obtenerTexto("see_more");
         } else {
-          // Expandir
           parrafoDesc.classList.add("expandido");
           if (contAlergenos) {
             contAlergenos.classList.remove("hidden");
@@ -1332,8 +1508,6 @@ const ControladorApp = {
         boton.addEventListener("click", (e) => {
           const video = e.currentTarget.parentElement.querySelector("video");
           if (video) video.play();
-
-          // Ocultar agresivamente al hacer clic manual
           e.currentTarget.classList.add("hidden");
           e.currentTarget.style.display = "none";
         });
@@ -1361,33 +1535,27 @@ const ControladorApp = {
 
             if (video) {
               video.preload = "auto";
-
-              // Evento nativo cuando el vídeo realmente está escupiendo frames
               video.onplaying = () => {
                 if (poster) poster.classList.add("desvanecer");
-                // Forzar ocultación agresiva
                 if (superposicion) {
                   superposicion.classList.add("hidden");
                   superposicion.style.display = "none";
                 }
               };
 
-              // Intentar reproducir
               const promesa = video.play();
               if (promesa !== undefined) {
                 promesa
                   .then(() => {
-                    // Éxito: El Autoplay funcionó
                     if (superposicion) {
                       superposicion.classList.add("hidden");
                       superposicion.style.display = "none";
                     }
                   })
                   .catch(() => {
-                    // Fallo: El navegador bloqueó el Autoplay (Mostrar el botón)
                     if (superposicion) {
                       superposicion.classList.remove("hidden");
-                      superposicion.classList.add("forzar-mostrar"); // <-- Usa esta clase nueva
+                      superposicion.classList.add("forzar-mostrar");
                       superposicion.style.display = "flex";
                     }
                   });
@@ -1401,16 +1569,13 @@ const ControladorApp = {
               this.renderizarPestanasVideo();
             }
           } else {
-            // Fuera de pantalla
             contenedor.classList.remove("esta-activo");
             if (video) video.pause();
             if (poster) poster.classList.remove("desvanecer");
-
-            // Restablecer el botón de Play a su estado oculto por defecto
             if (superposicion) {
               superposicion.classList.add("hidden");
-              superposicion.classList.remove("forzar-mostrar"); // <-- Límpialo
-              superposicion.style.display = ""; // Limpiar el estilo inline
+              superposicion.classList.remove("forzar-mostrar");
+              superposicion.style.display = "";
             }
           }
         });

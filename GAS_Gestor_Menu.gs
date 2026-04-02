@@ -706,3 +706,42 @@ function renderizarAdvertencias(advertencias) {
   );
   return html + `</ul>`;
 }
+
+// ============================================================
+// PROXY SEGURO PARA ENVIOS A TELEGRAM (Soporta CORS local)
+// ============================================================
+function doPost(e) {
+  try {
+    // Leemos el mensaje como parámetro de formulario estándar
+    const textoMensaje = e.parameter.mensaje;
+    if (!textoMensaje) throw new Error("No se recibió el parámetro 'mensaje'");
+
+    const scriptProps = PropertiesService.getScriptProperties();
+    const tokenBot = scriptProps.getProperty("TELEGRAM_BOT_TOKEN");
+    const chatId = scriptProps.getProperty("TELEGRAM_CHAT_ID");
+
+    if (!tokenBot || !chatId) {
+      throw new Error("El Bot de Telegram no está configurado.");
+    }
+
+    const opciones = {
+      method: "post",
+      contentType: "application/json",
+      muteHttpExceptions: true,
+      payload: JSON.stringify({
+        chat_id: chatId,
+        text: textoMensaje,
+        parse_mode: "HTML"
+      })
+    };
+
+    UrlFetchApp.fetch(`https://api.telegram.org/bot${tokenBot}/sendMessage`, opciones);
+
+    return ContentService.createTextOutput(JSON.stringify({ status: "success" }))
+      .setMimeType(ContentService.MimeType.JSON);
+
+  } catch (error) {
+    return ContentService.createTextOutput(JSON.stringify({ status: "error", error: error.toString() }))
+      .setMimeType(ContentService.MimeType.JSON);
+  }
+}
