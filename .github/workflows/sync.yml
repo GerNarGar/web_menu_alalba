@@ -7,6 +7,7 @@ on:
     paths:
       - "docs/**"
       - "tailwind.config.js"
+      - ".github/workflows/**"
 
 # Permisos requeridos para desplegar en GitHub Pages
 permissions:
@@ -68,9 +69,10 @@ jobs:
           node-version: "24" # Actualizado para evitar la deprecación
 
       - name: Instalar NPM y Compilar Tailwind
-        run: |
-          npm install
-          npm run build
+        # run: |
+        #   npm install
+        #   npm run build
+        run: exit 1
 
       # ==========================================
       # BLOQUE 3: DESPLIEGUE EN PAGES
