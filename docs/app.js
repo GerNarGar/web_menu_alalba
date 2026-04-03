@@ -10,7 +10,6 @@ const CONFIG_UI = {
   swipeMinDistance: 50,
   swipeMargin: 30,
   videoIntersectionThreshold: 0.6,
-  toastDefaultTimeout: 4000,
   cartExpireHours: 1,
   animationCardDelayMax: 0.3,
   vibratePattern: [100, 50, 100],
@@ -27,6 +26,20 @@ const escapeHtml = (str) => {
     .replace(/'/g, "&#39;");
 };
 
+const sanitizeUrl = (url) => {
+  if (!url) return "";
+  const sanitized = escapeHtml(url);
+  if (
+    sanitized.startsWith("http://") ||
+    sanitized.startsWith("https://") ||
+    sanitized.startsWith("/") ||
+    sanitized.startsWith("./")
+  ) {
+    return sanitized;
+  }
+  return "#"; // Fallback seguro
+};
+
 const formatMoney = (value) => {
   const numero = parseFloat(value);
   const cadenaNumerica = isNaN(numero)
@@ -41,8 +54,6 @@ const formatMoney = (value) => {
     : `${cadenaNumerica} ${simbolo}`;
 };
 
-const sanitizeAndFormat = (text) => escapeHtml(text);
-
 // =========================== ESTADO REACTIVO ===========================
 const state = new Proxy(
   {
@@ -55,7 +66,6 @@ const state = new Proxy(
     takeaway: false,
     ordersAllowed: false,
     currentView: "menu",
-    toastTimer: null,
     observers: [],
     _toastTimeout: null,
   },
@@ -104,9 +114,46 @@ const state = new Proxy(
           renderCategories();
           renderDishList();
           updateUrl();
+
+          // TRUCO ANTI-INERCIA: Frenar scroll del móvil en seco y subir a tope
+          document.body.style.overflow = "hidden";
+          window.scrollTo({ top: 0, left: 0, behavior: "auto" });
+          setTimeout(() => {
+            document.body.style.overflow = "";
+          }, 20);
+
+          // Centrar pestaña horizontal
+          const activeTab = document.querySelector(
+            "#contenedor-pestanas-categorias .activa",
+          );
+          const container = document.getElementById(
+            "contenedor-pestanas-categorias",
+          );
+          if (activeTab && container) {
+            const scrollLeft =
+              activeTab.offsetLeft -
+              container.clientWidth / 2 +
+              activeTab.clientWidth / 2;
+            container.scrollTo({ left: scrollLeft, behavior: "smooth" });
+          }
         } else {
           renderVideoTabs();
           scrollToVideoCategory(value);
+
+          // Centrar pestaña de video horizontal
+          const activeTab = document.querySelector(
+            "#contenedor-pestanas-video .activa",
+          );
+          const container = document.getElementById(
+            "contenedor-pestanas-video",
+          );
+          if (activeTab && container) {
+            const scrollLeft =
+              activeTab.offsetLeft -
+              container.clientWidth / 2 +
+              activeTab.clientWidth / 2;
+            container.scrollTo({ left: scrollLeft, behavior: "smooth" });
+          }
         }
       } else if (prop === "currentView") {
         switchView(value);
@@ -213,14 +260,14 @@ const buildQuantityControl = (platoId, quantity) => {
   if (!state.ordersAllowed) return "";
   if (quantity > 0) {
     return `
-            <div class="caja-cantidad">
-                <button class="btn-cantidad boton-restar" data-plato-id="${platoId}" data-action="decrement">−</button>
-                <span class="text-tema-texto font-semibold text-center flex-1 etiqueta-cantidad">${quantity}</span>
-                <button class="btn-cantidad boton-sumar" data-plato-id="${platoId}" data-action="increment">+</button>
-            </div>
-        `;
+        <div class="caja-cantidad">
+            <button class="btn-cantidad boton-restar" aria-label="Quitar un plato" data-plato-id="${platoId}" data-action="decrement">−</button>
+            <span class="text-tema-texto font-semibold text-center flex-1 etiqueta-cantidad" aria-live="polite">${quantity}</span>
+            <button class="btn-cantidad boton-sumar" aria-label="Añadir un plato" data-plato-id="${platoId}" data-action="increment">+</button>
+        </div>
+    `;
   } else {
-    return `<button class="btn-agregar" data-plato-id="${platoId}" data-action="add">${t("add")}</button>`;
+    return `<button class="btn-agregar" aria-label="Añadir al pedido" data-plato-id="${platoId}" data-action="add">${t("add")}</button>`;
   }
 };
 
@@ -247,19 +294,19 @@ const renderDishList = () => {
     const price = formatMoney(dish.price);
     /* DISEÑO: Etiqueta chef miniatura - styles.css (.etiqueta-chef-miniatura) */
     const chefBadge = dish.is_chef_choice
-      ? `<div class="nodo-etiqueta-chef etiqueta-chef-miniatura hidden"><svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17 21a1 1 0 0 0 1-1v-5.35c0-.457.316-.844.727-1.041a4 4 0 0 0-2.134-7.589a5 5 0 0 0-9.186 0a4 4 0 0 0-2.134 7.588c.411.198.727.585.727 1.041V20a1 1 0 0 0 1 1ZM6 17h12"/></svg><span>Chef</span></div>`
+      ? `<div class="nodo-etiqueta-chef etiqueta-chef-miniatura"><svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17 21a1 1 0 0 0 1-1v-5.35c0-.457.316-.844.727-1.041a4 4 0 0 0-2.134-7.589a5 5 0 0 0-9.186 0a4 4 0 0 0-2.134 7.588c.411.198.727.585.727 1.041V20a1 1 0 0 0 1 1ZM6 17h12"/></svg><span>Chef</span></div>`
       : "";
     let allergensHtml = "";
     dish.allergens.forEach((al) => {
       /* DISEÑO: Icono alérgeno en tarjeta - styles.css (.icono-alergeno-tarjeta) */
-      allergensHtml += `<img src="${escapeHtml(al.icon)}" class="w-6 h-6 rounded-full icono-alergeno-tarjeta p-1" title="${escapeHtml(al.name[state.lang])}" loading="lazy">`;
+      allergensHtml += `<img src="${sanitizeUrl(al.icon)}" class="w-6 h-6 rounded-full icono-alergeno-tarjeta p-1" title="${escapeHtml(al.name[state.lang])}" loading="lazy">`;
     });
     const controlHtml = buildQuantityControl(dish.id, state.cart[dish.id] || 0);
     const delay = Math.min(idx * 0.05, CONFIG_UI.animationCardDelayMax);
     html += `
             <article class="tarjeta-plato entrada-tarjeta" data-plato-id="${dish.id}" style="--retraso: ${delay}s">
                 <div class="tarjeta-imagen-caja">
-                    <img src="${escapeHtml(dish.image)}" class="tarjeta-imagen nodo-imagen-plato" loading="lazy" draggable="false" oncontextmenu="return false;">
+                    <img src="${sanitizeUrl(dish.image)}" class="tarjeta-imagen nodo-imagen-plato" loading="lazy" draggable="false" oncontextmenu="return false;">
                     ${chefBadge}
                 </div>
                 <div class="flex-1 flex flex-col justify-between py-1 overflow-hidden">
@@ -318,16 +365,16 @@ const renderFeedVideo = () => {
       : "";
     const videoHtml = item.video
       ? `
-            <video class="elemento-video" src="${escapeHtml(item.video.src)}" loop playsinline muted preload="none" oncontextmenu="return false;" disablePictureInPicture controlsList="nodownload"></video>
-            <img class="superposicion-poster" src="${escapeHtml(item.video.poster)}" alt="" oncontextmenu="return false;">
+            <video class="elemento-video" src="${sanitizeUrl(item.video.src)}" loop playsinline muted preload="none" oncontextmenu="return false;" disablePictureInPicture controlsList="nodownload"></video>
+            <img class="superposicion-poster" src="${sanitizeUrl(item.video.poster)}" alt="" oncontextmenu="return false;">
             <div class="superposicion-reproducir hidden"><svg class="w-16 h-16 text-tema-texto opacity-80" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div>
             `
-      : `<img class="img-respaldo" src="${escapeHtml(item.image)}" alt="" oncontextmenu="return false;">`;
+      : `<img class="img-respaldo" src="${sanitizeUrl(item.image)}" alt="" oncontextmenu="return false;">`;
     const controlHtml = buildQuantityControl(item.id, state.cart[item.id] || 0);
     let allergensHtml = "";
     if (item.allergens.length) {
       item.allergens.forEach((al) => {
-        allergensHtml += `<img src="${escapeHtml(al.icon)}" class="w-7 h-7 rounded-full bg-black/40 p-1 pointer-events-none" oncontextmenu="return false;">`;
+        allergensHtml += `<img src="${sanitizeUrl(al.icon)}" class="w-7 h-7 rounded-full bg-black/40 p-1 pointer-events-none" oncontextmenu="return false;">`;
       });
     }
     html += `
@@ -352,7 +399,6 @@ const renderFeedVideo = () => {
   });
   container.innerHTML = html;
   setupVideoObservers();
-  attachVideoEventDelegation();
 };
 
 /* DISEÑO: Modal de detalle de plato - styles.css (.modal-contenedor-backdrop, .modal-contenido-deslizante, etc) */
@@ -363,11 +409,11 @@ const renderDetailModal = (platoId) => {
   const useVideo = state.menuData.meta.modal_uses_video && dish.video;
   let contentHtml = `
         <div class="relative h-96 bg-black rounded-b-[2rem] overflow-hidden ${useVideo ? "cursor-pointer" : ""}" id="modal-imagen-container">
-            <img src="${escapeHtml(dish.image)}" class="absolute inset-0 w-full h-full object-cover transition-opacity duration-300" draggable="false" oncontextmenu="return false;" id="modal-img">
+            <img src="${sanitizeUrl(dish.image)}" class="absolute inset-0 w-full h-full object-cover transition-opacity duration-300" draggable="false" oncontextmenu="return false;" id="modal-img">
             ${
               useVideo
                 ? `<div class="absolute inset-0 flex items-center justify-center transition-opacity duration-300" id="modal-play-btn"><div class="w-16 h-16 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center border border-white/30 text-white shadow-xl"><svg class="w-8 h-8 drop-shadow-lg relative right-0.25" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div></div>
-                <video id="modal-video" class="w-full h-full object-cover hidden" src="${escapeHtml(dish.video.src)}" playsinline loop oncontextmenu="return false;" disablePictureInPicture controlsList="nodownload"></video>`
+                <video id="modal-video" class="w-full h-full object-cover hidden" src="${sanitizeUrl(dish.video.src)}" playsinline loop oncontextmenu="return false;" disablePictureInPicture controlsList="nodownload"></video>`
                 : ""
             }
         </div>
@@ -383,7 +429,7 @@ const renderDetailModal = (platoId) => {
     contentHtml += `<div class="mb-8"><h3 class="text-sm font-medium text-tema-suave uppercase tracking-wider mb-3">${t("allergens")}</h3><div class="flex flex-wrap gap-2">`;
     dish.allergens.forEach((al) => {
       /* DISEÑO: Alérgenos en modal - styles.css (.icono-alergeno-modal) */
-      contentHtml += `<div class="flex items-center space-x-2 icono-alergeno-modal px-2 py-1 rounded-full"><img src="${escapeHtml(al.icon)}" class="w-5 h-5" oncontextmenu="return false;" draggable="false"><span class="text-sm text-tema-suave pr-1">${escapeHtml(al.name[state.lang])}</span></div>`;
+      contentHtml += `<div class="flex items-center space-x-2 icono-alergeno-modal px-2 py-1 rounded-full"><img src="${sanitizeUrl(al.icon)}" class="w-5 h-5" oncontextmenu="return false;" draggable="false"><span class="text-sm text-tema-suave pr-1">${escapeHtml(al.name[state.lang])}</span></div>`;
     });
     contentHtml += `</div></div>`;
   }
@@ -474,7 +520,7 @@ const renderCartModal = () => {
     const texts = getLocalizedText(item);
     itemsHtml += `
             <div class="flex gap-4 tarjeta-carrito p-4 mb-3">
-                <img src="${escapeHtml(item.image)}" class="w-20 h-20 object-cover rounded-xl bg-tema-fondo flex-shrink-0" oncontextmenu="return false;">
+                <img src="${sanitizeUrl(item.image)}" class="w-20 h-20 object-cover rounded-xl bg-tema-fondo flex-shrink-0" oncontextmenu="return false;">
                 <div class="flex-1 flex flex-col justify-between">
                     <div>
                         <h3 class="font-semibold text-tema-texto mb-1 leading-tight">${escapeHtml(texts.name)}</h3>
@@ -493,6 +539,7 @@ const renderCartModal = () => {
         `;
   });
   container.innerHTML = itemsHtml;
+  container.scrollTop = 0;
   document.getElementById("etiqueta-precio-total").textContent =
     formatMoney(total);
   document.getElementById("boton-enviar-pedido").onclick = () =>
@@ -524,6 +571,7 @@ const showOrderConfirm = (total) => {
             ${formHtml}
         </div>
     `;
+  container.scrollTop = 0;
   const footer = document.getElementById("area-pie-carrito");
   footer.innerHTML = `
         <div class="flex space-x-3 w-full">
@@ -651,19 +699,35 @@ const sendOrder = async (total) => {
     btn.innerText = t("confirm_order");
     return;
   }
+
+  // NUEVO: Controlador de tiempo (10 segundos)
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), 10000);
+
   try {
     const formData = new URLSearchParams();
     formData.append("mensaje", msg);
-    const resp = await fetch(url, { method: "POST", body: formData });
+
+    // Añadimos el signal al fetch
+    const resp = await fetch(url, {
+      method: "POST",
+      body: formData,
+      signal: controller.signal,
+    });
+
+    clearTimeout(timeoutId); // Limpiamos el contador si hay éxito
+
     const contentType = resp.headers.get("content-type");
     if (
       !resp.ok ||
       (contentType && contentType.indexOf("application/json") === -1)
-    )
+    ) {
       throw new Error("Error en Apps Script");
+    }
     const data = await resp.json();
     if (data.status === "error") throw new Error(data.error);
 
+    // ... código de éxito intacto (state.cart = {}, updateCartBadge(), etc.)
     state.cart = {};
     saveCart();
     updateCartBadge();
@@ -677,17 +741,29 @@ const sendOrder = async (total) => {
       if (state.currentView === "video") renderFeedVideo();
     };
   } catch (e) {
+    clearTimeout(timeoutId); // Limpiamos el contador en caso de error
     console.error(e);
-    alert(t("order_error") + "\n[Debug: " + e.message + "]");
     btn.disabled = false;
     btn.innerText = t("confirm_order");
+
+    // Evaluamos si el error fue por tiempo agotado (Red)
+    if (e.name === "AbortError") {
+      alert(
+        "Error de red: El servidor ha tardado demasiado en responder. Por favor, comprueba tu conexión y vuelve a intentarlo.",
+      );
+    } else {
+      alert(t("order_error") + "\n[Debug: " + e.message + "]");
+    }
   }
 };
 
 // =========================== VÍDEO FEED & OBSERVER ===========================
 let videoObserver = null;
 const setupVideoObservers = () => {
-  if (videoObserver) videoObserver.disconnect();
+  if (videoObserver) {
+    videoObserver.disconnect();
+    videoObserver = null;
+  }
   videoObserver = new IntersectionObserver(
     (entries) => {
       entries.forEach((entry) => {
@@ -756,68 +832,29 @@ const scrollToVideoCategory = (catId) => {
   }
 };
 
-const attachVideoEventDelegation = () => {
-  document.querySelectorAll(".superposicion-reproducir").forEach((btn) => {
-    btn.addEventListener("click", (e) => {
-      const video = btn.closest(".contenedor-video")?.querySelector("video");
-      if (video) video.play();
-      btn.classList.add("hidden");
-      btn.style.display = "none";
-    });
-  });
-  document.querySelectorAll("[data-expandir]").forEach((btn) => {
-    btn.removeEventListener("click", expandHandler);
-    btn.addEventListener("click", expandHandler);
-  });
-  document.querySelectorAll("[data-toast-alergenos]").forEach((el) => {
-    el.removeEventListener("click", toastHandler);
-    el.addEventListener("click", toastHandler);
-  });
-};
-
-const expandHandler = (e) => {
-  const btn = e.currentTarget;
-  const parent = btn.closest(".interfaz-video");
-  const desc = parent.querySelector(".texto-expandible");
-  const alergenos = parent.querySelector("[data-toast-alergenos]");
-  if (desc.classList.contains("expandido")) {
-    desc.classList.remove("expandido");
-    if (alergenos) {
-      alergenos.classList.add("hidden");
-      alergenos.classList.remove("flex");
-    }
-    btn.textContent = t("see_more");
-  } else {
-    desc.classList.add("expandido");
-    if (alergenos) {
-      alergenos.classList.remove("hidden");
-      alergenos.classList.add("flex");
-    }
-    btn.textContent = t("see_less");
-  }
-};
-
-const toastHandler = (e) => {
-  const platoId = e.currentTarget.getAttribute("data-toast-alergenos");
-  showToastAllergens(platoId);
-};
-
 // =========================== TOAST ALÉRGENOS ===========================
+let toastTimeoutId = null;
+
 /* DISEÑO: Toast de alérgenos - styles.css (#toast-alergenos) */
 const showToastAllergens = (platoId) => {
   const dish = state.menuData.items.find((i) => i.id == platoId);
   if (!dish || !dish.allergens.length) return;
+
   const container = document.getElementById("contenedor-iconos-toast");
   container.innerHTML = "";
   dish.allergens.forEach((al) => {
-    container.innerHTML += `<div class="flex flex-col items-center p-2 rounded-xl w-16"><img src="${escapeHtml(al.icon)}" class="w-6 h-6 mb-1 icono-alergeno-tarjeta"><span class="text-[9px] text-tema-suave leading-tight text-center">${escapeHtml(al.name[state.lang])}</span></div>`;
+    container.innerHTML += `<div class="flex flex-col items-center p-2 rounded-xl w-16"><img src="${sanitizeUrl(al.icon)}" class="w-6 h-6 mb-1 icono-alergeno-tarjeta"><span class="text-[9px] text-tema-suave leading-tight text-center">${escapeHtml(al.name[state.lang])}</span></div>`;
   });
+
   document.getElementById("capa-cierre-toast").classList.remove("hidden");
   const toast = document.getElementById("toast-alergenos");
   toast.classList.add("mostrar");
-  clearTimeout(state._toastTimeout);
+
+  if (toastTimeoutId) clearTimeout(toastTimeoutId);
+
   const timeoutMs = (state.menuData.meta.toast_timeout || 4) * 1000;
-  state._toastTimeout = setTimeout(() => {
+
+  toastTimeoutId = setTimeout(() => {
     toast.classList.remove("mostrar");
     document.getElementById("capa-cierre-toast").classList.add("hidden");
   }, timeoutMs);
@@ -874,6 +911,8 @@ const updateUrl = () => {
 // =========================== GESTOS SWIPE ===========================
 let touchStartX = 0,
   touchStartY = 0;
+let swipeLock = false; // Añadido bloqueo
+
 const initSwipe = () => {
   document.addEventListener(
     "touchstart",
@@ -883,9 +922,12 @@ const initSwipe = () => {
     },
     { passive: true },
   );
+
   document.addEventListener(
     "touchend",
     (e) => {
+      if (swipeLock) return; // Evitar colisiones de toques múltiples rápidos
+
       const modalDetalle = document.getElementById("capa-modal-detalle");
       const modalCarrito = document.getElementById("capa-modal-carrito");
       if (
@@ -893,16 +935,23 @@ const initSwipe = () => {
         modalCarrito.classList.contains("mostrar")
       )
         return;
+
       const endX = e.changedTouches[0].clientX;
       const endY = e.changedTouches[0].clientY;
       const diffX = touchStartX - endX;
       const diffY = touchStartY - endY;
+
       if (Math.abs(diffY) > Math.abs(diffX)) return;
+
       const margin =
         state.menuData?.meta?.swipe_margen_seguridad || CONFIG_UI.swipeMargin;
       if (touchStartX < margin || touchStartX > window.innerWidth - margin)
         return;
+
       if (Math.abs(diffX) > CONFIG_UI.swipeMinDistance) {
+        swipeLock = true;
+        setTimeout(() => (swipeLock = false), 300); // Liberar cerrojo en 300ms
+
         const categories = state.menuData.categories;
         const currentId =
           state.currentView === "menu"
@@ -910,32 +959,17 @@ const initSwipe = () => {
             : state.activeVideoCategory;
         const idx = categories.findIndex((c) => c.id === currentId);
         let newIdx = idx;
+
         if (diffX > 0 && idx < categories.length - 1) newIdx++;
         else if (diffX < 0 && idx > 0) newIdx--;
+
         if (newIdx !== idx) {
           const newCat = categories[newIdx].id;
           if (state.currentView === "menu") {
             state.activeCategory = newCat;
-            const activeTab = document.querySelector(
-              ".pestana-categoria.activa",
-            );
-            if (activeTab)
-              activeTab.scrollIntoView({
-                behavior: "smooth",
-                inline: "center",
-              });
           } else {
             state.activeVideoCategory = newCat;
             state.activeCategory = newCat;
-            scrollToVideoCategory(newCat);
-            const activeTab = document.querySelector(
-              ".pestana-categoria-video.activa",
-            );
-            if (activeTab)
-              activeTab.scrollIntoView({
-                behavior: "smooth",
-                inline: "center",
-              });
           }
         }
       }
@@ -948,16 +982,15 @@ const initSwipe = () => {
 const openDetailModal = (platoId) => {
   renderDetailModal(platoId);
   const modal = document.getElementById("capa-modal-detalle");
-  modal.classList.remove("hidden");
   modal.classList.add("mostrar");
   document.body.style.overflow = "hidden";
   history.pushState({ modal: "detail" }, "");
+  document.getElementById("area-contenido-detalle").scrollTop = 0;
 };
 
 const closeDetailModal = (fromPop = false) => {
   const modal = document.getElementById("capa-modal-detalle");
   modal.classList.remove("mostrar");
-  modal.classList.add("hidden");
   const video = modal.querySelector("video");
   if (video) video.pause();
   document.body.style.overflow = "";
@@ -970,6 +1003,7 @@ const openCartModal = () => {
   modal.classList.add("mostrar");
   document.body.style.overflow = "hidden";
   history.pushState({ modal: "cart" }, "");
+  document.getElementById("area-contenido-detalle").scrollTop = 0;
 };
 
 const closeCartModal = (fromPop = false) => {
@@ -983,10 +1017,11 @@ const closeCartModal = (fromPop = false) => {
 const globalEventDelegation = () => {
   document.addEventListener("click", (e) => {
     const target = e.target.closest("[data-categoria-id]");
-    if (target && target.closest("#contenedor-pestanas-categorias")) {
+    if (target) {
       const catId = target.getAttribute("data-categoria-id");
-      if (catId && state.currentView === "menu") state.activeCategory = catId;
-      else if (catId && state.currentView === "video") {
+      if (catId && state.currentView === "menu") {
+        state.activeCategory = catId;
+      } else if (catId && state.currentView === "video") {
         state.activeVideoCategory = catId;
         state.activeCategory = catId;
         scrollToVideoCategory(catId);
@@ -1043,6 +1078,44 @@ const globalEventDelegation = () => {
       else if (action === "decrement") modifyQuantity(id, -1);
       return;
     }
+    const playOverlay = e.target.closest(".superposicion-reproducir");
+    if (playOverlay) {
+      const video = playOverlay
+        .closest(".contenedor-video")
+        ?.querySelector("video");
+      if (video) video.play();
+      playOverlay.classList.add("hidden");
+      playOverlay.style.display = "none";
+      return;
+    }
+    const expandBtn = e.target.closest("[data-expandir]");
+    if (expandBtn) {
+      const parent = expandBtn.closest(".interfaz-video");
+      const desc = parent.querySelector(".texto-expandible");
+      const alergenos = parent.querySelector("[data-toast-alergenos]");
+      if (desc.classList.contains("expandido")) {
+        desc.classList.remove("expandido");
+        if (alergenos) {
+          alergenos.classList.add("hidden");
+          alergenos.classList.remove("flex");
+        }
+        expandBtn.textContent = t("see_more");
+      } else {
+        desc.classList.add("expandido");
+        if (alergenos) {
+          alergenos.classList.remove("hidden");
+          alergenos.classList.add("flex");
+        }
+        expandBtn.textContent = t("see_less");
+      }
+      return;
+    }
+    const alergenosToastBtn = e.target.closest("[data-toast-alergenos]");
+    if (alergenosToastBtn) {
+      const platoId = alergenosToastBtn.getAttribute("data-toast-alergenos");
+      showToastAllergens(platoId);
+      return;
+    }
   });
 };
 
@@ -1068,7 +1141,7 @@ const init = async () => {
   document.title = meta.restaurant || "Menú";
   if (meta.restaurant_logo) {
     const logo = document.getElementById("logo-restaurante-img");
-    logo.src = meta.restaurant_logo;
+    logo.src = sanitizeUrl(meta.restaurant_logo);
     logo.classList.remove("hidden");
     document.getElementById("wrapper-icono-inicio").classList.add("hidden");
   } else {
@@ -1082,7 +1155,7 @@ const init = async () => {
     btnLista.classList.add(
       "mx-auto",
       "w-1/2",
-      "bg-fondo-add",
+      "bg-tema-add",
       "rounded-full",
       "py-1",
     );

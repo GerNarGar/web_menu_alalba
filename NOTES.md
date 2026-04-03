@@ -1,11 +1,3 @@
-cambios STYLE:
-chef badge no se ve en tarjetas.
-animacion entrada y salida modal detalle es por corte, la quiero como entrada de mis platos (la primera vez parece sí hacerlo...)
-animacion mis platos mas opaca desde el inicio.
-completar pedido y mis platos siempre abrir arriba no recordar posicion.
-
-
-
 IMPORTANTE:
 - GAS VALIDAR NUEVOS CAMPOS
 - VIDEO COMO HACE EL LOADING? precarga antes de play? el video no aparece entero como saber que dimensiones tengo que grabar o generar? carga todo el video aunque en la pantalla solo se vean X lineas de video?

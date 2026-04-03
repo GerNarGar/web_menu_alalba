@@ -510,13 +510,16 @@ video {
 .modal-contenedor-backdrop {
     opacity: 0;
     visibility: hidden;
-    transition: opacity 0.3s ease-out, visibility 0.3s ease-out;
+    /* Al cerrar: Opacidad tarda 0.3s. Visibility espera 0.4s (para dejar que el modal baje) */
+    transition: opacity 0.2s ease-out, visibility 0s linear 0.4s;
     z-index: 50;
 }
 
 .modal-contenedor-backdrop.mostrar {
     opacity: 1;
     visibility: visible;
+    /* Al abrir: Aparece de inmediato y la opacidad toma 0.3s */
+    transition: opacity 0.2s ease-out, visibility 0s linear 0s;
 }
 
 .modal-contenido-deslizante {
