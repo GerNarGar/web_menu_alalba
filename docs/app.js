@@ -1152,13 +1152,7 @@ const init = async () => {
     document.getElementById("pestaña-nav-menu").classList.add("hidden");
     const btnLista = document.getElementById("pestaña-nav-carrito");
     btnLista.classList.remove("w-full");
-    btnLista.classList.add(
-      "mx-auto",
-      "w-1/2",
-      "bg-tema-add",
-      "rounded-full",
-      "py-1",
-    );
+    btnLista.classList.add("p-4");
   }
   state.tableId = params.has("mesa")
     ? params.get("mesa")
