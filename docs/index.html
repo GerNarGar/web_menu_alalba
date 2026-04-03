@@ -8,19 +8,19 @@
     <title>Menú Restaurante</title>
 
     <link href="tailwind-build.css" rel="stylesheet">
-
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="styles.css" rel="stylesheet">
+</head>
 
 <body class="antialiased min-h-screen flex flex-col">
 
     <!-- CABECERA PRINCIPAL -->
     <header id="cabecera-principal"
-        class="sticky top-0 z-40 cabecera-cristal border-b borde-estandar transicion-vista vista-visible">
+        class="sticky top-0 z-40 cabecera-cristal transicion-vista vista-visible">
         <div class="flex items-center justify-between px-4 py-3">
             <button id="boton-inicio"
-                class="flex flex-col items-center justify-center h-full texto-principal px-2 min-w-[64px]"
+                class="flex flex-col items-center justify-center h-full text-tema-texto px-2 min-w-[64px]"
                 aria-label="Ir al inicio">
-                <!-- Wrapper oculto por defecto para evitar el parpadeo -->
                 <div id="wrapper-icono-inicio" class="hidden flex-col items-center">
                     <svg class="w-6 h-6 mb-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -29,16 +29,15 @@
                     </svg>
                     <span class="text-[10px] font-medium elemento-traducible" data-clave-traduccion="home">Inicio</span>
                 </div>
-                <!-- Imagen del logo dinámico (Oculta por defecto) -->
                 <img id="logo-restaurante-img" src="" alt="Logo" class="hidden nav-logo shrink-0 w-auto">
             </button>
-            <div class="text-sm font-medium texto-secundario">
+            <div class="text-sm font-medium text-tema-suave">
                 <span class="elemento-traducible" data-clave-traduccion="table">Mesa</span>: <span
-                    id="etiqueta-mesa-actual" class="texto-principal">...</span>
+                    id="etiqueta-mesa-actual" class="text-tema-texto">...</span>
             </div>
             <div class="relative">
                 <button id="boton-selector-idioma"
-                    class="flex items-center space-x-1 texto-principal fondo-secundario rounded-full px-3 py-1.5 text-sm font-medium"
+                    class="flex items-center space-x-1 text-tema-texto bg-tema-tarjeta rounded-full px-3 py-1.5 text-sm font-medium"
                     aria-haspopup="true" aria-expanded="false">
                     <span id="icono-bandera-idioma">🇪🇸</span> <span id="texto-codigo-idioma">ES</span>
                     <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -69,7 +68,7 @@
         role="main" aria-live="polite"></main>
 
     <!-- CONTENEDOR SECUNDARIO (MODO VIDEO FEED) -->
-    <div id="contenedor-feed-videos" class="fixed inset-0 fondo-principal transicion-vista vista-oculta"
+    <div id="contenedor-feed-videos" class="fixed inset-0 bg-tema-fondo transicion-vista vista-oculta"
         aria-hidden="true">
         <div class="pestanas-nav-video area-segura-superior gradiente-nav-video pb-4">
             <div id="contenedor-pestanas-video" class="flex space-x-2 px-4 pt-3 overflow-x-auto ocultar-scrollbar"
@@ -79,7 +78,7 @@
     </div>
 
     <!-- ESTADO VACÍO (CUANDO NO HAY PLATOS) -->
-    <div id="mensaje-estado-vacio" class="hidden flex-col items-center justify-center py-20 texto-secundario"
+    <div id="mensaje-estado-vacio" class="hidden flex-col items-center justify-center py-20 text-tema-suave"
         aria-hidden="true">
         <svg class="w-16 h-16 mb-4 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
@@ -91,10 +90,10 @@
     </div>
 
     <!-- TOAST INFORMATIVO DE ALÉRGENOS -->
-    <div id="capa-cierre-toast" class="hidden fixed inset-0 z-50"></div>
-    <div id="toast-alergenos" class="rounded-2xl borde-estandar p-4 shadow-2xl panel-toast" role="alert"
+    <div id="capa-cierre-toast" class="hidden fixed inset-0 z-[60]"></div>
+    <div id="toast-alergenos" class="rounded-2xl p-4 shadow-2xl panel-toast" role="alert"
         aria-live="assertive">
-        <h3 class="text-sm font-bold texto-principal mb-3 uppercase tracking-wider text-center shrink-0 elemento-traducible"
+        <h3 class="text-sm font-bold text-tema-texto mb-3 uppercase tracking-wider text-center shrink-0 elemento-traducible"
             data-clave-traduccion="allergens">Alérgenos</h3>
         <div id="contenedor-iconos-toast"
             class="flex flex-wrap justify-center gap-2 overflow-y-auto pb-2 ocultar-scrollbar"></div>
@@ -103,11 +102,10 @@
     <!-- MODAL DE DETALLE DEL PLATO -->
     <div id="capa-modal-detalle" class="modal-contenedor-backdrop fixed inset-0 z-50" role="dialog" aria-modal="true"
         aria-hidden="true">
-        <!-- El fondo oscuro ahora se separa del contenido para hacer un slide-up limpio -->
         <div id="fondo-cierre-detalle" class="backdrop-oscuro"></div>
-        <div class="modal-contenido-deslizante relative h-full flex flex-col fondo-principal">
+        <div class="modal-contenido-deslizante relative h-full flex flex-col bg-tema-fondo">
             <button id="boton-cerrar-detalle"
-                class="absolute top-4 right-4 z-20 w-10 h-10 btn-circular rounded-full flex items-center justify-center borde-estandar"
+                class="absolute top-4 right-4 z-20 w-10 h-10 btn-circular rounded-full flex items-center justify-center"
                 aria-label="Cerrar detalle">
                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12">
@@ -122,12 +120,12 @@
     <div id="capa-modal-carrito" class="modal-contenedor-backdrop fixed inset-0 z-50" role="dialog" aria-modal="true"
         aria-hidden="true">
         <div id="fondo-cierre-carrito" class="backdrop-oscuro"></div>
-        <div class="modal-contenido-deslizante relative h-full flex flex-col fondo-principal">
+        <div class="modal-contenido-deslizante relative h-full flex flex-col bg-tema-fondo">
             <div
-                class="flex items-center justify-between px-4 py-4 border-b borde-estandar cabecera-cristal relative z-10">
-                <h2 class="text-xl font-bold texto-principal elemento-traducible" data-clave-traduccion="my_list">Mi
+                class="flex items-center justify-between px-4 py-4 cabecera-cristal relative z-10">
+                <h2 class="text-xl font-bold text-tema-texto elemento-traducible" data-clave-traduccion="my_list">Mi
                     lista</h2>
-                <button id="boton-cerrar-carrito" class="w-10 h-10 flex items-center justify-center texto-secundario"
+                <button id="boton-cerrar-carrito" class="w-10 h-10 flex items-center justify-center text-tema-suave"
                     aria-label="Cerrar carrito">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12">
@@ -137,22 +135,21 @@
             </div>
             <div id="area-contenido-carrito" class="flex-1 overflow-y-auto px-4 py-4 pb-32 relative z-10"></div>
             <div id="area-pie-carrito"
-                class="fixed bottom-0 left-0 right-0 border-t borde-estandar p-4 cabecera-cristal z-20">
+                class="fixed bottom-0 left-0 right-0 p-4 cabecera-cristal z-20">
                 <div class="flex justify-between items-center mb-4">
-                    <span class="texto-secundario elemento-traducible" data-clave-traduccion="total">Total</span>
-                    <span id="etiqueta-precio-total" class="text-2xl font-bold texto-principal">0.00</span>
+                    <span class="text-tema-suave elemento-traducible" data-clave-traduccion="total">Total</span>
+                    <span id="etiqueta-precio-total" class="text-2xl font-bold text-tema-texto">0.00</span>
                 </div>
                 <button id="boton-enviar-pedido"
                     class="w-full btn-primario font-bold py-4 rounded-2xl text-lg flex justify-center items-center">
-                    <span class="elemento-traducible" data-clave-traduccion="send_order">Enviar pedido</span>
+                    <span class="elemento-traducible" data-clave-traduccion="complete_order">Completar pedido</span>
                 </button>
             </div>
         </div>
     </div>
 
     <!-- NAVEGACIÓN INFERIOR PRINCIPAL -->
-    <nav class="fixed bottom-0 left-0 right-0 nav-inferior-cristal z-40 pb-2"
-        aria-label="Navegación principal">
+    <nav class="fixed bottom-0 left-0 right-0 nav-inferior-cristal z-40 pb-2" aria-label="Navegación principal">
         <div class="flex justify-around items-center h-16">
             <button id="pestaña-nav-menu"
                 class="item-nav-inferior activa flex flex-col items-center justify-center w-full h-full space-y-1">
@@ -189,57 +186,7 @@
         </div>
     </nav>
 
-    <!-- ======================================================================= -->
-    <!-- SISTEMA DE PLANTILLAS XSS SAFE (Template Engine Nativo)              -->
-    <!-- ======================================================================= -->
-
-    <!-- Plantilla: Tarjeta de Plato Estándar -->
-    <template id="plantilla-tarjeta-plato">
-        <article class="tarjeta-plato entrada-tarjeta" role="button" tabindex="0">
-            <div class="tarjeta-imagen-caja">
-                <img src="" alt="" class="tarjeta-imagen nodo-imagen-plato" loading="lazy">
-                <div class="nodo-etiqueta-chef etiqueta-chef-miniatura hidden">
-                    <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                        <path
-                            d="M17 21a1 1 0 0 0 1-1v-5.35c0-.457.316-.844.727-1.041a4 4 0 0 0-2.134-7.589a5 5 0 0 0-9.186 0a4 4 0 0 0-2.134 7.588c.411.198.727.585.727 1.041V20a1 1 0 0 0 1 1ZM6 17h12" />
-                    </svg>
-                    <span>Chef</span>
-                </div>
-            </div>
-            <div class="flex-1 flex flex-col justify-between py-1 overflow-hidden">
-                <div>
-                    <h3
-                        class="font-semibold texto-principal text-base leading-tight mb-1 line-clamp-2 nodo-titulo-plato">
-                    </h3>
-                    <p class="text-lg font-bold texto-acento mb-2 nodo-precio-plato"></p>
-                    <div class="flex flex-wrap gap-1 mb-2 nodo-contenedor-alergenos"></div>
-                </div>
-                <div class="flex items-center justify-end contenedor-controles-cantidad"></div>
-            </div>
-        </article>
-    </template>
-
-    <!-- Plantilla: Botón Agregar Básico -->
-    <template id="plantilla-boton-agregar">
-        <button class="btn-agregar" aria-label="Añadir plato"></button>
-    </template>
-
-    <!-- Plantilla: Stepper de Cantidad -->
-    <template id="plantilla-control-cantidad">
-        <div class="caja-cantidad">
-            <button class="btn-cantidad boton-restar" aria-label="Quitar uno">−</button>
-            <span class="texto-principal font-semibold text-center flex-1 etiqueta-cantidad"></span>
-            <button class="btn-cantidad boton-sumar" aria-label="Añadir uno">+</button>
-        </div>
-    </template>
-
-    <!-- Plantilla: Alérgeno Icono Simple -->
-    <template id="plantilla-alergeno-icono">
-        <img src="" alt="" class="w-5 h-5 rounded-full fondo-principal p-0.5 borde-estandar nodo-icono-alergeno"
-            title="">
-    </template>
-
-    <!-- Script Principal Refactorizado -->
+    <!-- SCRIPT PRINCIPAL -->
     <script src="app.js"></script>
 </body>
 
