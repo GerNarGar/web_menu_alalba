@@ -103,7 +103,7 @@
     <div id="capa-modal-detalle" class="modal-contenedor-backdrop fixed inset-0 z-50" role="dialog" aria-modal="true"
         aria-hidden="true">
         <div id="fondo-cierre-detalle" class="backdrop-oscuro"></div>
-        <div class="modal-contenido-deslizante relative h-full flex flex-col bg-tema-fondo">
+        <div class="modal-contenido-deslizante relative h-full flex flex-col bg-tema-fondo sm:max-w-[450px] sm:mx-auto sm:shadow-2xl sm:border-x-8 sm:border-gray-800">
             <button id="boton-cerrar-detalle"
                 class="absolute top-4 right-4 z-20 w-10 h-10 btn-circular rounded-full flex items-center justify-center"
                 aria-label="Cerrar detalle">
@@ -149,7 +149,7 @@
     </div>
 
     <!-- NAVEGACIÓN INFERIOR PRINCIPAL -->
-    <nav class="fixed bottom-0 left-0 right-0 nav-inferior-cristal z-40 pb-2" aria-label="Navegación principal">
+    <nav class="fixed bottom-0 left-0 right-0 nav-inferior-cristal z-40 pb-2 hidden" aria-label="Navegación principal">
         <div class="flex justify-around items-center h-16">
             <button id="pestaña-nav-menu"
                 class="item-nav-inferior activa flex flex-col items-center justify-center w-full h-full space-y-1">

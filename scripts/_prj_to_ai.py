@@ -5,8 +5,18 @@ import re
 import subprocess
 
 # --- Configuración ---
-OUTPUT_FILE = 'proyecto_completo.txt'
+OUTPUT_FILE = 'archivos_proyecto.txt'
 
+SOLO_ARCHIVOS = [
+    'docs/app.js',
+    'docs/index.html',
+    'docs/menu-data.json',
+    'scripts/sync.py',
+    'GAS_Gestor_Menu.gs',
+    # 'docs/styles.css',
+    # 'docs/tailwind-build.css',
+    # 'tailwind.config.js',
+]
 EXTENSIONES_TEXTO = {
     '.js',
     '.jsx',
@@ -175,16 +185,16 @@ def generar_backup_sql():
         # Si prefieres no hacerlo interactivo cada vez, asegúrate de haber hecho 'supabase login' antes una vez.
         print('🔑 Verificando sesión de Supabase...')
         # Intentamos un comando simple para ver si hay sesión
-        # subprocess.run(['supabase', 'login'], check=True)
+        subprocess.run(['supabase', 'login'], check=True)
 
         # 2. Link del proyecto
-        # print(f'🔗 Vinculando proyecto con referencia: {ref}...')
-        # subprocess.run(
-        #     ['supabase', 'link', '--project-ref', ref, '--debug'],
-        #     check=True,
-        #     capture_output=True,
-        #     text=True,
-        # )
+        print(f'🔗 Vinculando proyecto con referencia: {ref}...')
+        subprocess.run(
+            ['supabase', 'link', '--project-ref', ref, '--debug'],
+            check=True,
+            capture_output=True,
+            text=True,
+        )
 
         # 3. Generar el Backup
         os.makedirs('backups', exist_ok=True)
@@ -208,58 +218,82 @@ def empaquetar_proyecto():
     print('⏳ Empaquetando archivos de código...')
     count = 0
 
-    # Normalizamos las rutas de la lista de ignorados para que funcionen bien en cualquier OS (Windows/Mac/Linux)
     ignorar_norm = {os.path.normpath(i) for i in IGNORAR_TOTALMENTE}
 
+    # 🔹 Normalizamos también la lista nueva
+    solo_archivos_norm = {os.path.normpath(p) for p in SOLO_ARCHIVOS}
+
     with open(OUTPUT_FILE, 'w', encoding='utf-8') as outfile:
-        for root, dirs, files in os.walk('.'):
-            # 1. Filtrar carpetas evaluando tanto su nombre suelto como su ruta relativa
-            dirs_permitidos = []
-            for d in dirs:
-                ruta_dir_relativa = os.path.normpath(os.path.relpath(os.path.join(root, d), '.'))
-                # Ignorar si el nombre exacto de la carpeta o la ruta completa están en la lista
-                if d not in ignorar_norm and ruta_dir_relativa not in ignorar_norm:
-                    dirs_permitidos.append(d)
-            dirs[:] = (
-                dirs_permitidos  # Modificamos in-place para que os.walk no entre en las ignoradas
-            )
+        # =========================================
+        # 🔴 MODO MANUAL: SOLO ARCHIVOS ESPECÍFICOS
+        # =========================================
+        if solo_archivos_norm:
+            print('📌 Modo manual activado: solo se procesarán los archivos indicados.')
 
-            for file in files:
-                path_relativo = os.path.relpath(os.path.join(root, file), '.')
-                path_norm = os.path.normpath(path_relativo)
-
-                # 2. Check de ignorados por archivo (nombre o ruta)
-                if (
-                    file in ignorar_norm
-                    or path_norm in ignorar_norm
-                    or path_norm == OUTPUT_FILE
-                    or file == os.path.basename(__file__)
-                ):
+            for path in solo_archivos_norm:
+                if not os.path.exists(path):
+                    print(f'⚠️ Archivo no encontrado: {path}')
                     continue
 
-                # 3. Filtro por extensión
-                _, ext = os.path.splitext(file)
-                if ext.lower() in EXTENSIONES_OMITIR:
-                    continue
+                file = os.path.basename(path)
 
-                # AQUÍ ESTÁ LA MAGIA PARA EL .gitignore:
-                # Comprobamos si la extensión ESTÁ en la lista OR si el nombre del archivo ESTÁ en la lista
-                if ext.lower() in EXTENSIONES_TEXTO or file.lower() in EXTENSIONES_TEXTO:
-                    outfile.write(f'\n{"=" * 60}\n')
-                    outfile.write(f'ARCHIVO: {path_relativo}\n')
-                    outfile.write(f'{"=" * 60}\n\n')
+                outfile.write(f'\n{"=" * 60}\n')
+                outfile.write(f'ARCHIVO: {path}\n')
+                outfile.write(f'{"=" * 60}\n\n')
 
-                    try:
-                        with open(os.path.join(root, file), 'r', encoding='utf-8') as infile:
-                            outfile.write(infile.read())
-                            count += 1
-                    except Exception as e:
-                        outfile.write(f'Error al leer archivo: {e}')
-                    outfile.write('\n')
+                try:
+                    with open(path, 'r', encoding='utf-8') as infile:
+                        outfile.write(infile.read())
+                        count += 1
+                except Exception as e:
+                    outfile.write(f'Error al leer archivo: {e}')
 
-        # --- NUEVA FUNCIÓN ---
-        # Volcamos las hojas de cálculo al final del archivo
-        volcar_hojas_google_sheets(outfile)
+                outfile.write('\n')
+
+        # =========================================
+        # 🟢 MODO NORMAL: WALK COMPLETO
+        # =========================================
+        else:
+            for root, dirs, files in os.walk('.'):
+                dirs_permitidos = []
+                for d in dirs:
+                    ruta_dir_relativa = os.path.normpath(
+                        os.path.relpath(os.path.join(root, d), '.')
+                    )
+                    if d not in ignorar_norm and ruta_dir_relativa not in ignorar_norm:
+                        dirs_permitidos.append(d)
+                dirs[:] = dirs_permitidos
+
+                for file in files:
+                    path_relativo = os.path.relpath(os.path.join(root, file), '.')
+                    path_norm = os.path.normpath(path_relativo)
+
+                    if (
+                        file in ignorar_norm
+                        or path_norm in ignorar_norm
+                        or path_norm == OUTPUT_FILE
+                        or file == os.path.basename(__file__)
+                    ):
+                        continue
+
+                    _, ext = os.path.splitext(file)
+                    if ext.lower() in EXTENSIONES_OMITIR:
+                        continue
+
+                    if ext.lower() in EXTENSIONES_TEXTO or file.lower() in EXTENSIONES_TEXTO:
+                        outfile.write(f'\n{"=" * 60}\n')
+                        outfile.write(f'ARCHIVO: {path_relativo}\n')
+                        outfile.write(f'{"=" * 60}\n\n')
+
+                        try:
+                            with open(os.path.join(root, file), 'r', encoding='utf-8') as infile:
+                                outfile.write(infile.read())
+                                count += 1
+                        except Exception as e:
+                            outfile.write(f'Error al leer archivo: {e}')
+                        outfile.write('\n')
+
+            volcar_hojas_google_sheets(outfile)
 
     print(f'✅ ¡Hecho! Se han empaquetado {count} archivos en: {OUTPUT_FILE}')
 

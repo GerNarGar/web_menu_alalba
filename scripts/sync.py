@@ -210,7 +210,7 @@ def obtener_configuracion_con_tematica_visual(servicio_api_sheets):
     respuesta_api = (
         servicio_api_sheets.spreadsheets()
         .get(
-            spreadsheetId=IDENTIFICADOR_HOJA_CALCULO, ranges=['Config!A2:B30'], includeGridData=True
+            spreadsheetId=IDENTIFICADOR_HOJA_CALCULO, ranges=['Config!A2:B50'], includeGridData=True
         )
         .execute()
     )
@@ -643,6 +643,9 @@ def ejecutar_sincronizacion_maestra():
                 configuracion_general.get('modal_uses_video', False)
             ),
             'gas_webapp_url': str(configuracion_general.get('gas_webapp_url', '')).strip(),
+            'finalizar_pedido_telegram': evaluar_booleano(
+                configuracion_general.get('finalizar_pedido_telegram', True)
+            ),
         },
         'categories': sorted(coleccion_categorias, key=lambda c: c['order']),
         'allergens': list(diccionario_maestro_alergenos.values()),

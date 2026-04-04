@@ -1,0 +1,4015 @@
+
+============================================================
+ARCHIVO: docs/index.html
+============================================================
+
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#000000" id="meta-color-tema">
+    <title>Menú Restaurante</title>
+
+    <link href="tailwind-build.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="styles.css" rel="stylesheet">
+</head>
+
+<body class="antialiased min-h-screen flex flex-col">
+
+    <!-- CABECERA PRINCIPAL -->
+    <header id="cabecera-principal"
+        class="sticky top-0 z-40 cabecera-cristal transicion-vista vista-visible">
+        <div class="flex items-center justify-between px-4 py-3">
+            <button id="boton-inicio"
+                class="flex flex-col items-center justify-center h-full text-tema-texto px-2 min-w-[64px]"
+                aria-label="Ir al inicio">
+                <div id="wrapper-icono-inicio" class="hidden flex-col items-center">
+                    <svg class="w-6 h-6 mb-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6">
+                        </path>
+                    </svg>
+                    <span class="text-[10px] font-medium elemento-traducible" data-clave-traduccion="home">Inicio</span>
+                </div>
+                <img id="logo-restaurante-img" src="" alt="Logo" class="hidden nav-logo shrink-0 w-auto">
+            </button>
+            <div class="text-sm font-medium text-tema-suave">
+                <span class="elemento-traducible" data-clave-traduccion="table">Mesa</span>: <span
+                    id="etiqueta-mesa-actual" class="text-tema-texto">...</span>
+            </div>
+            <div class="relative">
+                <button id="boton-selector-idioma"
+                    class="flex items-center space-x-1 text-tema-texto bg-tema-tarjeta rounded-full px-3 py-1.5 text-sm font-medium"
+                    aria-haspopup="true" aria-expanded="false">
+                    <span id="icono-bandera-idioma">🇪🇸</span> <span id="texto-codigo-idioma">ES</span>
+                    <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                    </svg>
+                </button>
+                <div id="panel-desplegable-idiomas"
+                    class="hidden absolute right-0 mt-2 w-32 panel-flotante shadow-2xl overflow-hidden z-50"
+                    role="menu">
+                    <button
+                        class="boton-opcion-idioma w-full text-left px-4 py-3 item-desplegable flex items-center space-x-2"
+                        data-codigo-idioma="es" role="menuitem"><span>🇪🇸</span><span>Español</span></button>
+                    <button
+                        class="boton-opcion-idioma w-full text-left px-4 py-3 item-desplegable flex items-center space-x-2"
+                        data-codigo-idioma="en" role="menuitem"><span>🇬🇧</span><span>English</span></button>
+                    <button
+                        class="boton-opcion-idioma w-full text-left px-4 py-3 item-desplegable flex items-center space-x-2"
+                        data-codigo-idioma="fr" role="menuitem"><span>🇫🇷</span><span>Français</span></button>
+                </div>
+            </div>
+        </div>
+        <div id="contenedor-pestanas-categorias" class="flex space-x-2 px-4 pb-3 overflow-x-auto ocultar-scrollbar"
+            role="tablist"></div>
+    </header>
+
+    <!-- CONTENEDOR PRINCIPAL (MODO LISTA) -->
+    <main id="contenedor-principal-platos" class="flex-1 px-4 py-4 space-y-4 pb-24 transicion-vista vista-visible"
+        aria-live="polite"></main>
+
+    <!-- CONTENEDOR SECUNDARIO (MODO VIDEO FEED) -->
+    <div id="contenedor-feed-videos" class="fixed inset-0 bg-tema-fondo transicion-vista vista-oculta"
+        aria-hidden="true">
+        <div class="pestanas-nav-video area-segura-superior gradiente-nav-video pb-4">
+            <div id="contenedor-pestanas-video" class="flex space-x-2 px-4 pt-3 overflow-x-auto ocultar-scrollbar"
+                role="tablist"></div>
+        </div>
+        <div id="area-scroll-videos" class="contenedor-scroll-video"></div>
+    </div>
+
+    <!-- ESTADO VACÍO (CUANDO NO HAY PLATOS) -->
+    <div id="mensaje-estado-vacio" class="hidden flex-col items-center justify-center py-20 text-tema-suave"
+        aria-hidden="true">
+        <svg class="w-16 h-16 mb-4 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10">
+            </path>
+        </svg>
+        <p class="text-lg font-medium elemento-traducible" data-clave-traduccion="empty_menu">No hay platos disponibles
+        </p>
+    </div>
+
+    <!-- TOAST INFORMATIVO DE ALÉRGENOS -->
+    <div id="capa-cierre-toast" class="hidden fixed inset-0 z-[60]"></div>
+    <div id="toast-alergenos" class="rounded-2xl p-4 shadow-2xl panel-toast" role="alert"
+        aria-live="assertive">
+        <h3 class="text-sm font-bold text-tema-texto mb-3 uppercase tracking-wider text-center shrink-0 elemento-traducible"
+            data-clave-traduccion="allergens">Alérgenos</h3>
+        <div id="contenedor-iconos-toast"
+            class="flex flex-wrap justify-center gap-2 overflow-y-auto pb-2 ocultar-scrollbar"></div>
+    </div>
+
+    <!-- MODAL DE DETALLE DEL PLATO -->
+    <div id="capa-modal-detalle" class="modal-contenedor-backdrop fixed inset-0 z-50" role="dialog" aria-modal="true"
+        aria-hidden="true">
+        <div id="fondo-cierre-detalle" class="backdrop-oscuro"></div>
+        <div class="modal-contenido-deslizante relative h-full flex flex-col bg-tema-fondo">
+            <button id="boton-cerrar-detalle"
+                class="absolute top-4 right-4 z-20 w-10 h-10 btn-circular rounded-full flex items-center justify-center"
+                aria-label="Cerrar detalle">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12">
+                    </path>
+                </svg>
+            </button>
+            <div id="area-contenido-detalle" class="flex-1 overflow-y-auto pb-32"></div>
+        </div>
+    </div>
+
+    <!-- MODAL DEL CARRITO / MI LISTA -->
+    <div id="capa-modal-carrito" class="modal-contenedor-backdrop fixed inset-0 z-50" role="dialog" aria-modal="true"
+        aria-hidden="true">
+        <div id="fondo-cierre-carrito" class="backdrop-oscuro"></div>
+        <div class="modal-contenido-deslizante relative h-full flex flex-col bg-tema-fondo">
+            <div
+                class="flex items-center justify-between px-4 py-4 cabecera-cristal relative z-10">
+                <h2 class="text-xl font-bold text-tema-texto elemento-traducible" data-clave-traduccion="my_list">Mi
+                    lista</h2>
+                <button id="boton-cerrar-carrito" class="w-10 h-10 flex items-center justify-center text-tema-suave"
+                    aria-label="Cerrar carrito">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12">
+                        </path>
+                    </svg>
+                </button>
+            </div>
+            <div id="area-contenido-carrito" class="flex-1 overflow-y-auto px-4 py-4 pb-32 relative z-10"></div>
+            <div id="area-pie-carrito"
+                class="fixed bottom-0 left-0 right-0 p-4 cabecera-cristal z-20">
+                <div class="flex justify-between items-center mb-4">
+                    <span class="text-tema-suave elemento-traducible" data-clave-traduccion="total">Total</span>
+                    <span id="etiqueta-precio-total" class="text-2xl font-bold text-tema-texto">0.00</span>
+                </div>
+                <button id="boton-enviar-pedido"
+                    class="w-full btn-primario font-bold py-4 rounded-2xl text-lg flex justify-center items-center">
+                    <span class="elemento-traducible" data-clave-traduccion="complete_order">Completar pedido</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- NAVEGACIÓN INFERIOR PRINCIPAL -->
+    <nav class="fixed bottom-0 left-0 right-0 nav-inferior-cristal z-40 pb-2" aria-label="Navegación principal">
+        <div class="flex justify-around items-center h-16">
+            <button id="pestaña-nav-menu"
+                class="item-nav-inferior activa flex flex-col items-center justify-center w-full h-full space-y-1">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16">
+                    </path>
+                </svg>
+                <span class="text-xs font-medium elemento-traducible" data-clave-traduccion="menu">Menú</span>
+            </button>
+            <button id="pestaña-nav-video"
+                class="item-nav-inferior flex flex-col items-center justify-center w-full h-full space-y-1">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z">
+                    </path>
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+                <span class="text-xs font-medium">Video</span>
+            </button>
+            <button id="pestaña-nav-carrito"
+                class="item-nav-inferior flex-col items-center justify-center w-full h-full space-y-1 relative hidden">
+                <div class="relative">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2">
+                        </path>
+                    </svg>
+                    <span id="globo-notificacion-carrito"
+                        class="hidden absolute -top-2 -right-2 insignia-notificacion text-[10px] font-bold w-5 h-5 rounded-full items-center justify-center">0</span>
+                </div>
+                <span class="text-xs font-medium elemento-traducible" data-clave-traduccion="my_list">Mi lista</span>
+            </button>
+        </div>
+    </nav>
+
+    <!-- SCRIPT PRINCIPAL -->
+    <script src="app.js"></script>
+</body>
+
+</html>
+
+============================================================
+ARCHIVO: docs/app.js
+============================================================
+
+/**
+ * ==========================================================================
+ * MENÚ DIGITAL REACTIVO (Vanilla JS con Proxy y Template Literals)
+ * ==========================================================================
+ */
+
+// =========================== CONFIGURACIÓN UI ===========================
+const CONFIG_UI = {
+  transitionModalMs: 300,
+  swipeMinDistance: 50,
+  swipeMargin: 30,
+  videoIntersectionThreshold: 0.6,
+  cartExpireHours: 1,
+  animationCardDelayMax: 0.3,
+  vibratePattern: [100, 50, 100],
+};
+
+// =========================== UTILIDADES ===========================
+const escapeHtml = (str) => {
+  if (!str) return "";
+  return str
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+};
+
+const sanitizeUrl = (url) => {
+  if (!url) return "";
+  const sanitized = escapeHtml(url);
+  if (
+    sanitized.startsWith("http://") ||
+    sanitized.startsWith("https://") ||
+    sanitized.startsWith("/") ||
+    sanitized.startsWith("./")
+  ) {
+    return sanitized;
+  }
+  return "#"; // Fallback seguro
+};
+
+const formatMoney = (value) => {
+  const numero = parseFloat(value);
+  const cadenaNumerica = isNaN(numero)
+    ? value
+    : numero % 1 === 0
+      ? numero.toString()
+      : numero.toFixed(2).replace(".", ",");
+  const simbolo = state.menuData?.meta?.currency || "€";
+  const posicion = state.menuData?.meta?.currency_position || "derecha";
+  return posicion === "izquierda"
+    ? `${simbolo} ${cadenaNumerica}`
+    : `${cadenaNumerica} ${simbolo}`;
+};
+
+// =========================== ESTADO REACTIVO ===========================
+const state = new Proxy(
+  {
+    menuData: null,
+    lang: "es",
+    activeCategory: "",
+    activeVideoCategory: "",
+    cart: {},
+    tableId: "No",
+    takeaway: false,
+    ordersAllowed: false,
+    currentView: "menu",
+    observers: [],
+    _toastTimeout: null,
+  },
+  {
+    set(target, prop, value) {
+      const oldValue = target[prop];
+      target[prop] = value;
+
+      if (prop === "cart") {
+        updateCartBadge();
+        if (
+          document
+            .getElementById("capa-modal-carrito")
+            ?.classList.contains("mostrar")
+        ) {
+          renderCartModal();
+        }
+        if (
+          document
+            .getElementById("capa-modal-detalle")
+            ?.classList.contains("mostrar")
+        ) {
+          const detailId = document
+            .getElementById("area-contenido-detalle")
+            .getAttribute("data-plato-id");
+          if (detailId) renderDetailBar(detailId);
+        }
+        document
+          .querySelectorAll(".contenedor-controles-cantidad")
+          .forEach((container) => {
+            const platoId = container.getAttribute("data-plato-control");
+            if (platoId) {
+              container.innerHTML = buildQuantityControl(
+                platoId,
+                state.cart[platoId] || 0,
+              );
+            }
+          });
+      } else if (prop === "lang") {
+        applyTranslations();
+        renderCategories();
+        if (state.currentView === "menu") renderDishList();
+        else if (state.currentView === "video") renderVideoTabs();
+      } else if (prop === "activeCategory") {
+        if (state.currentView === "menu") {
+          renderCategories();
+          renderDishList();
+          updateUrl();
+
+          // TRUCO ANTI-INERCIA: Frenar scroll del móvil en seco y subir a tope
+          document.body.style.overflow = "hidden";
+          window.scrollTo({ top: 0, left: 0, behavior: "auto" });
+          setTimeout(() => {
+            document.body.style.overflow = "";
+          }, 20);
+
+          // Centrar pestaña horizontal
+          const activeTab = document.querySelector(
+            "#contenedor-pestanas-categorias .activa",
+          );
+          const container = document.getElementById(
+            "contenedor-pestanas-categorias",
+          );
+          if (activeTab && container) {
+            const scrollLeft =
+              activeTab.offsetLeft -
+              container.clientWidth / 2 +
+              activeTab.clientWidth / 2;
+            container.scrollTo({ left: scrollLeft, behavior: "smooth" });
+          }
+        } else {
+          renderVideoTabs();
+          scrollToVideoCategory(value);
+
+          // Centrar pestaña de video horizontal
+          const activeTab = document.querySelector(
+            "#contenedor-pestanas-video .activa",
+          );
+          const container = document.getElementById(
+            "contenedor-pestanas-video",
+          );
+          if (activeTab && container) {
+            const scrollLeft =
+              activeTab.offsetLeft -
+              container.clientWidth / 2 +
+              activeTab.clientWidth / 2;
+            container.scrollTo({ left: scrollLeft, behavior: "smooth" });
+          }
+        }
+      } else if (prop === "currentView") {
+        switchView(value);
+        updateUrl();
+      }
+      return true;
+    },
+  },
+);
+
+// =========================== i18n ===========================
+const dictionary = {
+  es: {
+    menu: "Menú",
+    my_list: "Mis platos",
+    add: "Añadir",
+    total: "Total",
+    complete_order: "Completar pedido",
+    modify: "Modificar",
+    confirm_order: "Confirmar",
+    table: "Mesa",
+    home: "Inicio",
+    see_more: "Ver más",
+    see_less: "Ver menos",
+    empty_menu: "No hay platos disponibles",
+    allergens: "Alérgenos",
+    chef_suggestion: "Sugerencia del chef",
+    sending_order: "Enviando...",
+    order_name: "Tu nombre",
+    order_phone: "Tu teléfono",
+    error_form: "Por favor, rellena tu nombre y teléfono.",
+    order_error: "Error al enviar el pedido.",
+    success_msg: "Muchas gracias, en breve le atenderá un camarero.",
+    success_btn: "Cerrar",
+  },
+  en: {
+    menu: "Menu",
+    my_list: "My dishes",
+    add: "Add",
+    total: "Total",
+    complete_order: "Complete order",
+    modify: "Modify",
+    confirm_order: "Confirm",
+    table: "Table",
+    home: "Home",
+    see_more: "See more",
+    see_less: "See less",
+    empty_menu: "No dishes available",
+    allergens: "Allergens",
+    chef_suggestion: "Chef's choice",
+    sending_order: "Sending...",
+    order_name: "Your name",
+    order_phone: "Your phone",
+    error_form: "Please fill in your name and phone.",
+    order_error: "Error sending the order.",
+    success_msg: "Thank you very much, a waiter will be with you shortly.",
+    success_btn: "Close",
+  },
+  fr: {
+    menu: "Menu",
+    my_list: "Mes plats",
+    add: "Ajouter",
+    total: "Total",
+    complete_order: "Finaliser la commande",
+    modify: "Modifier",
+    confirm_order: "Confirmer",
+    table: "Table",
+    home: "Accueil",
+    see_more: "Voir plus",
+    see_less: "Voir moins",
+    empty_menu: "Aucun plat disponible",
+    allergens: "Allergènes",
+    chef_suggestion: "Suggestion du chef",
+    sending_order: "Envoi en cours...",
+    order_name: "Votre nom",
+    order_phone: "Votre téléphone",
+    error_form: "Veuillez indiquer votre nom et téléphone.",
+    order_error: "Erreur lors de l'envoi de la commande.",
+    success_msg: "Merci beaucoup, un serveur s'occupera de vous sous peu.",
+    success_btn: "Fermer",
+  },
+};
+
+const t = (key) => dictionary[state.lang][key] || key;
+
+const applyTranslations = () => {
+  document.querySelectorAll(".elemento-traducible").forEach((el) => {
+    const key = el.getAttribute("data-clave-traduccion");
+    if (el.tagName === "INPUT") el.placeholder = t(key);
+    else el.textContent = t(key);
+  });
+  document.getElementById("texto-codigo-idioma").textContent =
+    state.lang.toUpperCase();
+  const flagMap = { es: "🇪🇸", en: "🇬🇧", fr: "🇫🇷" };
+  document.getElementById("icono-bandera-idioma").textContent =
+    flagMap[state.lang] || "🇪🇸";
+};
+
+const getLocalizedText = (item) => item.i18n[state.lang] || item.i18n.es;
+
+// =========================== RENDERIZADO CON TEMPLATES ===========================
+/* DISEÑO: Control de cantidad (stepper o botón añadir) - styles.css (.caja-cantidad, .btn-agregar) */
+const buildQuantityControl = (platoId, quantity) => {
+  if (!state.ordersAllowed) return "";
+  if (quantity > 0) {
+    return `
+        <div class="caja-cantidad">
+            <button class="btn-cantidad boton-restar" aria-label="Quitar un plato" data-plato-id="${platoId}" data-action="decrement">−</button>
+            <span class="text-tema-texto font-semibold text-center flex-1 etiqueta-cantidad" aria-live="polite">${quantity}</span>
+            <button class="btn-cantidad boton-sumar" aria-label="Añadir un plato" data-plato-id="${platoId}" data-action="increment">+</button>
+        </div>
+    `;
+  } else {
+    return `<button class="btn-agregar" aria-label="Añadir al pedido" data-plato-id="${platoId}" data-action="add">${t("add")}</button>`;
+  }
+};
+
+/* DISEÑO: Lista de platos (tarjetas) - styles.css (.tarjeta-plato, .tarjeta-imagen-caja, etc) */
+const renderDishList = () => {
+  const container = document.getElementById("contenedor-principal-platos");
+  const dishes = state.menuData.items.filter(
+    (item) => item.category === state.activeCategory && item.image,
+  );
+  const emptyMsg = document.getElementById("mensaje-estado-vacio");
+
+  if (dishes.length === 0) {
+    container.innerHTML = "";
+    emptyMsg.classList.remove("hidden");
+    emptyMsg.classList.add("flex");
+    return;
+  }
+  emptyMsg.classList.add("hidden");
+  emptyMsg.classList.remove("flex");
+
+  let html = "";
+  dishes.forEach((dish, idx) => {
+    const texts = getLocalizedText(dish);
+    const price = formatMoney(dish.price);
+    /* DISEÑO: Etiqueta chef miniatura - styles.css (.etiqueta-chef-miniatura) */
+    const chefBadge = dish.is_chef_choice
+      ? `<div class="nodo-etiqueta-chef etiqueta-chef-miniatura"><svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17 21a1 1 0 0 0 1-1v-5.35c0-.457.316-.844.727-1.041a4 4 0 0 0-2.134-7.589a5 5 0 0 0-9.186 0a4 4 0 0 0-2.134 7.588c.411.198.727.585.727 1.041V20a1 1 0 0 0 1 1ZM6 17h12"/></svg><span>Chef</span></div>`
+      : "";
+    let allergensHtml = "";
+    dish.allergens.forEach((al) => {
+      /* DISEÑO: Icono alérgeno en tarjeta - styles.css (.icono-alergeno-tarjeta) */
+      allergensHtml += `<img src="${sanitizeUrl(al.icon)}" class="w-6 h-6 rounded-full icono-alergeno-tarjeta p-1" title="${escapeHtml(al.name[state.lang])}" loading="lazy">`;
+    });
+    const controlHtml = buildQuantityControl(dish.id, state.cart[dish.id] || 0);
+    const delay = Math.min(idx * 0.05, CONFIG_UI.animationCardDelayMax);
+    html += `
+            <article class="tarjeta-plato entrada-tarjeta" data-plato-id="${dish.id}" style="--retraso: ${delay}s">
+                <div class="tarjeta-imagen-caja">
+                    <img src="${sanitizeUrl(dish.image)}" class="tarjeta-imagen nodo-imagen-plato" loading="lazy" draggable="false" oncontextmenu="return false;">
+                    ${chefBadge}
+                </div>
+                <div class="flex-1 flex flex-col justify-between py-1 overflow-hidden">
+                    <div>
+                        <h3 class="font-semibold text-tema-texto text-base leading-tight mb-1 line-clamp-2 nodo-titulo-plato">${escapeHtml(texts.name)}</h3>
+                        <p class="text-lg font-bold text-tema-acento mb-2 nodo-precio-plato">${price}</p>
+                        <div class="flex flex-wrap gap-1 mb-2 nodo-contenedor-alergenos">${allergensHtml}</div>
+                    </div>
+                    <div class="flex items-center justify-end contenedor-controles-cantidad" data-plato-control="${dish.id}">${controlHtml}</div>
+                </div>
+            </article>
+        `;
+  });
+  container.innerHTML = html;
+};
+
+/* DISEÑO: Pestañas de categorías (menú) - styles.css (.pestana-categoria) */
+const renderCategories = () => {
+  const container = document.getElementById("contenedor-pestanas-categorias");
+  let html = "";
+  state.menuData.categories.forEach((cat) => {
+    const activeClass = cat.id === state.activeCategory ? "activa" : "";
+    html += `<button class="pestana-categoria flex-1 text-center whitespace-nowrap px-3 py-2 rounded-full text-sm font-medium transition-colors ${activeClass}" data-categoria-id="${cat.id}">${escapeHtml(cat.label[state.lang])}</button>`;
+  });
+  container.innerHTML = html;
+};
+
+/* DISEÑO: Pestañas de categorías (video) - styles.css (.pestana-categoria-video) */
+const renderVideoTabs = () => {
+  const container = document.getElementById("contenedor-pestanas-video");
+  let html = "";
+  state.menuData.categories.forEach((cat) => {
+    const activeClass = cat.id === state.activeVideoCategory ? "activa" : "";
+    html += `<button class="pestana-categoria-video flex-1 text-center whitespace-nowrap px-3 py-2 rounded-full text-xs font-medium transition-colors ${activeClass}" data-categoria-id="${cat.id}">${escapeHtml(cat.label[state.lang])}</button>`;
+  });
+  container.innerHTML = html;
+};
+
+/* DISEÑO: Feed de videos estilo TikTok - styles.css (.contenedor-video, .interfaz-video, .gradiente-video, etc) */
+const renderFeedVideo = () => {
+  const container = document.getElementById("area-scroll-videos");
+  const order = state.menuData.categories.map((c) => c.id);
+  const videoItems = state.menuData.items
+    .filter((i) => i.image)
+    .sort((a, b) => order.indexOf(a.category) - order.indexOf(b.category));
+  if (videoItems.length === 0) {
+    container.innerHTML = `<div class="flex items-center justify-center h-full text-tema-suave">${t("empty_menu")}</div>`;
+    return;
+  }
+  let html = "";
+  videoItems.forEach((item) => {
+    const texts = getLocalizedText(item);
+    /* DISEÑO: Etiqueta chef en video - styles.css (.etiqueta-chef-video) */
+    const chefHtml = item.is_chef_choice
+      ? `<div class="inline-flex items-center space-x-1 py-0.5 rounded-md etiqueta-chef-video mb-1"><svg class="icono-sugerencia-chef" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17 21a1 1 0 0 0 1-1v-5.35c0-.457.316-.844.727-1.041a4 4 0 0 0-2.134-7.589a5 5 0 0 0-9.186 0a4 4 0 0 0-2.134 7.588c.411.198.727.585.727 1.041V20a1 1 0 0 0 1 1ZM6 17h12"/></svg><span class="text-xs font-semibold">${t("chef_suggestion")}</span></div>`
+      : "";
+    const videoHtml = item.video
+      ? `
+            <video class="elemento-video" src="${sanitizeUrl(item.video.src)}" loop playsinline muted preload="none" oncontextmenu="return false;" disablePictureInPicture controlsList="nodownload"></video>
+            <img class="superposicion-poster" src="${sanitizeUrl(item.video.poster)}" alt="" oncontextmenu="return false;">
+            <div class="superposicion-reproducir hidden"><svg class="w-16 h-16 text-tema-texto opacity-80" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div>
+            `
+      : `<img class="img-respaldo" src="${sanitizeUrl(item.image)}" alt="" oncontextmenu="return false;">`;
+    const controlHtml = buildQuantityControl(item.id, state.cart[item.id] || 0);
+    let allergensHtml = "";
+    if (item.allergens.length) {
+      item.allergens.forEach((al) => {
+        allergensHtml += `<img src="${sanitizeUrl(al.icon)}" class="w-7 h-7 rounded-full bg-black/40 p-1 pointer-events-none" oncontextmenu="return false;">`;
+      });
+    }
+    html += `
+            <div class="contenedor-video" data-id="${item.id}" data-categoria="${item.category}">
+                ${videoHtml}
+                <div class="gradiente-video absolute bottom-0 left-0 right-0 h-[55%] z-[3] pointer-events-none"></div>
+                <div class="interfaz-video">
+                    <div class="mb-4">
+                        ${chefHtml}
+                        <h3 class="text-2xl font-bold text-tema-texto mb-1 leading-tight drop-shadow-lg">${escapeHtml(texts.name)}</h3>
+                        <div class="flex justify-between items-center mb-2">
+                            <p class="text-xl font-bold text-tema-acento drop-shadow-md">${formatMoney(item.price)}</p>
+                            <div class="flex items-center contenedor-controles-cantidad" data-plato-control="${item.id}">${controlHtml}</div>
+                        </div>
+                        <div class="texto-expandible text-tema-texto text-sm leading-relaxed mb-1 drop-shadow-md">${escapeHtml(texts.description)}</div>
+                        ${item.allergens.length ? `<div class="hidden flex-wrap w-full gap-2 mt-2 mb-2 p-2 -ml-2 rounded-xl active:bg-white/10 transition-colors cursor-pointer" data-toast-alergenos="${item.id}">${allergensHtml}</div>` : ""}
+                        <button class="text-tema-suave text-xs font-medium mb-1 drop-shadow-md" data-expandir>${t("see_more")}</button>
+                    </div>
+                </div>
+            </div>
+        `;
+  });
+  container.innerHTML = html;
+  setupVideoObservers();
+};
+
+/* DISEÑO: Modal de detalle de plato - styles.css (.modal-contenedor-backdrop, .modal-contenido-deslizante, etc) */
+const renderDetailModal = (platoId) => {
+  const dish = state.menuData.items.find((d) => d.id == platoId);
+  if (!dish) return;
+  const texts = getLocalizedText(dish);
+  const useVideo = state.menuData.meta.modal_uses_video && dish.video;
+  let contentHtml = `
+        <div class="relative h-96 bg-black rounded-b-[2rem] overflow-hidden ${useVideo ? "cursor-pointer" : ""}" id="modal-imagen-container">
+            <img src="${sanitizeUrl(dish.image)}" class="absolute inset-0 w-full h-full object-cover transition-opacity duration-300" draggable="false" oncontextmenu="return false;" id="modal-img">
+            ${
+              useVideo
+                ? `<div class="absolute inset-0 flex items-center justify-center transition-opacity duration-300" id="modal-play-btn"><div class="w-16 h-16 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center border border-white/30 text-white shadow-xl"><svg class="w-8 h-8 drop-shadow-lg relative right-0.25" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div></div>
+                <video id="modal-video" class="w-full h-full object-cover hidden" src="${sanitizeUrl(dish.video.src)}" playsinline loop oncontextmenu="return false;" disablePictureInPicture controlsList="nodownload"></video>`
+                : ""
+            }
+        </div>
+        <div class="px-6 py-6 pb-2">
+            <h1 class="text-3xl font-bold text-tema-texto mb-2">${escapeHtml(texts.name)}</h1>
+            <div class="flex items-center justify-between mb-6">
+                <span class="text-2xl font-bold text-tema-acento">${formatMoney(dish.price)}</span>
+                ${dish.is_chef_choice ? `<div class="etiqueta-chef-detalle"><svg class="icono-sugerencia-chef" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17 21a1 1 0 0 0 1-1v-5.35c0-.457.316-.844.727-1.041a4 4 0 0 0-2.134-7.589a5 5 0 0 0-9.186 0a4 4 0 0 0-2.134 7.588c.411.198.727.585.727 1.041V20a1 1 0 0 0 1 1ZM6 17h12"/></svg><span class="ml-1">${t("chef_suggestion")}</span></div>` : ""}
+            </div>
+            <p class="text-tema-suave text-lg leading-relaxed mb-6 text-left">${escapeHtml(texts.description)}</p>
+    `;
+  if (dish.allergens.length) {
+    contentHtml += `<div class="mb-8"><h3 class="text-sm font-medium text-tema-suave uppercase tracking-wider mb-3">${t("allergens")}</h3><div class="flex flex-wrap gap-2">`;
+    dish.allergens.forEach((al) => {
+      /* DISEÑO: Alérgenos en modal - styles.css (.icono-alergeno-modal) */
+      contentHtml += `<div class="flex items-center space-x-2 icono-alergeno-modal px-2 py-1 rounded-full"><img src="${sanitizeUrl(al.icon)}" class="w-5 h-5" oncontextmenu="return false;" draggable="false"><span class="text-sm text-tema-suave pr-1">${escapeHtml(al.name[state.lang])}</span></div>`;
+    });
+    contentHtml += `</div></div>`;
+  }
+  contentHtml += `</div>`;
+  document.getElementById("area-contenido-detalle").innerHTML = contentHtml;
+  document
+    .getElementById("area-contenido-detalle")
+    .setAttribute("data-plato-id", platoId);
+  renderDetailBar(platoId);
+
+  if (useVideo) {
+    const containerImg = document.getElementById("modal-imagen-container");
+    const img = document.getElementById("modal-img");
+    const playBtn = document.getElementById("modal-play-btn");
+    const video = document.getElementById("modal-video");
+    containerImg.addEventListener("click", () => {
+      img.style.opacity = "0";
+      playBtn.style.opacity = "0";
+      setTimeout(() => {
+        img.classList.add("hidden");
+        playBtn.classList.add("hidden");
+        video.classList.remove("hidden");
+        video.play();
+      }, CONFIG_UI.transitionModalMs);
+    });
+  }
+};
+
+/* DISEÑO: Barra inferior dinámica en modal detalle - styles.css (.btn-primario, .btn-secundario) */
+const renderDetailBar = (platoId) => {
+  const dish = state.menuData.items.find((d) => d.id == platoId);
+  if (!dish || !state.ordersAllowed) return;
+  const quantity = state.cart[platoId] || 0;
+  let barHtml = "";
+  if (quantity > 0) {
+    barHtml = `
+            <div class="flex items-center justify-between">
+                <div class="flex items-center justify-between space-x-2 btn-secundario rounded-full px-3 py-2 h-14 w-40">
+                    <button class="w-10 h-10 flex items-center justify-center text-tema-texto text-2xl font-bold rounded-full" data-modal-action="decrement" data-plato-id="${platoId}">−</button>
+                    <span class="text-2xl font-bold text-tema-texto text-center flex-1">${quantity}</span>
+                    <button class="w-10 h-10 flex items-center justify-center text-tema-texto text-2xl font-bold rounded-full" data-modal-action="increment" data-plato-id="${platoId}">+</button>
+                </div>
+                <div class="text-right">
+                    <div class="text-tema-suave text-sm">${t("total")}</div>
+                    <div class="text-2xl font-bold text-tema-texto">${formatMoney(dish.price * quantity)}</div>
+                </div>
+            </div>
+        `;
+  } else {
+    barHtml = `<button class="w-full h-14 btn-primario font-bold rounded-full text-lg transition-transform" data-modal-action="add" data-plato-id="${platoId}">${t("add")} • ${formatMoney(dish.price)}</button>`;
+  }
+  const barContainer =
+    document.getElementById("barra-dinamica-detalle") ||
+    (() => {
+      const div = document.createElement("div");
+      div.id = "barra-dinamica-detalle";
+      div.className = "fixed bottom-0 left-0 right-0 cabecera-cristal p-4 z-10";
+      document
+        .querySelector("#capa-modal-detalle .modal-contenido-deslizante")
+        .appendChild(div);
+      return div;
+    })();
+  barContainer.innerHTML = barHtml;
+};
+
+/* DISEÑO: Modal del carrito - styles.css (.tarjeta-carrito, .btn-secundario, etc) */
+const renderCartModal = () => {
+  const container = document.getElementById("area-contenido-carrito");
+  const cartItems = Object.entries(state.cart)
+    .map(([id, qty]) => ({
+      item: state.menuData.items.find((i) => i.id == id),
+      cantidad: qty,
+    }))
+    .filter((i) => i.item);
+  const footer = document.getElementById("area-pie-carrito");
+  footer.innerHTML = `<div class="flex justify-between items-center mb-4"><span class="text-tema-suave">${t("total")}</span><span id="etiqueta-precio-total" class="text-2xl font-bold text-tema-texto">0.00</span></div><button id="boton-enviar-pedido" class="w-full btn-primario font-bold py-4 rounded-2xl text-lg flex justify-center items-center">${t("complete_order")}</button>`;
+
+  if (cartItems.length === 0) {
+    container.innerHTML = `<div class="flex flex-col items-center justify-center h-full text-tema-suave text-lg">${t("empty_menu")}</div>`;
+    footer.classList.add("hidden");
+    return;
+  }
+  footer.classList.remove("hidden");
+  let total = 0;
+  let itemsHtml = "";
+  cartItems.forEach(({ item, cantidad }) => {
+    total += item.price * cantidad;
+    const texts = getLocalizedText(item);
+    itemsHtml += `
+            <div class="flex gap-4 tarjeta-carrito p-4 mb-3">
+                <img src="${sanitizeUrl(item.image)}" class="w-20 h-20 object-cover rounded-xl bg-tema-fondo flex-shrink-0" oncontextmenu="return false;">
+                <div class="flex-1 flex flex-col justify-between">
+                    <div>
+                        <h3 class="font-semibold text-tema-texto mb-1 leading-tight">${escapeHtml(texts.name)}</h3>
+                        <p class="text-tema-acento font-bold">${formatMoney(item.price)}</p>
+                    </div>
+                    <div class="flex items-center justify-between mt-2">
+                        <div class="flex items-center space-x-3 btn-secundario rounded-full px-2 py-1">
+                            <button class="w-8 h-8 flex items-center justify-center text-tema-texto font-bold rounded-full" data-cart-action="decrement" data-plato-id="${item.id}">−</button>
+                            <span class="text-tema-texto font-semibold w-4 text-center">${cantidad}</span>
+                            <button class="w-8 h-8 flex items-center justify-center text-tema-texto font-bold rounded-full" data-cart-action="increment" data-plato-id="${item.id}">+</button>
+                        </div>
+                        <span class="text-tema-texto font-bold">${formatMoney(item.price * cantidad)}</span>
+                    </div>
+                </div>
+            </div>
+        `;
+  });
+  container.innerHTML = itemsHtml;
+  container.scrollTop = 0;
+  document.getElementById("etiqueta-precio-total").textContent =
+    formatMoney(total);
+  document.getElementById("boton-enviar-pedido").onclick = () =>
+    showOrderConfirm(total);
+};
+
+const showOrderConfirm = (total) => {
+  const container = document.getElementById("area-contenido-carrito");
+  let itemsList = "";
+  Object.entries(state.cart).forEach(([id, cantidad]) => {
+    const item = state.menuData.items.find((i) => i.id == id);
+    if (item) {
+      itemsList += `<div class="flex justify-between items-center py-2"><span class="text-tema-texto flex-1 pr-2">${cantidad}x ${escapeHtml(getLocalizedText(item).name)}</span><span class="text-tema-suave font-medium whitespace-nowrap">${formatMoney(item.price * cantidad)}</span></div>`;
+    }
+  });
+  let formHtml = "";
+  if (state.takeaway) {
+    formHtml = `
+            <div class="tarjeta-carrito p-4 w-full text-left mb-6">
+                <input type="text" id="input-nombre-pedido" class="w-full input-formulario rounded-xl px-4 py-3 mb-3" placeholder="${t("order_name")}">
+                <input type="tel" id="input-telefono-pedido" class="w-full input-formulario rounded-xl px-4 py-3" placeholder="${t("order_phone")}">
+            </div>
+        `;
+  }
+  container.innerHTML = `
+        <div class="flex flex-col items-center text-center mt-1 w-full">
+            <div class="w-full text-center mb-1"><p class="text-tema-suave text-md">${t("total")}</p><p class="text-2xl font-bold text-tema-acento mb-2">${formatMoney(total)}</p></div>
+            <div class="w-full text-left rounded-2xl px-4 py-2 mb-2 border">${itemsList}</div>
+            ${formHtml}
+        </div>
+    `;
+  container.scrollTop = 0;
+  const footer = document.getElementById("area-pie-carrito");
+  footer.innerHTML = `
+        <div class="flex space-x-3 w-full">
+            <button class="flex-1 btn-secundario font-bold py-4 rounded-2xl text-lg" id="btn-modificar-pedido">${t("modify")}</button>
+            <button class="flex-1 btn-primario font-bold py-4 rounded-2xl text-lg flex justify-center items-center" id="btn-confirmar-pedido">${t("confirm_order")}</button>
+        </div>
+    `;
+  document.getElementById("btn-modificar-pedido").onclick = () =>
+    renderCartModal();
+  document.getElementById("btn-confirmar-pedido").onclick = () =>
+    sendOrder(total);
+};
+
+const updateCartBadge = () => {
+  const totalItems = Object.values(state.cart).reduce((a, b) => a + b, 0);
+  const cartBtn = document.getElementById("pestaña-nav-carrito");
+  const badge = document.getElementById("globo-notificacion-carrito");
+  const navBar = document.querySelector("nav.nav-inferior-cristal");
+  if (state.ordersAllowed) {
+    cartBtn.classList.remove("hidden");
+    cartBtn.classList.add("flex");
+    if (totalItems > 0) {
+      badge.textContent = totalItems;
+      badge.classList.remove("hidden");
+      badge.classList.add("flex");
+    } else {
+      badge.classList.add("hidden");
+    }
+  } else {
+    cartBtn.classList.add("hidden");
+  }
+  if (
+    !state.ordersAllowed &&
+    state.menuData?.meta?.enable_video_feed === false
+  ) {
+    navBar.classList.add("hidden");
+  } else {
+    navBar.classList.remove("hidden");
+  }
+};
+
+// =========================== CARRITO Y PERSISTENCIA ===========================
+const loadCartFromStorage = () => {
+  const stored = localStorage.getItem(`cesta_pedidos_${state.tableId}`);
+  if (stored) {
+    try {
+      const parsed = JSON.parse(stored);
+      let items = parsed.items || parsed;
+      const timestamp = parsed.timestamp || 0;
+      const expireHours =
+        state.menuData.meta.limpiar_carrito_tras_hora ||
+        CONFIG_UI.cartExpireHours;
+      if (timestamp && Date.now() - timestamp > expireHours * 3600000)
+        items = {};
+      const newCart = {};
+      for (let id in items) {
+        if (state.menuData.items.some((p) => p.id == id))
+          newCart[id] = items[id];
+      }
+      state.cart = newCart;
+    } catch (e) {
+      state.cart = {};
+    }
+  }
+};
+
+const saveCart = () => {
+  localStorage.setItem(
+    `cesta_pedidos_${state.tableId}`,
+    JSON.stringify({ items: state.cart, timestamp: Date.now() }),
+  );
+};
+
+const modifyQuantity = (platoId, delta) => {
+  if (!state.ordersAllowed) return;
+  const newQty = (state.cart[platoId] || 0) + delta;
+  if (newQty <= 0) {
+    const newCart = { ...state.cart };
+    delete newCart[platoId];
+    state.cart = newCart;
+  } else {
+    state.cart = { ...state.cart, [platoId]: newQty };
+  }
+  saveCart();
+  if (state.menuData?.meta?.vibrar_al_enviar && navigator.vibrate)
+    navigator.vibrate(CONFIG_UI.vibratePattern);
+};
+
+const sendOrder = async (total) => {
+  let nombre = "",
+    telefono = "";
+  if (state.takeaway) {
+    nombre = document.getElementById("input-nombre-pedido")?.value.trim() || "";
+    telefono =
+      document.getElementById("input-telefono-pedido")?.value.trim() || "";
+    if (!nombre || !telefono) {
+      alert(t("error_form"));
+      return;
+    }
+  }
+  const btn = document.getElementById("btn-confirmar-pedido");
+  btn.disabled = true;
+  btn.innerHTML = `<svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-tema-texto inline-block" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg><span class="elemento-traducible" data-clave-traduccion="sending_order">${t("sending_order")}</span>`;
+
+  const orderLang = state.menuData?.meta?.order_lang || "es";
+  const sanitize = (txt) =>
+    txt.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+  const itemsResume = Object.entries(state.cart)
+    .map(([id, qty]) => {
+      const item = state.menuData.items.find((i) => i.id == id);
+      if (!item) return "";
+      const name = item.i18n[orderLang]?.name || getLocalizedText(item).name;
+      return `• ${qty}x ${sanitize(name)}`;
+    })
+    .filter(Boolean)
+    .join("\n");
+  const clientInfo = state.takeaway
+    ? `🥡 TAKEAWAY\n👤 Nombre: ${sanitize(nombre)}\n📞 Tel: ${sanitize(telefono)}`
+    : `🍽️ ${orderLang === "es" ? "MESA" : "TABLE"}: ${sanitize(state.tableId)}`;
+  const msg = `<b>${clientInfo}</b>\n⏰ ${new Date().toLocaleTimeString()}\n\n${itemsResume}`;
+  const url = state.menuData.meta.gas_webapp_url;
+  if (!url) {
+    alert("Falta configurar URL de envío");
+    btn.disabled = false;
+    btn.innerText = t("confirm_order");
+    return;
+  }
+
+  // NUEVO: Controlador de tiempo (10 segundos)
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), 10000);
+
+  try {
+    const formData = new URLSearchParams();
+    formData.append("mensaje", msg);
+
+    // Añadimos el signal al fetch
+    const resp = await fetch(url, {
+      method: "POST",
+      body: formData,
+      signal: controller.signal,
+    });
+
+    clearTimeout(timeoutId); // Limpiamos el contador si hay éxito
+
+    const contentType = resp.headers.get("content-type");
+    if (
+      !resp.ok ||
+      (contentType && contentType.indexOf("application/json") === -1)
+    ) {
+      throw new Error("Error en Apps Script");
+    }
+    const data = await resp.json();
+    if (data.status === "error") throw new Error(data.error);
+
+    // ... código de éxito intacto (state.cart = {}, updateCartBadge(), etc.)
+    state.cart = {};
+    saveCart();
+    updateCartBadge();
+    const container = document.getElementById("area-contenido-carrito");
+    container.innerHTML = `<div class="flex flex-col items-center justify-center h-full text-center py-20 px-4 entrada-tarjeta"><div class="w-24 h-24 bg-green-100 rounded-full flex items-center justify-center mb-6"><svg class="w-12 h-12 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg></div><h2 class="text-2xl font-bold text-tema-texto mb-2 leading-tight">${t("success_msg")}</h2></div>`;
+    const footer = document.getElementById("area-pie-carrito");
+    footer.innerHTML = `<button id="btn-cerrar-exito" class="w-full btn-secundario font-bold py-4 rounded-2xl text-lg">${t("success_btn")}</button>`;
+    document.getElementById("btn-cerrar-exito").onclick = () => {
+      closeCartModal();
+      renderDishList();
+      if (state.currentView === "video") renderFeedVideo();
+    };
+  } catch (e) {
+    clearTimeout(timeoutId); // Limpiamos el contador en caso de error
+    console.error(e);
+    btn.disabled = false;
+    btn.innerText = t("confirm_order");
+
+    // Evaluamos si el error fue por tiempo agotado (Red)
+    if (e.name === "AbortError") {
+      alert(
+        "Error de red: El servidor ha tardado demasiado en responder. Por favor, comprueba tu conexión y vuelve a intentarlo.",
+      );
+    } else {
+      alert(t("order_error") + "\n[Debug: " + e.message + "]");
+    }
+  }
+};
+
+// =========================== VÍDEO FEED & OBSERVER ===========================
+let videoObserver = null;
+const setupVideoObservers = () => {
+  if (videoObserver) {
+    videoObserver.disconnect();
+    videoObserver = null;
+  }
+  videoObserver = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((entry) => {
+        const container = entry.target;
+        const video = container.querySelector(".elemento-video");
+        const playOverlay = container.querySelector(
+          ".superposicion-reproducir",
+        );
+        const poster = container.querySelector(".superposicion-poster");
+        if (
+          entry.isIntersecting &&
+          entry.intersectionRatio > CONFIG_UI.videoIntersectionThreshold
+        ) {
+          container.classList.add("esta-activo");
+          if (video) {
+            video.preload = "auto";
+            video.onplaying = () => {
+              if (poster) poster.classList.add("desvanecer");
+              if (playOverlay) {
+                playOverlay.classList.add("hidden");
+                playOverlay.style.display = "none";
+              }
+            };
+            video.play().catch(() => {
+              if (playOverlay) {
+                playOverlay.classList.remove("hidden");
+                playOverlay.classList.add("forzar-mostrar");
+                playOverlay.style.display = "flex";
+              }
+            });
+          }
+          const catId = container.dataset.categoria;
+          if (catId && state.activeVideoCategory !== catId) {
+            state.activeVideoCategory = catId;
+            state.activeCategory = catId;
+            renderVideoTabs();
+          }
+        } else {
+          container.classList.remove("esta-activo");
+          if (video) video.pause();
+          if (poster) poster.classList.remove("desvanecer");
+          if (playOverlay) {
+            playOverlay.classList.add("hidden");
+            playOverlay.classList.remove("forzar-mostrar");
+            playOverlay.style.display = "";
+          }
+        }
+      });
+    },
+    { threshold: [CONFIG_UI.videoIntersectionThreshold] },
+  );
+  document
+    .querySelectorAll(".contenedor-video")
+    .forEach((el) => videoObserver.observe(el));
+};
+
+const scrollToVideoCategory = (catId) => {
+  const target = document.querySelector(
+    `.contenedor-video[data-categoria="${catId}"]`,
+  );
+  const scrollContainer = document.getElementById("area-scroll-videos");
+  if (target && scrollContainer) {
+    scrollContainer.style.scrollBehavior = "auto";
+    target.scrollIntoView();
+    scrollContainer.style.scrollBehavior = "smooth";
+  }
+};
+
+// =========================== TOAST ALÉRGENOS ===========================
+let toastTimeoutId = null;
+
+/* DISEÑO: Toast de alérgenos - styles.css (#toast-alergenos) */
+const showToastAllergens = (platoId) => {
+  const dish = state.menuData.items.find((i) => i.id == platoId);
+  if (!dish || !dish.allergens.length) return;
+
+  const container = document.getElementById("contenedor-iconos-toast");
+  container.innerHTML = "";
+  dish.allergens.forEach((al) => {
+    container.innerHTML += `<div class="flex flex-col items-center p-2 rounded-xl w-16"><img src="${sanitizeUrl(al.icon)}" class="w-6 h-6 mb-1 icono-alergeno-tarjeta"><span class="text-[9px] text-tema-suave leading-tight text-center">${escapeHtml(al.name[state.lang])}</span></div>`;
+  });
+
+  document.getElementById("capa-cierre-toast").classList.remove("hidden");
+  const toast = document.getElementById("toast-alergenos");
+  toast.classList.add("mostrar");
+
+  if (toastTimeoutId) clearTimeout(toastTimeoutId);
+
+  const timeoutMs = (state.menuData.meta.toast_timeout || 4) * 1000;
+
+  toastTimeoutId = setTimeout(() => {
+    toast.classList.remove("mostrar");
+    document.getElementById("capa-cierre-toast").classList.add("hidden");
+  }, timeoutMs);
+};
+
+// =========================== VISTAS Y NAVEGACIÓN ===========================
+const switchView = (view) => {
+  const navMenu = document.getElementById("pestaña-nav-menu");
+  const navVideo = document.getElementById("pestaña-nav-video");
+  const feedVideo = document.getElementById("contenedor-feed-videos");
+  const cabecera = document.getElementById("cabecera-principal");
+  const mainContainer = document.getElementById("contenedor-principal-platos");
+  document.body.style.overflow = "";
+  if (view === "menu") {
+    navMenu.classList.add("activa");
+    navVideo.classList.remove("activa");
+    feedVideo.classList.remove("vista-visible");
+    feedVideo.classList.add("vista-oculta");
+    cabecera.classList.remove("vista-oculta");
+    mainContainer.classList.remove("vista-oculta");
+    cabecera.classList.add("vista-visible");
+    mainContainer.classList.add("vista-visible");
+    if (videoObserver) videoObserver.disconnect();
+    document.querySelectorAll("video.elemento-video").forEach((v) => v.pause());
+    state.activeCategory = state.activeVideoCategory;
+  } else if (view === "video") {
+    navMenu.classList.remove("activa");
+    navVideo.classList.add("activa");
+    cabecera.classList.remove("vista-visible");
+    mainContainer.classList.remove("vista-visible");
+    cabecera.classList.add("vista-oculta");
+    mainContainer.classList.add("vista-oculta");
+    feedVideo.classList.remove("vista-oculta");
+    feedVideo.classList.add("vista-visible");
+    state.activeVideoCategory = state.activeCategory;
+    renderVideoTabs();
+    renderFeedVideo();
+    scrollToVideoCategory(state.activeCategory);
+  }
+};
+
+const updateUrl = () => {
+  const url = new URL(window.location.origin + window.location.pathname);
+  url.searchParams.set("view", state.currentView);
+  if (state.tableId !== "No") url.searchParams.set("mesa", state.tableId);
+  url.hash = state.activeCategory;
+  history.pushState(
+    { view: state.currentView, category: state.activeCategory },
+    "",
+    url,
+  );
+};
+
+// =========================== GESTOS SWIPE ===========================
+let touchStartX = 0,
+  touchStartY = 0;
+let swipeLock = false; // Añadido bloqueo
+
+const initSwipe = () => {
+  document.addEventListener(
+    "touchstart",
+    (e) => {
+      touchStartX = e.touches[0].clientX;
+      touchStartY = e.touches[0].clientY;
+    },
+    { passive: true },
+  );
+
+  document.addEventListener(
+    "touchend",
+    (e) => {
+      if (swipeLock) return; // Evitar colisiones de toques múltiples rápidos
+
+      const modalDetalle = document.getElementById("capa-modal-detalle");
+      const modalCarrito = document.getElementById("capa-modal-carrito");
+      if (
+        modalDetalle.classList.contains("mostrar") ||
+        modalCarrito.classList.contains("mostrar")
+      )
+        return;
+
+      const endX = e.changedTouches[0].clientX;
+      const endY = e.changedTouches[0].clientY;
+      const diffX = touchStartX - endX;
+      const diffY = touchStartY - endY;
+
+      if (Math.abs(diffY) > Math.abs(diffX)) return;
+
+      const margin =
+        state.menuData?.meta?.swipe_margen_seguridad || CONFIG_UI.swipeMargin;
+      if (touchStartX < margin || touchStartX > window.innerWidth - margin)
+        return;
+
+      if (Math.abs(diffX) > CONFIG_UI.swipeMinDistance) {
+        swipeLock = true;
+        setTimeout(() => (swipeLock = false), 300); // Liberar cerrojo en 300ms
+
+        const categories = state.menuData.categories;
+        const currentId =
+          state.currentView === "menu"
+            ? state.activeCategory
+            : state.activeVideoCategory;
+        const idx = categories.findIndex((c) => c.id === currentId);
+        let newIdx = idx;
+
+        if (diffX > 0 && idx < categories.length - 1) newIdx++;
+        else if (diffX < 0 && idx > 0) newIdx--;
+
+        if (newIdx !== idx) {
+          const newCat = categories[newIdx].id;
+          if (state.currentView === "menu") {
+            state.activeCategory = newCat;
+          } else {
+            state.activeVideoCategory = newCat;
+            state.activeCategory = newCat;
+          }
+        }
+      }
+    },
+    { passive: true },
+  );
+};
+
+// =========================== MODALES Y POPSTATE ===========================
+const openDetailModal = (platoId) => {
+  renderDetailModal(platoId);
+  const modal = document.getElementById("capa-modal-detalle");
+  modal.classList.add("mostrar");
+  document.body.style.overflow = "hidden";
+  history.pushState({ modal: "detail" }, "");
+  document.getElementById("area-contenido-detalle").scrollTop = 0;
+};
+
+const closeDetailModal = (fromPop = false) => {
+  const modal = document.getElementById("capa-modal-detalle");
+  modal.classList.remove("mostrar");
+  const video = modal.querySelector("video");
+  if (video) video.pause();
+  document.body.style.overflow = "";
+  if (!fromPop) history.back();
+};
+
+const openCartModal = () => {
+  renderCartModal();
+  const modal = document.getElementById("capa-modal-carrito");
+  modal.classList.add("mostrar");
+  document.body.style.overflow = "hidden";
+  history.pushState({ modal: "cart" }, "");
+  document.getElementById("area-contenido-detalle").scrollTop = 0;
+};
+
+const closeCartModal = (fromPop = false) => {
+  const modal = document.getElementById("capa-modal-carrito");
+  modal.classList.remove("mostrar");
+  document.body.style.overflow = "";
+  if (!fromPop) history.back();
+};
+
+// =========================== EVENTOS GLOBALES (DELEGACIÓN) ===========================
+const globalEventDelegation = () => {
+  document.addEventListener("click", (e) => {
+    const target = e.target.closest("[data-categoria-id]");
+    if (target) {
+      const catId = target.getAttribute("data-categoria-id");
+      if (catId && state.currentView === "menu") {
+        state.activeCategory = catId;
+      } else if (catId && state.currentView === "video") {
+        state.activeVideoCategory = catId;
+        state.activeCategory = catId;
+        scrollToVideoCategory(catId);
+      }
+      return;
+    }
+    const addBtn = e.target.closest('[data-action="add"]');
+    if (addBtn) {
+      const id = addBtn.getAttribute("data-plato-id");
+      if (id) modifyQuantity(id, 1);
+      return;
+    }
+    const decBtn = e.target.closest('[data-action="decrement"]');
+    if (decBtn) {
+      const id = decBtn.getAttribute("data-plato-id");
+      if (id) modifyQuantity(id, -1);
+      return;
+    }
+    const incBtn = e.target.closest('[data-action="increment"]');
+    if (incBtn) {
+      const id = incBtn.getAttribute("data-plato-id");
+      if (id) modifyQuantity(id, 1);
+      return;
+    }
+    const cartDec = e.target.closest('[data-cart-action="decrement"]');
+    if (cartDec) {
+      const id = cartDec.getAttribute("data-plato-id");
+      if (id) modifyQuantity(id, -1);
+      return;
+    }
+    const cartInc = e.target.closest('[data-cart-action="increment"]');
+    if (cartInc) {
+      const id = cartInc.getAttribute("data-plato-id");
+      if (id) modifyQuantity(id, 1);
+      return;
+    }
+    const dishCard = e.target.closest(".tarjeta-plato");
+    if (dishCard && state.currentView === "menu") {
+      const id = dishCard.getAttribute("data-plato-id");
+      if (id) openDetailModal(id);
+      return;
+    }
+    const modalAction = e.target.closest("[data-modal-action]");
+    if (
+      modalAction &&
+      document
+        .getElementById("capa-modal-detalle")
+        .classList.contains("mostrar")
+    ) {
+      const action = modalAction.getAttribute("data-modal-action");
+      const id = modalAction.getAttribute("data-plato-id");
+      if (action === "add") modifyQuantity(id, 1);
+      else if (action === "increment") modifyQuantity(id, 1);
+      else if (action === "decrement") modifyQuantity(id, -1);
+      return;
+    }
+    const playOverlay = e.target.closest(".superposicion-reproducir");
+    if (playOverlay) {
+      const video = playOverlay
+        .closest(".contenedor-video")
+        ?.querySelector("video");
+      if (video) video.play();
+      playOverlay.classList.add("hidden");
+      playOverlay.style.display = "none";
+      return;
+    }
+    const expandBtn = e.target.closest("[data-expandir]");
+    if (expandBtn) {
+      const parent = expandBtn.closest(".interfaz-video");
+      const desc = parent.querySelector(".texto-expandible");
+      const alergenos = parent.querySelector("[data-toast-alergenos]");
+      if (desc.classList.contains("expandido")) {
+        desc.classList.remove("expandido");
+        if (alergenos) {
+          alergenos.classList.add("hidden");
+          alergenos.classList.remove("flex");
+        }
+        expandBtn.textContent = t("see_more");
+      } else {
+        desc.classList.add("expandido");
+        if (alergenos) {
+          alergenos.classList.remove("hidden");
+          alergenos.classList.add("flex");
+        }
+        expandBtn.textContent = t("see_less");
+      }
+      return;
+    }
+    const alergenosToastBtn = e.target.closest("[data-toast-alergenos]");
+    if (alergenosToastBtn) {
+      const platoId = alergenosToastBtn.getAttribute("data-toast-alergenos");
+      showToastAllergens(platoId);
+      return;
+    }
+  });
+};
+
+// =========================== INICIALIZACIÓN ===========================
+const init = async () => {
+  const params = new URLSearchParams(window.location.search);
+  const resp = await fetch("./menu-data.json");
+  const data = await resp.json();
+  state.menuData = data;
+  const meta = data.meta;
+  // Inyectar CSS variables
+  const root = document.documentElement.style;
+  root.setProperty(
+    "--color-fondo-principal",
+    meta.theme_background || "#000000",
+  );
+  root.setProperty("--color-texto-principal", meta.theme_text || "#ffffff");
+  root.setProperty("--color-acento", meta.theme_primary || "#ffffff");
+  root.setProperty(
+    "--color-notificacion",
+    meta.theme_notification || "#ef4444",
+  );
+  document.title = meta.restaurant || "Menú";
+  if (meta.restaurant_logo) {
+    const logo = document.getElementById("logo-restaurante-img");
+    logo.src = sanitizeUrl(meta.restaurant_logo);
+    logo.classList.remove("hidden");
+    document.getElementById("wrapper-icono-inicio").classList.add("hidden");
+  } else {
+    document.getElementById("wrapper-icono-inicio").classList.remove("hidden");
+  }
+  if (meta.enable_video_feed === false) {
+    document.getElementById("pestaña-nav-video").classList.add("hidden");
+    document.getElementById("pestaña-nav-menu").classList.add("hidden");
+    const btnLista = document.getElementById("pestaña-nav-carrito");
+    btnLista.classList.remove("w-full");
+    btnLista.classList.add("p-4");
+  }
+  state.tableId = params.has("mesa")
+    ? params.get("mesa")
+    : meta.default_table || "No";
+  if (state.tableId === "No") {
+    const mesaElem = document.getElementById("etiqueta-mesa-actual");
+    if (mesaElem && mesaElem.parentElement)
+      mesaElem.parentElement.classList.add("hidden");
+  } else {
+    document.getElementById("etiqueta-mesa-actual").textContent = state.tableId;
+  }
+  state.takeaway = !params.has("mesa");
+  state.ordersAllowed = meta.allow_orders || state.tableId !== "No";
+  state.lang = meta.default_lang || "es";
+  state.activeCategory = data.categories[0]?.id || "";
+  state.activeVideoCategory = state.activeCategory;
+
+  applyTranslations();
+  loadCartFromStorage();
+  renderCategories();
+  renderDishList();
+  updateCartBadge();
+
+  const initialView = params.get("view") || "menu";
+  const hashCat = window.location.hash.slice(1);
+  if (hashCat && data.categories.some((c) => c.id === hashCat))
+    state.activeCategory = hashCat;
+  state.currentView = initialView;
+
+  // Eventos fijos
+  document
+    .getElementById("boton-selector-idioma")
+    .addEventListener("click", () => {
+      document
+        .getElementById("panel-desplegable-idiomas")
+        .classList.toggle("hidden");
+    });
+  document.querySelectorAll(".boton-opcion-idioma").forEach((btn) => {
+    btn.addEventListener("click", (e) => {
+      state.lang = e.currentTarget.getAttribute("data-codigo-idioma");
+      document
+        .getElementById("panel-desplegable-idiomas")
+        .classList.add("hidden");
+    });
+  });
+  document.getElementById("boton-inicio").addEventListener("click", () => {
+    const link = state.menuData?.meta?.restaurant_url;
+    if (link && link.trim()) window.location.href = link;
+    else if (state.menuData.categories[0]) {
+      state.activeCategory = state.menuData.categories[0].id;
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+  });
+  document
+    .getElementById("boton-cerrar-detalle")
+    .addEventListener("click", () => closeDetailModal());
+  document
+    .getElementById("fondo-cierre-detalle")
+    .addEventListener("click", () => closeDetailModal());
+  document
+    .getElementById("boton-cerrar-carrito")
+    .addEventListener("click", () => closeCartModal());
+  document
+    .getElementById("fondo-cierre-carrito")
+    .addEventListener("click", () => closeCartModal());
+  document.getElementById("pestaña-nav-menu").addEventListener("click", () => {
+    state.currentView = "menu";
+  });
+  document.getElementById("pestaña-nav-video").addEventListener("click", () => {
+    if (meta.enable_video_feed !== false) state.currentView = "video";
+  });
+  document
+    .getElementById("pestaña-nav-carrito")
+    .addEventListener("click", () => openCartModal());
+  document.getElementById("capa-cierre-toast").addEventListener("click", () => {
+    document.getElementById("toast-alergenos").classList.remove("mostrar");
+    document.getElementById("capa-cierre-toast").classList.add("hidden");
+  });
+
+  globalEventDelegation();
+  initSwipe();
+
+  window.addEventListener("popstate", (event) => {
+    const modalDetalle = document.getElementById("capa-modal-detalle");
+    const modalCarrito = document.getElementById("capa-modal-carrito");
+    if (modalDetalle.classList.contains("mostrar")) {
+      closeDetailModal(true);
+      return;
+    }
+    if (modalCarrito.classList.contains("mostrar")) {
+      closeCartModal(true);
+      return;
+    }
+    const url = new URL(window.location);
+    const view = url.searchParams.get("view") || "menu";
+    const cat =
+      url.hash.slice(1) ||
+      (state.menuData ? state.menuData.categories[0]?.id : "");
+    if (state.currentView !== view) state.currentView = view;
+    if (state.activeCategory !== cat) state.activeCategory = cat;
+  });
+};
+
+document.addEventListener("DOMContentLoaded", init);
+
+
+============================================================
+ARCHIVO: GAS_Gestor_Menu.gs
+============================================================
+
+// ============================================================
+// ARCHIVO: GAS_Gestor_Menu.gs
+// ============================================================
+
+const HOJA_ESPANOL = "Menu_ES";
+const HOJA_INTERNACIONAL = "Menu_INT";
+const HOJA_CATEGORIAS = "Categorias";
+const HOJA_CONFIGURACION = "Config";
+
+function onOpen() {
+  const interfaz = SpreadsheetApp.getUi();
+  interfaz
+    .createMenu("🍔 Menú Web")
+    .addItem(
+      "1. Sincronizar y Traducir Textos (IA)",
+      "sincronizarYTraducirTextos",
+    )
+    .addSeparator()
+    .addItem("2. Validar", "ejecutarValidacion")
+    .addSeparator()
+    .addItem("3. 🚀 Publicar en Web", "validarYLanzarPublicacion")
+    .addToUi();
+}
+
+function onEdit(evento) {
+  if (!evento || !evento.range) return;
+  const hoja_activa = evento.range.getSheet();
+  if (hoja_activa.getName() !== HOJA_ESPANOL) return;
+
+  const fila = evento.range.getRow();
+  const columna = evento.range.getColumn();
+
+  // Autogenerar ID si se edita Categoría (col 2) o Nombre (col 6)
+  if (fila > 1 && (columna === 2 || columna === 6)) {
+    const celda_id = hoja_activa.getRange(fila, 1);
+    if (!celda_id.getValue()) {
+      const todos_los_ids = hoja_activa
+        .getRange("A2:A")
+        .getValues()
+        .flat()
+        .filter((v) => !isNaN(v) && v !== "");
+      const id_maximo =
+        todos_los_ids.length > 0 ? Math.max(...todos_los_ids) : 0;
+      celda_id.setValue(id_maximo + 1);
+      hoja_activa
+        .getRange(fila, 1, 1, hoja_activa.getLastColumn())
+        .setBackground("#E8F5E9");
+    }
+  }
+}
+
+function ejecutarValidacion() {
+  const interfaz = SpreadsheetApp.getUi();
+  const resultado = analizarDatosMenu(interfaz);
+  mostrarReporteHTML(interfaz, resultado, false);
+}
+
+function validarYLanzarPublicacion() {
+  const interfaz = SpreadsheetApp.getUi();
+  const resultado = analizarDatosMenu(interfaz);
+
+  if (!resultado.es_valido) {
+    mostrarReporteHTML(interfaz, resultado, true);
+    return;
+  }
+
+  if (resultado.advertencias.length > 0) {
+    const respuesta = interfaz.alert(
+      "⚠️ Advertencias detectadas",
+      "Hay advertencias menores (como vídeos largos). ¿Deseas publicar de todos modos?",
+      interfaz.ButtonSet.YES_NO,
+    );
+    if (respuesta !== interfaz.Button.YES) return;
+  }
+
+  dispararAccionGithub(interfaz, resultado.configuracion);
+}
+
+// ============================================================
+// LÓGICA PRINCIPAL DE VALIDACIÓN
+// ============================================================
+function analizarDatosMenu(interfaz) {
+  const libro_actual = SpreadsheetApp.getActiveSpreadsheet();
+  const hojas = {
+    es: libro_actual.getSheetByName(HOJA_ESPANOL),
+    int: libro_actual.getSheetByName(HOJA_INTERNACIONAL),
+    cat: libro_actual.getSheetByName(HOJA_CATEGORIAS),
+    conf: libro_actual.getSheetByName(HOJA_CONFIGURACION),
+  };
+
+  if (!hojas.es || !hojas.int || !hojas.cat || !hojas.conf) {
+    return {
+      es_valido: false,
+      errores: ["Faltan hojas principales en el documento."],
+      advertencias: [],
+    };
+  }
+
+  // 1. Validar Configuración
+  const res_config = extraerValidarConfiguracion(hojas.conf);
+  if (res_config.errores.length > 0) {
+    return {
+      es_valido: false,
+      errores: res_config.errores,
+      advertencias: [],
+      configuracion: res_config.configuracion,
+    };
+  }
+
+  // 2. Control de Columnas Dinámico
+  const datos_es = hojas.es.getDataRange().getValues();
+  const cabeceras = datos_es[0].map((h) => h.toString().trim().toLowerCase());
+  const indices = {
+    id: cabeceras.indexOf("id"),
+    cat: cabeceras.indexOf("categoria"),
+    activo: cabeceras.indexOf("activo"),
+    precio: cabeceras.indexOf("precio"),
+    img: cabeceras.indexOf("img_filename"),
+    video: cabeceras.indexOf("video_filename"),
+    nombre: cabeceras.indexOf("nombre"),
+  };
+
+  const columnas_faltantes = Object.entries(indices)
+    .filter(([clave, idx]) => idx === -1 && clave !== "video")
+    .map(([clave]) => clave);
+  if (columnas_faltantes.length > 0) {
+    return {
+      es_valido: false,
+      errores: [
+        `Faltan columnas obligatorias en ${HOJA_ESPANOL}: ${columnas_faltantes.join(", ")}`,
+      ],
+      advertencias: [],
+      configuracion: res_config.configuracion,
+    };
+  }
+
+  // 3. Consulta de Google Drive
+  let mapa_archivos_drive = {};
+  try {
+    libro_actual.toast("Consultando Google Drive...", "Validando");
+    const archivos = obtenerMetadatosDrive(
+      res_config.configuracion["image_drive_folder_id"].toString().trim(),
+    );
+    Object.keys(archivos).forEach(
+      (k) => (mapa_archivos_drive[k.toLowerCase()] = archivos[k]),
+    );
+
+    const nombre_logo = res_config.configuracion["restaurante_image"];
+    if (nombre_logo && nombre_logo.toString().trim() !== "") {
+      if (!mapa_archivos_drive[nombre_logo.toString().trim().toLowerCase()]) {
+        return {
+          es_valido: false,
+          errores: [
+            `El logo "${nombre_logo}" configurado en la pestaña Config NO existe en la carpeta de Drive.`,
+          ],
+          advertencias: [],
+          configuracion: res_config.configuracion,
+        };
+      }
+    }
+  } catch (error) {
+    return {
+      es_valido: false,
+      errores: [error.message],
+      advertencias: [],
+      configuracion: res_config.configuracion,
+    };
+  }
+
+  // 4. Preparar Contexto y Limpiar Notas Anteriores
+  hojas.es.clearNotes();
+  const contexto = {
+    hoja_es: hojas.es,
+    errores: [],
+    advertencias: [],
+    indices: indices,
+    archivos_drive: mapa_archivos_drive,
+    categorias_validas: hojas.cat
+      .getDataRange()
+      .getValues()
+      .slice(1)
+      .map((r) => r[0].toString().trim().toLowerCase())
+      .filter(Boolean),
+    diccionario_traducciones: mapearTraducciones(hojas.int),
+    ids_procesados: new Set(),
+    ancho_minimo_imagen:
+      parseInt(res_config.configuracion["image_min_width"]) || 600,
+    tamaño_max_video_mb:
+      parseFloat(res_config.configuracion["video_max_size_MB"]) || 50,
+  };
+
+  // 5. Validar filas iterativamente
+  for (let fila_idx = 1; fila_idx < datos_es.length; fila_idx++) {
+    inspeccionarFilaMenu(datos_es[fila_idx], fila_idx + 1, contexto);
+  }
+
+  return {
+    es_valido: contexto.errores.length === 0,
+    errores: contexto.errores,
+    advertencias: contexto.advertencias,
+    configuracion: res_config.configuracion,
+  };
+}
+
+// ============================================================
+// FUNCIONES DE APOYO Y UTILIDADES
+// ============================================================
+function extraerValidarConfiguracion(hoja_conf) {
+  const datos = hoja_conf.getDataRange().getValues();
+  const configuracion = {};
+  datos.forEach((fila) => {
+    if (fila[0]) configuracion[fila[0].toString().trim()] = fila[1];
+  });
+
+  const errores = [];
+  const requeridos = [
+    "restaurante_nombre",
+    "github_username",
+    "github_repo",
+    "image_drive_folder_id",
+    "moneda_simbolo",
+  ];
+  for (let campo of requeridos) {
+    if (
+      !configuracion[campo] ||
+      configuracion[campo].toString().trim() === ""
+    ) {
+      errores.push(`Falta parámetro en Config: "${campo}"`);
+    }
+  }
+  return { configuracion, errores };
+}
+
+function inspeccionarFilaMenu(fila, numero_fila, contexto) {
+  const valor_id = fila[contexto.indices.id];
+  if (valor_id === "" || valor_id === null) return;
+
+  const string_id = valor_id.toString().trim().toUpperCase();
+  if (string_id.includes("#REF!") || isNaN(Number(valor_id))) {
+    insertarNota(
+      contexto.hoja_es,
+      numero_fila,
+      contexto.indices.id + 1,
+      "ID inválido.",
+    );
+    contexto.errores.push(`Fila ${numero_fila}: ID inválido.`);
+    return;
+  }
+
+  const esta_activo =
+    fila[contexto.indices.activo] === true ||
+    fila[contexto.indices.activo].toString().toUpperCase() === "TRUE" ||
+    fila[contexto.indices.activo] === 1;
+
+  if (contexto.ids_procesados.has(string_id)) {
+    insertarNota(
+      contexto.hoja_es,
+      numero_fila,
+      contexto.indices.id + 1,
+      "ID Duplicado.",
+    );
+    contexto.errores.push(`Fila ${numero_fila}: ID ${string_id} duplicado.`);
+  }
+  contexto.ids_procesados.add(string_id);
+
+  const valor_cat = fila[contexto.indices.cat]
+    ? fila[contexto.indices.cat].toString().trim().toLowerCase()
+    : "";
+  if (!contexto.categorias_validas.includes(valor_cat)) {
+    insertarNota(
+      contexto.hoja_es,
+      numero_fila,
+      contexto.indices.cat + 1,
+      "Categoría no existe.",
+    );
+    contexto.errores.push(
+      `Fila ${numero_fila}: Categoría "${valor_cat}" no existe.`,
+    );
+  }
+
+  let precio_parseado = parseFloat(
+    fila[contexto.indices.precio]
+      ? fila[contexto.indices.precio].toString().replace(",", ".")
+      : "0",
+  );
+  if (isNaN(precio_parseado) || precio_parseado <= 0) {
+    insertarNota(
+      contexto.hoja_es,
+      numero_fila,
+      contexto.indices.precio + 1,
+      "Precio inválido.",
+    );
+    contexto.errores.push(`Fila ${numero_fila}: Precio inválido.`);
+  }
+
+  if (esta_activo) {
+    if (
+      !fila[contexto.indices.nombre] ||
+      fila[contexto.indices.nombre].toString().trim() === ""
+    ) {
+      insertarNota(
+        contexto.hoja_es,
+        numero_fila,
+        contexto.indices.nombre + 1,
+        "Falta el Nombre.",
+      );
+      contexto.errores.push(`Fila ${numero_fila}: Falta NOMBRE.`);
+    }
+
+    validarArchivoMultimedia(
+      fila[contexto.indices.img],
+      "imagen",
+      numero_fila,
+      contexto.indices.img + 1,
+      contexto,
+    );
+    if (contexto.indices.video !== -1) {
+      validarArchivoMultimedia(
+        fila[contexto.indices.video],
+        "video",
+        numero_fila,
+        contexto.indices.video + 1,
+        contexto,
+      );
+    }
+
+    if (
+      !contexto.diccionario_traducciones[string_id] ||
+      !contexto.diccionario_traducciones[string_id].nombre_en
+    ) {
+      contexto.errores.push(
+        `Fila ${numero_fila}: Plato ID ${string_id} sin traducciones en ${HOJA_INTERNACIONAL}.`,
+      );
+    }
+  }
+}
+
+function validarArchivoMultimedia(
+  nombre_archivo_crudo,
+  tipo,
+  fila_num,
+  col_idx,
+  contexto,
+) {
+  const nombre_archivo = nombre_archivo_crudo
+    ? nombre_archivo_crudo.toString().trim()
+    : "";
+  if (!nombre_archivo && tipo === "video") return;
+  if (!nombre_archivo && tipo === "imagen") {
+    insertarNota(contexto.hoja_es, fila_num, col_idx, "Falta imagen.");
+    return contexto.errores.push(`Fila ${fila_num}: Falta imagen.`);
+  }
+
+  const exp_reg =
+    tipo === "imagen" ? /^[\w\-]+\.(jpg|jpeg|png)$/i : /^[\w\-]+\.(mp4|mov)$/i;
+  if (!exp_reg.test(nombre_archivo)) {
+    insertarNota(contexto.hoja_es, fila_num, col_idx, `Formato inválido.`);
+    return contexto.errores.push(
+      `Fila ${fila_num}: Archivo ${nombre_archivo} formato inválido.`,
+    );
+  }
+
+  const info_archivo = contexto.archivos_drive[nombre_archivo.toLowerCase()];
+  if (!info_archivo) {
+    insertarNota(contexto.hoja_es, fila_num, col_idx, "No existe en Drive.");
+    return contexto.errores.push(
+      `Fila ${fila_num}: Archivo "${nombre_archivo}" NO existe en Drive.`,
+    );
+  }
+
+  if (
+    tipo === "imagen" &&
+    info_archivo.width > 0 &&
+    info_archivo.width < contexto.ancho_minimo_imagen
+  ) {
+    insertarNota(
+      contexto.hoja_es,
+      fila_num,
+      col_idx,
+      `Ancho < ${contexto.ancho_minimo_imagen}px`,
+    );
+    contexto.errores.push(
+      `Fila ${fila_num}: Imagen "${nombre_archivo}" muy pequeña (${info_archivo.width}px).`,
+    );
+  } else if (tipo === "video") {
+    const tamaño_mb = (info_archivo.size / (1024 * 1024)).toFixed(2);
+    if (info_archivo.size > contexto.tamaño_max_video_mb * 1024 * 1024) {
+      insertarNota(
+        contexto.hoja_es,
+        fila_num,
+        col_idx,
+        `Pesado: ${tamaño_mb}MB`,
+      );
+      contexto.errores.push(
+        `Fila ${fila_num}: Video "${nombre_archivo}" pesa ${tamaño_mb}MB (máx ${contexto.tamaño_max_video_mb}MB).`,
+      );
+    }
+    if (info_archivo.duration > 12) {
+      contexto.advertencias.push(
+        `Fila ${fila_num}: Video "${nombre_archivo}" dura ${info_archivo.duration.toFixed(1)}s. (Recomendado: < 12s).`,
+      );
+    }
+  }
+}
+
+function mapearTraducciones(hoja_int) {
+  const dict = {};
+  const datos = hoja_int.getDataRange().getValues();
+  const cabeceras = datos[0].map((h) => h.toString().trim().toLowerCase());
+  const idx_id = cabeceras.indexOf("id");
+  const idx_nom_en = cabeceras.indexOf("nombre_en");
+  const idx_nom_fr = cabeceras.indexOf("nombre_fr");
+
+  if (idx_id === -1) return dict;
+
+  datos.slice(1).forEach((fila) => {
+    if (fila[idx_id]) {
+      dict[fila[idx_id].toString().trim().toUpperCase()] = {
+        nombre_en: idx_nom_en !== -1 ? fila[idx_nom_en] : "",
+        nombre_fr: idx_nom_fr !== -1 ? fila[idx_nom_fr] : "",
+      };
+    }
+  });
+  return dict;
+}
+
+function insertarNota(hoja, fila, columna, mensaje) {
+  hoja.getRange(fila, columna).setNote("🚨 ERROR: " + mensaje);
+}
+
+function obtenerMetadatosDrive(id_carpeta) {
+  const mapa_archivos = {};
+  let token = null;
+  do {
+    const respuesta = Drive.Files.list({
+      q: `'${id_carpeta}' in parents and trashed = false`,
+      fields:
+        "nextPageToken, files(name, imageMediaMetadata, size, videoMediaMetadata)",
+      pageToken: token,
+      pageSize: 1000,
+    });
+    if (respuesta.files) {
+      respuesta.files.forEach((f) => {
+        mapa_archivos[f.name.trim()] = {
+          width: f.imageMediaMetadata ? f.imageMediaMetadata.width : 0,
+          size: f.size || 0,
+          duration: f.videoMediaMetadata
+            ? f.videoMediaMetadata.durationMillis / 1000
+            : 0,
+        };
+      });
+    }
+    token = respuesta.nextPageToken;
+  } while (token);
+  return mapa_archivos;
+}
+
+function dispararAccionGithub(interfaz, configuracion) {
+  const token_github =
+    PropertiesService.getScriptProperties().getProperty("GITHUB_TOKEN");
+  if (!token_github)
+    return interfaz.alert(
+      "Error",
+      "No hay GITHUB_TOKEN configurado.",
+      interfaz.ButtonSet.OK,
+    );
+
+  const propietario = configuracion.github_username.toString().trim();
+  const repositorio = configuracion.github_repo.toString().trim();
+  const endpoint = `https://api.github.com/repos/${propietario}/${repositorio}/actions/workflows/sync.yml/dispatches`;
+
+  try {
+    const solicitud = UrlFetchApp.fetch(endpoint, {
+      method: "post",
+      contentType: "application/json",
+      muteHttpExceptions: true,
+      headers: {
+        Authorization: "token " + token_github,
+        Accept: "application/vnd.github.v3+json",
+      },
+      payload: JSON.stringify({ ref: "main" }),
+    });
+    if (solicitud.getResponseCode() === 204) {
+      interfaz.alert(
+        "🚀 Lanzado",
+        `El menú se sincronizará en breve en la web.`,
+        interfaz.ButtonSet.OK,
+      );
+    } else {
+      interfaz.alert(
+        "Error de GitHub",
+        solicitud.getContentText(),
+        interfaz.ButtonSet.OK,
+      );
+    }
+  } catch (error) {
+    interfaz.alert(
+      "Error de conexión",
+      error.toString(),
+      interfaz.ButtonSet.OK,
+    );
+  }
+}
+
+// ============================================================
+// LÓGICA DE SINCRONIZACIÓN Y TRADUCCIÓN (MEJORADA POR LOTE)
+// ============================================================
+function sincronizarYTraducirTextos() {
+  const interfaz = SpreadsheetApp.getUi();
+  const libro = SpreadsheetApp.getActiveSpreadsheet();
+  const hoja_es = libro.getSheetByName(HOJA_ESPANOL);
+  if (!hoja_es) return;
+
+  let hoja_int = libro.getSheetByName(HOJA_INTERNACIONAL);
+  if (!hoja_int) {
+    hoja_int = libro.insertSheet(HOJA_INTERNACIONAL);
+    hoja_int.appendRow([
+      "id",
+      "nombre_es",
+      "nombre_en",
+      "nombre_fr",
+      "descripcion_es",
+      "descripcion_en",
+      "descripcion_fr",
+    ]);
+    hoja_int.getRange("A1:G1").setFontWeight("bold").setBackground("#F3F3F3");
+    hoja_int.setFrozenRows(1);
+  }
+
+  const datos_es = hoja_es.getDataRange().getValues();
+  const cab_es = datos_es.shift();
+  const idx_es = {
+    id: cab_es.indexOf("id"),
+    nom: cab_es.indexOf("nombre"),
+    desc: cab_es.indexOf("descripcion"),
+  };
+
+  if (idx_es.id === -1 || idx_es.nom === -1) {
+    return interfaz.alert(
+      "Error",
+      `Faltan columnas "id" o "nombre" en ${HOJA_ESPANOL}.`,
+      interfaz.ButtonSet.OK,
+    );
+  }
+
+  // Preparamos matriz de escritura para Menu_INT
+  const datos_int = hoja_int.getDataRange().getValues();
+  const cab_int = datos_int[0];
+  const mapa_int = {};
+  datos_int.slice(1).forEach((fila, i) => {
+    if (fila[0])
+      mapa_int[fila[0].toString().trim().toUpperCase()] = {
+        idx_fila: i + 1,
+        datos: fila,
+      }; // idx_fila + 1 porque quitamos cabecera
+  });
+
+  // Array que almacenará todos los datos a reescribir masivamente (Batch)
+  const nueva_matriz_int = [];
+  let cont_nuevos = 0,
+    cont_trads = 0;
+
+  libro.toast(
+    "Evaluando textos y sincronizando con Menu_INT...",
+    "En marcha 🤖",
+  );
+
+  for (let i = 0; i < datos_es.length; i++) {
+    const fila_es = datos_es[i];
+    if (
+      !fila_es[idx_es.id] ||
+      fila_es[idx_es.id].toString().includes("#") ||
+      !fila_es[idx_es.nom]
+    )
+      continue;
+
+    const id_plato = fila_es[idx_es.id].toString().trim().toUpperCase();
+    const texto_nom_es = fila_es[idx_es.nom].toString().trim();
+    const texto_desc_es = (fila_es[idx_es.desc] || "").toString().trim();
+
+    let fila_final_int = [
+      id_plato,
+      texto_nom_es,
+      "",
+      "",
+      texto_desc_es,
+      "",
+      "",
+    ];
+
+    if (mapa_int[id_plato]) {
+      // Existe en INT. Mantenemos traducciones existentes, pero FORZAMOS actualizar los textos en Español de referencia
+      const datos_existentes = mapa_int[id_plato].datos;
+      fila_final_int[2] = datos_existentes[2]; // nombre_en
+      fila_final_int[3] = datos_existentes[3]; // nombre_fr
+      fila_final_int[5] = datos_existentes[5]; // descripcion_en
+      fila_final_int[6] = datos_existentes[6]; // descripcion_fr
+
+      // Traducir solo si están vacíos
+      if (!fila_final_int[2] && texto_nom_es) {
+        fila_final_int[2] = LanguageApp.translate(texto_nom_es, "es", "en");
+        cont_trads++;
+      }
+      if (!fila_final_int[3] && texto_nom_es) {
+        fila_final_int[3] = LanguageApp.translate(texto_nom_es, "es", "fr");
+        cont_trads++;
+      }
+      if (!fila_final_int[5] && texto_desc_es) {
+        fila_final_int[5] = LanguageApp.translate(texto_desc_es, "es", "en");
+        cont_trads++;
+      }
+      if (!fila_final_int[6] && texto_desc_es) {
+        fila_final_int[6] = LanguageApp.translate(texto_desc_es, "es", "fr");
+        cont_trads++;
+      }
+    } else {
+      // Nuevo plato
+      if (texto_nom_es) {
+        fila_final_int[2] = LanguageApp.translate(texto_nom_es, "es", "en");
+        fila_final_int[3] = LanguageApp.translate(texto_nom_es, "es", "fr");
+        cont_trads += 2;
+      }
+      if (texto_desc_es) {
+        fila_final_int[5] = LanguageApp.translate(texto_desc_es, "es", "en");
+        fila_final_int[6] = LanguageApp.translate(texto_desc_es, "es", "fr");
+        cont_trads += 2;
+      }
+      cont_nuevos++;
+    }
+
+    nueva_matriz_int.push(fila_final_int);
+  }
+
+  // Escritura por Lote (1 sola llamada a la API = Máximo rendimiento)
+  if (nueva_matriz_int.length > 0) {
+    // Rellenamos con blancos si la matriz anterior era más larga (para sobreescribir limpio)
+    hoja_int
+      .getRange(
+        2,
+        1,
+        Math.max(nueva_matriz_int.length, datos_int.length - 1),
+        7,
+      )
+      .clearContent();
+    hoja_int
+      .getRange(2, 1, nueva_matriz_int.length, 7)
+      .setValues(nueva_matriz_int);
+  }
+
+  libro.toast("Sincronización finalizada", "Hecho ✅");
+  if (cont_trads > 0 || cont_nuevos > 0) {
+    interfaz.alert(
+      "¡Éxito!",
+      `Platos sincronizados.\nNuevos detectados: ${cont_nuevos}\nTextos traducidos (IA): ${cont_trads}`,
+      interfaz.ButtonSet.OK,
+    );
+  } else {
+    interfaz.alert(
+      "Todo al día",
+      "No se detectaron campos vacíos para traducir. Textos de referencia actualizados.",
+      interfaz.ButtonSet.OK,
+    );
+  }
+}
+
+// ============================================================
+// UI HTML REPORTES
+// ============================================================
+function mostrarReporteHTML(interfaz, resultado, es_bloqueo) {
+  if (resultado.es_valido && resultado.advertencias.length === 0) {
+    return interfaz.alert(
+      "✅ Todo Correcto",
+      "El menú está validado y listo.",
+      interfaz.ButtonSet.OK,
+    );
+  }
+
+  let html_str = `<div style="font-family: Arial, sans-serif; padding: 10px;">`;
+  if (!resultado.es_valido) html_str += renderizarErrores(resultado.errores);
+  if (resultado.advertencias.length > 0)
+    html_str += renderizarAdvertencias(resultado.advertencias);
+  html_str += `</div>`;
+
+  const html_output = HtmlService.createHtmlOutput(html_str)
+    .setWidth(600)
+    .setHeight(450);
+  interfaz.showModalDialog(
+    html_output,
+    es_bloqueo ? "🛑 Publicación Bloqueada" : "📋 Reporte de Validación",
+  );
+}
+
+function renderizarErrores(errores) {
+  let html = `<h3 style="color: #d32f2f;">❌ Se encontraron ${errores.length} Errores:</h3>`;
+  html += `<p style="font-size: 12px; color: #555;">Se han añadido notas en las celdas afectadas.</p>`;
+  html += `<ul style="color: #d32f2f; font-size: 14px; background: #ffebee; padding: 15px; border-radius: 8px;">`;
+  errores.forEach((e) => (html += `<li style="margin-bottom: 5px;">${e}</li>`));
+  return html + `</ul>`;
+}
+
+function renderizarAdvertencias(advertencias) {
+  let html = `<h3 style="color: #f57c00;">⚠️ Advertencias:</h3>`;
+  html += `<ul style="color: #ef6c00; font-size: 14px; background: #fff3e0; padding: 15px; border-radius: 8px;">`;
+  advertencias.forEach(
+    (a) => (html += `<li style="margin-bottom: 5px;">${a}</li>`),
+  );
+  return html + `</ul>`;
+}
+
+// ============================================================
+// PROXY SEGURO PARA ENVIOS A TELEGRAM (Soporta CORS local)
+// ============================================================
+function doPost(e) {
+  try {
+    // Leemos el mensaje como parámetro de formulario estándar
+    const textoMensaje = e.parameter.mensaje;
+    if (!textoMensaje) throw new Error("No se recibió el parámetro 'mensaje'");
+
+    const scriptProps = PropertiesService.getScriptProperties();
+    const tokenBot = scriptProps.getProperty("TELEGRAM_BOT_TOKEN");
+    const chatId = scriptProps.getProperty("TELEGRAM_CHAT_ID");
+
+    if (!tokenBot || !chatId) {
+      throw new Error("El Bot de Telegram no está configurado.");
+    }
+
+    const opciones = {
+      method: "post",
+      contentType: "application/json",
+      muteHttpExceptions: true,
+      payload: JSON.stringify({
+        chat_id: chatId,
+        text: textoMensaje,
+        parse_mode: "HTML",
+      }),
+    };
+
+    UrlFetchApp.fetch(
+      `https://api.telegram.org/bot${tokenBot}/sendMessage`,
+      opciones,
+    );
+
+    return ContentService.createTextOutput(
+      JSON.stringify({ status: "success" }),
+    ).setMimeType(ContentService.MimeType.JSON);
+  } catch (error) {
+    return ContentService.createTextOutput(
+      JSON.stringify({ status: "error", error: error.toString() }),
+    ).setMimeType(ContentService.MimeType.JSON);
+  }
+}
+
+
+============================================================
+ARCHIVO: docs/menu-data.json
+============================================================
+
+{
+  "meta": {
+    "restaurant": "Restaurante Al Alba",
+    "restaurant_url": "https://hotelalalba.com/restaurante/",
+    "restaurant_logo": "./img/logo_restaurante.webp",
+    "currency": "DH",
+    "currency_position": "derecha",
+    "default_lang": "es",
+    "order_lang": "fr",
+    "default_table": "No",
+    "theme_primary": "#ff6a00",
+    "theme_background": "#000000",
+    "theme_text": "#ffffff",
+    "theme_notification": "#f43131",
+    "allow_orders": false,
+    "limpiar_carrito_tras_hora": 1,
+    "toast_timeout": 4,
+    "vibrar_al_enviar": true,
+    "swipe_margen_seguridad": 30,
+    "generated_at": "2026-04-03T01:40:44.749633",
+    "base_url": "https://GerNarGar.github.io/web_menu_alalba",
+    "enable_video_feed": false,
+    "modal_uses_video": true,
+    "gas_webapp_url": "https://script.google.com/macros/s/AKfycby6Nk5iq1CT6Nh7r-xpqR8ddJM8MiTVTi1s2pk3HRLeTVgIAbHKwdkEV1393je_NhRx/exec"
+  },
+  "categories": [
+    {
+      "id": "entrantes",
+      "order": 1,
+      "label": {
+        "es": "Entrantes",
+        "en": "Starters",
+        "fr": "Entrées"
+      }
+    },
+    {
+      "id": "principales",
+      "order": 2,
+      "label": {
+        "es": "Principales",
+        "en": "Main Courses",
+        "fr": "Plats"
+      }
+    },
+    {
+      "id": "postres",
+      "order": 3,
+      "label": {
+        "es": "Postres",
+        "en": "Desserts",
+        "fr": "Desserts"
+      }
+    }
+  ],
+  "allergens": [
+    {
+      "code": 1,
+      "name": {
+        "es": "Gluten",
+        "en": "Gluten",
+        "fr": "Gluten"
+      },
+      "icon": "./img/icons/icons_small/gluten.png"
+    },
+    {
+      "code": 2,
+      "name": {
+        "es": "Crustáceos",
+        "en": "Crustaceans",
+        "fr": "Crustacés"
+      },
+      "icon": "./img/icons/icons_small/crustaceans.png"
+    },
+    {
+      "code": 3,
+      "name": {
+        "es": "Frutos secos",
+        "en": "Nuts / Tree nuts",
+        "fr": "Fruits à coque"
+      },
+      "icon": "./img/icons/icons_small/treenuts.png"
+    },
+    {
+      "code": 4,
+      "name": {
+        "es": "Apio",
+        "en": "Celery",
+        "fr": "Céleri"
+      },
+      "icon": "./img/icons/icons_small/celery.png"
+    },
+    {
+      "code": 5,
+      "name": {
+        "es": "Mostaza",
+        "en": "Mustard",
+        "fr": "Moutarde"
+      },
+      "icon": "./img/icons/icons_small/mustard.png"
+    },
+    {
+      "code": 6,
+      "name": {
+        "es": "Sésamo",
+        "en": "Sesame",
+        "fr": "Sésame"
+      },
+      "icon": "./img/icons/icons_small/sesame.png"
+    },
+    {
+      "code": 7,
+      "name": {
+        "es": "Pescado",
+        "en": "Fish",
+        "fr": "Poisson"
+      },
+      "icon": "./img/icons/icons_small/fish.png"
+    },
+    {
+      "code": 8,
+      "name": {
+        "es": "Soja",
+        "en": "Soy / Soya",
+        "fr": "Soja"
+      },
+      "icon": "./img/icons/icons_small/soyabeans.png"
+    },
+    {
+      "code": 9,
+      "name": {
+        "es": "Lácteos",
+        "en": "Dairy / Milk",
+        "fr": "Produits laitiers"
+      },
+      "icon": "./img/icons/icons_small/milk.png"
+    },
+    {
+      "code": 10,
+      "name": {
+        "es": "Sulfitos",
+        "en": "Sulphites",
+        "fr": "Sulfites"
+      },
+      "icon": "./img/icons/icons_small/so2.png"
+    },
+    {
+      "code": 11,
+      "name": {
+        "es": "Huevo",
+        "en": "Egg",
+        "fr": "Œuf"
+      },
+      "icon": "./img/icons/icons_small/egg.png"
+    },
+    {
+      "code": 12,
+      "name": {
+        "es": "Cacahuetes",
+        "en": "Peanuts",
+        "fr": "Arachides"
+      },
+      "icon": "./img/icons/icons_small/peanuts.png"
+    },
+    {
+      "code": 13,
+      "name": {
+        "es": "Moluscos",
+        "en": "Molluscs",
+        "fr": "Mollusques"
+      },
+      "icon": "./img/icons/icons_small/molluscs.png"
+    },
+    {
+      "code": 14,
+      "name": {
+        "es": "Altramuces",
+        "en": "Lupins",
+        "fr": "Lupin"
+      },
+      "icon": "./img/icons/icons_small/lupin.png"
+    }
+  ],
+  "items": [
+    {
+      "id": 1,
+      "category": "entrantes",
+      "price": 65.0,
+      "is_chef_choice": true,
+      "allergens": [
+        {
+          "code": 1,
+          "name": {
+            "es": "Gluten",
+            "en": "Gluten",
+            "fr": "Gluten"
+          },
+          "icon": "./img/icons/icons_small/gluten.png"
+        },
+        {
+          "code": 9,
+          "name": {
+            "es": "Lácteos",
+            "en": "Dairy / Milk",
+            "fr": "Produits laitiers"
+          },
+          "icon": "./img/icons/icons_small/milk.png"
+        },
+        {
+          "code": 12,
+          "name": {
+            "es": "Cacahuetes",
+            "en": "Peanuts",
+            "fr": "Arachides"
+          },
+          "icon": "./img/icons/icons_small/peanuts.png"
+        }
+      ],
+      "image": "./img/platos/briuats1.webp",
+      "video": {
+        "src": "./img/videos/vid4_30fps.mp4",
+        "poster": "./img/videos/vid4_30fps_poster.webp",
+        "duration": 7.1
+      },
+      "i18n": {
+        "es": {
+          "name": "Briuats de queso y puerro con salsa de frutos del bosque",
+          "description": "Tres triángulos crujientes de masa hojaldrada (Warqa) con un relleno de puerro confitado y queso ghibli con una mezcla de especias cálidas y cacahuetes garrapiñados. Para untar, los servimos junto a una salsa agridulce de frutos del bosque."
+        },
+        "en": {
+          "name": "Cheese and leek briuats with forest fruit sauce",
+          "description": "Three crispy triangles of puff pastry (Warqa) filled with candied leek and Ghibli cheese, topped with a warm spice blend and caramelized peanuts. Served with a sweet and sour berry dip."
+        },
+        "fr": {
+          "name": "Briuats au fromage et aux poireaux, sauce aux fruits des bois",
+          "description": "Trois triangles croustillants de pâte feuilletée (Warqa) fourrés de poireaux confits et de fromage Ghibli, nappés d'un mélange d'épices chaudes et de cacahuètes caramélisées. Servis avec une sauce aigre-douce aux fruits rouges."
+        }
+      }
+    },
+    {
+      "id": 2,
+      "category": "entrantes",
+      "price": 60.0,
+      "is_chef_choice": true,
+      "allergens": [
+        {
+          "code": 1,
+          "name": {
+            "es": "Gluten",
+            "en": "Gluten",
+            "fr": "Gluten"
+          },
+          "icon": "./img/icons/icons_small/gluten.png"
+        },
+        {
+          "code": 3,
+          "name": {
+            "es": "Frutos secos",
+            "en": "Nuts / Tree nuts",
+            "fr": "Fruits à coque"
+          },
+          "icon": "./img/icons/icons_small/treenuts.png"
+        },
+        {
+          "code": 9,
+          "name": {
+            "es": "Lácteos",
+            "en": "Dairy / Milk",
+            "fr": "Produits laitiers"
+          },
+          "icon": "./img/icons/icons_small/milk.png"
+        }
+      ],
+      "image": "./img/platos/veloute.webp",
+      "video": {
+        "src": "./img/videos/vid2_25fps.mp4",
+        "poster": "./img/videos/vid2_25fps_poster.webp",
+        "duration": 11.5
+      },
+      "i18n": {
+        "es": {
+          "name": "Velouté de harira, queso de cabra y crunch de maíz",
+          "description": "Reinvención de la tradicional sopa marroquí de Ramadán en textura de velouté que combinamos con un lácteo agrio, queso de cabra y maíz crujiente picado."
+        },
+        "en": {
+          "name": "Harira velouté, goat cheese and corn crunch",
+          "description": "A reinvention of the traditional Moroccan Ramadan soup in a velouté texture that we combined with a sour dairy, goat cheese and chopped crispy corn."
+        },
+        "fr": {
+          "name": "Velouté d'harira, fromage de chèvre et croûton de maïs",
+          "description": "Une réinvention de la soupe traditionnelle marocaine du Ramadan, dans une texture veloutée que nous avons associée à un produit laitier acidulé, du fromage de chèvre et du maïs croustillant haché."
+        }
+      }
+    },
+    {
+      "id": 3,
+      "category": "entrantes",
+      "price": 65.0,
+      "is_chef_choice": false,
+      "allergens": [
+        {
+          "code": 3,
+          "name": {
+            "es": "Frutos secos",
+            "en": "Nuts / Tree nuts",
+            "fr": "Fruits à coque"
+          },
+          "icon": "./img/icons/icons_small/treenuts.png"
+        },
+        {
+          "code": 6,
+          "name": {
+            "es": "Sésamo",
+            "en": "Sesame",
+            "fr": "Sésame"
+          },
+          "icon": "./img/icons/icons_small/sesame.png"
+        }
+      ],
+      "image": "./img/platos/zalouk.webp",
+      "video": {
+        "src": "./img/videos/vid1_25fps.mp4",
+        "poster": "./img/videos/vid1_25fps_poster.webp",
+        "duration": 9.3
+      },
+      "i18n": {
+        "es": {
+          "name": "Zalouk con humus rosa y anacardos",
+          "description": "Versión de la tradicional ensalada de verduras asadas y especiadas, el Zalouck, combinada con un humus de garbanzo, remolacha y tahini, unos anacardos picados y escamas de sal rosa del Himalaya."
+        },
+        "en": {
+          "name": "Zalouk with pink humus and cashews",
+          "description": "A version of the traditional roasted and spiced vegetable salad, Zalouck, combined with a chickpea, beetroot and tahini hummus, chopped cashews and Himalayan pink salt flakes."
+        },
+        "fr": {
+          "name": "Zalouk avec du houmous rose et des noix de cajou",
+          "description": "Une version de la salade traditionnelle de légumes rôtis et épicés, le Zalouck, combinée à un houmous de pois chiches, de betterave et de tahini, des noix de cajou hachées et des flocons de sel rose de l'Himalaya."
+        }
+      }
+    },
+    {
+      "id": 4,
+      "category": "entrantes",
+      "price": 75.0,
+      "is_chef_choice": true,
+      "allergens": [
+        {
+          "code": 1,
+          "name": {
+            "es": "Gluten",
+            "en": "Gluten",
+            "fr": "Gluten"
+          },
+          "icon": "./img/icons/icons_small/gluten.png"
+        },
+        {
+          "code": 6,
+          "name": {
+            "es": "Sésamo",
+            "en": "Sesame",
+            "fr": "Sésame"
+          },
+          "icon": "./img/icons/icons_small/sesame.png"
+        },
+        {
+          "code": 9,
+          "name": {
+            "es": "Lácteos",
+            "en": "Dairy / Milk",
+            "fr": "Produits laitiers"
+          },
+          "icon": "./img/icons/icons_small/milk.png"
+        }
+      ],
+      "image": "./img/platos/crepe1.webp",
+      "video": {
+        "src": "./img/videos/vid3_50fps.mp4",
+        "poster": "./img/videos/vid3_50fps_poster.webp",
+        "duration": 6.5
+      },
+      "i18n": {
+        "es": {
+          "name": "Crepe de kefta y coulis de pimiento",
+          "description": "Un crep relleno de carne picada de ternera, berenjenas horneadas y champiñones salteados que lo acompañamos con un coulis de pimiento rojo asado, unas lascas de queso Parmesano y sésamo tostado."
+        },
+        "en": {
+          "name": "Kefta crepe with pepper coulis",
+          "description": "A crepe filled with minced beef, baked eggplant and sautéed mushrooms, accompanied by a roasted red pepper coulis, Parmesan cheese shavings and toasted sesame seeds."
+        },
+        "fr": {
+          "name": "Crêpe de kefta avec coulis de poivrons",
+          "description": "Une crêpe garnie de bœuf haché, d'aubergines cuites au four et de champignons sautés, accompagnée d'un coulis de poivrons rouges grillés, de copeaux de parmesan et de graines de sésame grillées."
+        }
+      }
+    },
+    {
+      "id": 5,
+      "category": "entrantes",
+      "price": 75.0,
+      "is_chef_choice": false,
+      "allergens": [
+        {
+          "code": 1,
+          "name": {
+            "es": "Gluten",
+            "en": "Gluten",
+            "fr": "Gluten"
+          },
+          "icon": "./img/icons/icons_small/gluten.png"
+        },
+        {
+          "code": 9,
+          "name": {
+            "es": "Lácteos",
+            "en": "Dairy / Milk",
+            "fr": "Produits laitiers"
+          },
+          "icon": "./img/icons/icons_small/milk.png"
+        },
+        {
+          "code": 11,
+          "name": {
+            "es": "Huevo",
+            "en": "Egg",
+            "fr": "Œuf"
+          },
+          "icon": "./img/icons/icons_small/egg.png"
+        }
+      ],
+      "image": "./img/platos/briuats2.webp",
+      "video": null,
+      "i18n": {
+        "es": {
+          "name": "Briuats de kefta especiado con salsa fresca de yogur a la menta",
+          "description": "Tres triángulos crujientes de masa hojaldrada (Warqa) con un relleno aromático que mezcla la carne de la ternera y del cordero. Se sirve con una salsa de yogur con toques de limón y menta."
+        },
+        "en": {
+          "name": "Spiced kefta briuats with fresh mint yogurt sauce",
+          "description": "Three crispy triangles of puff pastry (Warqa) with an aromatic filling that blends beef and lamb. Served with a yogurt sauce with hints of lemon and mint."
+        },
+        "fr": {
+          "name": "Briuats de kefta épicés avec sauce au yaourt à la menthe fraîche",
+          "description": "Trois triangles croustillants de pâte feuilletée (Warqa) fourrés d'une farce aromatique mêlant bœuf et agneau. Servis avec une sauce au yaourt aux notes de citron et de menthe."
+        }
+      }
+    },
+    {
+      "id": 6,
+      "category": "entrantes",
+      "price": 65.0,
+      "is_chef_choice": false,
+      "allergens": [
+        {
+          "code": 1,
+          "name": {
+            "es": "Gluten",
+            "en": "Gluten",
+            "fr": "Gluten"
+          },
+          "icon": "./img/icons/icons_small/gluten.png"
+        }
+      ],
+      "image": "./img/platos/crema.webp",
+      "video": null,
+      "i18n": {
+        "es": {
+          "name": "Crema asada de calabaza con semillas tostadas y croûtons al romero",
+          "description": "Nuestra crema asada de calabaza y boniato se presenta con unas pepitas de calabaza. Se sirve con unos croûtons de pan artesanal aromatizados al romero."
+        },
+        "en": {
+          "name": "Roasted pumpkin cream with toasted seeds and rosemary croutons",
+          "description": "Our roasted pumpkin and sweet potato cream soup is garnished with pumpkin seeds. It's served with rosemary-infused artisan bread croutons."
+        },
+        "fr": {
+          "name": "Crème de potiron rôti avec graines grillées et croûtons au romarin",
+          "description": "Notre soupe crémeuse de potiron et de patate douce rôtie est parsemée de graines de potiron. Elle est servie avec des croûtons de pain artisanal parfumés au romarin."
+        }
+      }
+    },
+    {
+      "id": 7,
+      "category": "principales",
+      "price": 140.0,
+      "is_chef_choice": true,
+      "allergens": [
+        {
+          "code": 1,
+          "name": {
+            "es": "Gluten",
+            "en": "Gluten",
+            "fr": "Gluten"
+          },
+          "icon": "./img/icons/icons_small/gluten.png"
+        },
+        {
+          "code": 3,
+          "name": {
+            "es": "Frutos secos",
+            "en": "Nuts / Tree nuts",
+            "fr": "Fruits à coque"
+          },
+          "icon": "./img/icons/icons_small/treenuts.png"
+        }
+      ],
+      "image": "./img/platos/pastela_pollo.webp",
+      "video": {
+        "src": "./img/videos/vid4_30fps.mp4",
+        "poster": "./img/videos/vid4_30fps_poster.webp",
+        "duration": 7.1
+      },
+      "i18n": {
+        "es": {
+          "name": "Pastela de pollo confitado, manzana y cebolla caramelizada",
+          "description": "Pastela de finas hojas crujientes de masa hojaldrada (Warqa) rellena de una mezcla especiada y melosa de pollo confitado desmenuzado, cebolla caramelizada lentamente y chutney de manzana. Lo coronamos con la mezcla tradicional de azúcar, canela, almendras tostadas y chips de naranja."
+        },
+        "en": {
+          "name": "Confit chicken pastilla with apple and caramelized onion",
+          "description": "A pastilla of thin, crispy layers of puff pastry (Warqa) filled with a spiced and mellow mixture of shredded confit chicken, slowly caramelized onions, and apple chutney. We top it with the traditional mixture of sugar, cinnamon, toasted almonds, and orange chips."
+        },
+        "fr": {
+          "name": "Pastilla de poulet confit aux pommes et oignons caramélisés",
+          "description": "Une pastilla composée de fines couches croustillantes de pâte feuilletée (Warqa) garnie d'un mélange épicé et onctueux de poulet confit effiloché, d'oignons caramélisés et de chutney de pommes. Nous la saupoudrons du traditionnel mélange de sucre, de cannelle, d'amandes grillées et de zestes d'orange."
+        }
+      }
+    },
+    {
+      "id": 8,
+      "category": "principales",
+      "price": 140.0,
+      "is_chef_choice": true,
+      "allergens": [
+        {
+          "code": 1,
+          "name": {
+            "es": "Gluten",
+            "en": "Gluten",
+            "fr": "Gluten"
+          },
+          "icon": "./img/icons/icons_small/gluten.png"
+        },
+        {
+          "code": 7,
+          "name": {
+            "es": "Pescado",
+            "en": "Fish",
+            "fr": "Poisson"
+          },
+          "icon": "./img/icons/icons_small/fish.png"
+        },
+        {
+          "code": 9,
+          "name": {
+            "es": "Lácteos",
+            "en": "Dairy / Milk",
+            "fr": "Produits laitiers"
+          },
+          "icon": "./img/icons/icons_small/milk.png"
+        },
+        {
+          "code": 12,
+          "name": {
+            "es": "Cacahuetes",
+            "en": "Peanuts",
+            "fr": "Arachides"
+          },
+          "icon": "./img/icons/icons_small/peanuts.png"
+        },
+        {
+          "code": 13,
+          "name": {
+            "es": "Moluscos",
+            "en": "Molluscs",
+            "fr": "Mollusques"
+          },
+          "icon": "./img/icons/icons_small/molluscs.png"
+        }
+      ],
+      "image": "./img/platos/keftas.webp",
+      "video": {
+        "src": "./img/videos/vid2_25fps.mp4",
+        "poster": "./img/videos/vid2_25fps_poster.webp",
+        "duration": 11.5
+      },
+      "i18n": {
+        "es": {
+          "name": "Keftas de sepia, vinagreta de cacahuetes y sémola negra",
+          "description": "Cinco albóndigas de kefta de sepia que se combinan con una vinagreta a base de cacahuetes tostados y tomates cherry confitados. Se sirven con una sémola negra de pescado y tinta de sepia."
+        },
+        "en": {
+          "name": "Cuttlefish keftas, peanut vinaigrette and black semolina",
+          "description": "Five cuttlefish kefta meatballs combined with a vinaigrette made with roasted peanuts and confit cherry tomatoes. Served with black fish grits and cuttlefish ink."
+        },
+        "fr": {
+          "name": "Keftas de seiche, vinaigrette aux cacahuètes et semoule noire",
+          "description": "Cinq boulettes de kefta de seiche, accompagnées d'une vinaigrette aux cacahuètes grillées et aux tomates cerises confites. Servies avec du gruau de poisson noir et de l'encre de seiche."
+        }
+      }
+    },
+    {
+      "id": 9,
+      "category": "principales",
+      "price": 160.0,
+      "is_chef_choice": true,
+      "allergens": [
+        {
+          "code": 1,
+          "name": {
+            "es": "Gluten",
+            "en": "Gluten",
+            "fr": "Gluten"
+          },
+          "icon": "./img/icons/icons_small/gluten.png"
+        },
+        {
+          "code": 3,
+          "name": {
+            "es": "Frutos secos",
+            "en": "Nuts / Tree nuts",
+            "fr": "Fruits à coque"
+          },
+          "icon": "./img/icons/icons_small/treenuts.png"
+        },
+        {
+          "code": 13,
+          "name": {
+            "es": "Moluscos",
+            "en": "Molluscs",
+            "fr": "Mollusques"
+          },
+          "icon": "./img/icons/icons_small/molluscs.png"
+        }
+      ],
+      "image": "./img/platos/pulpo.webp",
+      "video": {
+        "src": "./img/videos/vid1_25fps.mp4",
+        "poster": "./img/videos/vid1_25fps_poster.webp",
+        "duration": 9.3
+      },
+      "i18n": {
+        "es": {
+          "name": "Pulpo, romesco y sémola aromatizada",
+          "description": "Pata de pulpo cocinada mediante la técnica de confitado a baja temperatura. Se presenta con una sémola infusionada con un caldo de pulpo casero y se acompaña de una salsa Romesco de pimientos asados y frutos secos, con un toque final de aceite de pimentón."
+        },
+        "en": {
+          "name": "Octopus, romesco sauce and flavored semolina",
+          "description": "Octopus leg cooked using the low-temperature confit technique. It is served with semolina infused with homemade octopus broth and accompanied by a Romesco sauce of roasted peppers and nuts, with a final touch of paprika oil."
+        },
+        "fr": {
+          "name": "Poulpe, sauce romesco et semoule aromatisée",
+          "description": "Une cuisse de poulpe confite à basse température. Elle est servie avec de la semoule infusée dans un bouillon de poulpe maison et accompagnée d'une sauce romesco aux poivrons grillés et aux noix, relevée d'un filet d'huile de paprika."
+        }
+      }
+    },
+    {
+      "id": 10,
+      "category": "principales",
+      "price": 130.0,
+      "is_chef_choice": false,
+      "allergens": [
+        {
+          "code": 1,
+          "name": {
+            "es": "Gluten",
+            "en": "Gluten",
+            "fr": "Gluten"
+          },
+          "icon": "./img/icons/icons_small/gluten.png"
+        },
+        {
+          "code": 3,
+          "name": {
+            "es": "Frutos secos",
+            "en": "Nuts / Tree nuts",
+            "fr": "Fruits à coque"
+          },
+          "icon": "./img/icons/icons_small/treenuts.png"
+        },
+        {
+          "code": 7,
+          "name": {
+            "es": "Pescado",
+            "en": "Fish",
+            "fr": "Poisson"
+          },
+          "icon": "./img/icons/icons_small/fish.png"
+        }
+      ],
+      "image": "./img/platos/pastela_marina.webp",
+      "video": {
+        "src": "./img/videos/vid3_50fps.mp4",
+        "poster": "./img/videos/vid3_50fps_poster.webp",
+        "duration": 6.5
+      },
+      "i18n": {
+        "es": {
+          "name": "Pastela marina con toque dulce de miel y menta",
+          "description": "Pastela de masa hojaldrada (Warqa) rellena de pescado blanco desmenuzado junto a una mezcla aromática de verduras pochadas, fideos finos, almendras tostadas y una vinagreta de miel y Módena. La adornamos con azúcar glass, canela molida y unas hojas frescas de hierbabuena."
+        },
+        "en": {
+          "name": "Seafood pastilla with a sweet touch of honey and mint",
+          "description": "Puff pastry pie (Warqa) filled with flaked white fish, an aromatic mix of sautéed vegetables, thin noodles, toasted almonds, and a honey and Modena balsamic vinaigrette. Garnished with powdered sugar, ground cinnamon, and fresh mint leaves."
+        },
+        "fr": {
+          "name": "Pastilla aux fruits de mer avec une touche sucrée de miel et de menthe",
+          "description": "Tourte feuilletée (Warqa) garnie de poisson blanc émietté, d'un mélange aromatique de légumes sautés, de fines nouilles, d'amandes grillées et d'une vinaigrette au miel et au vinaigre balsamique de Modène. Décorée de sucre glace, de cannelle moulue et de feuilles de menthe fraîche."
+        }
+      }
+    },
+    {
+      "id": 11,
+      "category": "principales",
+      "price": 170.0,
+      "is_chef_choice": false,
+      "allergens": [
+        {
+          "code": 3,
+          "name": {
+            "es": "Frutos secos",
+            "en": "Nuts / Tree nuts",
+            "fr": "Fruits à coque"
+          },
+          "icon": "./img/icons/icons_small/treenuts.png"
+        },
+        {
+          "code": 5,
+          "name": {
+            "es": "Mostaza",
+            "en": "Mustard",
+            "fr": "Moutarde"
+          },
+          "icon": "./img/icons/icons_small/mustard.png"
+        },
+        {
+          "code": 6,
+          "name": {
+            "es": "Sésamo",
+            "en": "Sesame",
+            "fr": "Sésame"
+          },
+          "icon": "./img/icons/icons_small/sesame.png"
+        }
+      ],
+      "image": "./img/platos/cordero.webp",
+      "video": {
+        "src": "./img/videos/vid4_30fps.mp4",
+        "poster": "./img/videos/vid4_30fps_poster.webp",
+        "duration": 7.1
+      },
+      "i18n": {
+        "es": {
+          "name": "Cordero a baja temperatura con chutney de ciruela pasa, orejones y almendra tostada",
+          "description": "Reinterpretación del clásico Tajín de Cordero. Utilizamos la técnica de cocción a baja temperatura con un majado previo de especias cálidas y miel para lograr un cordero meloso y especiado. Lo servimos sobre una reducción de sus jugos y lo acompañamos de un Chutney agridulce de ciruela pasa. Lo decoramos con almendras tostadas, orejones y sésamo."
+        },
+        "en": {
+          "name": "Slow-cooked lamb with prune chutney, dried apricots and toasted almonds",
+          "description": "A reinterpretation of the classic Lamb Tagine. We use a low-temperature cooking technique with a prior marinade of warming spices and honey to achieve a tender and flavorful lamb. We serve it on a bed of its own juices and accompany it with a sweet and sour prune chutney. We garnish it with toasted almonds, dried apricots, and sesame seeds."
+        },
+        "fr": {
+          "name": "Agneau mijoté avec chutney de pruneaux, abricots secs et amandes grillées",
+          "description": "Une réinterprétation du tajine d'agneau classique. Nous utilisons une technique de cuisson à basse température, après une marinade aux épices chaudes et au miel, pour obtenir un agneau tendre et savoureux. Nous le servons sur un lit de jus de cuisson et l'accompagnons d'un chutney de pruneaux aigre-doux. Nous le garnissons d'amandes grillées, d'abricots secs et de graines de sésame."
+        }
+      }
+    },
+    {
+      "id": 12,
+      "category": "principales",
+      "price": 170.0,
+      "is_chef_choice": false,
+      "allergens": [
+        {
+          "code": 3,
+          "name": {
+            "es": "Frutos secos",
+            "en": "Nuts / Tree nuts",
+            "fr": "Fruits à coque"
+          },
+          "icon": "./img/icons/icons_small/treenuts.png"
+        },
+        {
+          "code": 9,
+          "name": {
+            "es": "Lácteos",
+            "en": "Dairy / Milk",
+            "fr": "Produits laitiers"
+          },
+          "icon": "./img/icons/icons_small/milk.png"
+        }
+      ],
+      "image": "./img/platos/ternera.webp",
+      "video": {
+        "src": "./img/videos/vid2_25fps.mp4",
+        "poster": "./img/videos/vid2_25fps_poster.webp",
+        "duration": 11.5
+      },
+      "i18n": {
+        "es": {
+          "name": "Costilla de ternera en cocción lenta, pera y pistacho.",
+          "description": "Costilla de ternera tierna, infusionada con Canela y Cardamomo, lograda tras 14 horas de cocción lenta. Acompañada de un cremoso puré de Pera especiada con Jengibre y el toque crujiente del Pistacho"
+        },
+        "en": {
+          "name": "Slow cooked beef rib, pear and pistachio.",
+          "description": "Tender beef rib, infused with cinnamon and cardamom, slow-cooked for 14 hours. Served with a creamy pear purée spiced with ginger and a crunchy pistachio topping."
+        },
+        "fr": {
+          "name": "Côte de bœuf mijotée, poire et pistache.",
+          "description": "Côte de bœuf tendre, infusée à la cannelle et à la cardamome, cuite lentement pendant 14 heures. Servie avec une purée de poires onctueuse relevée au gingembre et un crumble de pistaches croquant."
+        }
+      }
+    },
+    {
+      "id": 13,
+      "category": "postres",
+      "price": 55.0,
+      "is_chef_choice": false,
+      "allergens": [
+        {
+          "code": 1,
+          "name": {
+            "es": "Gluten",
+            "en": "Gluten",
+            "fr": "Gluten"
+          },
+          "icon": "./img/icons/icons_small/gluten.png"
+        },
+        {
+          "code": 3,
+          "name": {
+            "es": "Frutos secos",
+            "en": "Nuts / Tree nuts",
+            "fr": "Fruits à coque"
+          },
+          "icon": "./img/icons/icons_small/treenuts.png"
+        },
+        {
+          "code": 8,
+          "name": {
+            "es": "Soja",
+            "en": "Soy / Soya",
+            "fr": "Soja"
+          },
+          "icon": "./img/icons/icons_small/soyabeans.png"
+        },
+        {
+          "code": 9,
+          "name": {
+            "es": "Lácteos",
+            "en": "Dairy / Milk",
+            "fr": "Produits laitiers"
+          },
+          "icon": "./img/icons/icons_small/milk.png"
+        },
+        {
+          "code": 11,
+          "name": {
+            "es": "Huevo",
+            "en": "Egg",
+            "fr": "Œuf"
+          },
+          "icon": "./img/icons/icons_small/egg.png"
+        }
+      ],
+      "image": "./img/platos/chocolate.webp",
+      "video": {
+        "src": "./img/videos/vid4_30fps.mp4",
+        "poster": "./img/videos/vid4_30fps_poster.webp",
+        "duration": 7.1
+      },
+      "i18n": {
+        "es": {
+          "name": "Fusión de chocolate, jengibre y dátil",
+          "description": "Brownie de chocolate negro de alto porcentaje de cacao con nueces y un doble blend de azúcar. Lo servimos caliente y acompañado de una bola de helado de vainilla y un toffee natural de dátiles."
+        },
+        "en": {
+          "name": "Fusion of chocolate, ginger and date",
+          "description": "Dark chocolate brownie made with high percentage cocoa, walnuts, and a double blend of sugar. We serve it warm with a scoop of vanilla ice cream and a natural date toffee."
+        },
+        "fr": {
+          "name": "Fusion de chocolat, de gingembre et de dattes",
+          "description": "Brownie au chocolat noir, préparé avec une forte concentration de cacao, des noix et un double mélange de sucre. Nous le servons chaud, accompagné d'une boule de glace à la vanille et d'un caramel aux dattes naturelles."
+        }
+      }
+    },
+    {
+      "id": 14,
+      "category": "postres",
+      "price": 50.0,
+      "is_chef_choice": true,
+      "allergens": [
+        {
+          "code": 1,
+          "name": {
+            "es": "Gluten",
+            "en": "Gluten",
+            "fr": "Gluten"
+          },
+          "icon": "./img/icons/icons_small/gluten.png"
+        },
+        {
+          "code": 3,
+          "name": {
+            "es": "Frutos secos",
+            "en": "Nuts / Tree nuts",
+            "fr": "Fruits à coque"
+          },
+          "icon": "./img/icons/icons_small/treenuts.png"
+        },
+        {
+          "code": 6,
+          "name": {
+            "es": "Sésamo",
+            "en": "Sesame",
+            "fr": "Sésame"
+          },
+          "icon": "./img/icons/icons_small/sesame.png"
+        },
+        {
+          "code": 11,
+          "name": {
+            "es": "Huevo",
+            "en": "Egg",
+            "fr": "Œuf"
+          },
+          "icon": "./img/icons/icons_small/egg.png"
+        }
+      ],
+      "image": "./img/platos/crepe2.webp",
+      "video": {
+        "src": "./img/videos/vid1_25fps.mp4",
+        "poster": "./img/videos/vid1_25fps_poster.webp",
+        "duration": 9.3
+      },
+      "i18n": {
+        "es": {
+          "name": "Crep de amlou sobre salsa cítrica",
+          "description": "Crep relleno de Amlou, una crema de almendras tostadas marroquí, miel y aceite de argán. Lo presentamos sobre una salsa cítrica reducida lentamente con naranja amarga, jengibre y limón."
+        },
+        "en": {
+          "name": "Amlou crepe with citrus sauce",
+          "description": "Crepe filled with Amlou, a Moroccan toasted almond cream, honey, and argan oil. We present it on a slowly reduced citrus sauce with bitter orange, ginger, and lemon."
+        },
+        "fr": {
+          "name": "Crêpe Amlou à la sauce aux agrumes",
+          "description": "Crêpe fourrée à l'Amlou, une crème marocaine d'amandes grillées, de miel et d'huile d'argan. Elle est servie sur un lit de sauce aux agrumes réduite lentement, agrémentée d'orange amère, de gingembre et de citron."
+        }
+      }
+    },
+    {
+      "id": 15,
+      "category": "postres",
+      "price": 55.0,
+      "is_chef_choice": true,
+      "allergens": [
+        {
+          "code": 1,
+          "name": {
+            "es": "Gluten",
+            "en": "Gluten",
+            "fr": "Gluten"
+          },
+          "icon": "./img/icons/icons_small/gluten.png"
+        },
+        {
+          "code": 3,
+          "name": {
+            "es": "Frutos secos",
+            "en": "Nuts / Tree nuts",
+            "fr": "Fruits à coque"
+          },
+          "icon": "./img/icons/icons_small/treenuts.png"
+        },
+        {
+          "code": 9,
+          "name": {
+            "es": "Lácteos",
+            "en": "Dairy / Milk",
+            "fr": "Produits laitiers"
+          },
+          "icon": "./img/icons/icons_small/milk.png"
+        },
+        {
+          "code": 11,
+          "name": {
+            "es": "Huevo",
+            "en": "Egg",
+            "fr": "Œuf"
+          },
+          "icon": "./img/icons/icons_small/egg.png"
+        }
+      ],
+      "image": "./img/platos/tortada.webp",
+      "video": {
+        "src": "./img/videos/vid3_50fps.mp4",
+        "poster": "./img/videos/vid3_50fps_poster.webp",
+        "duration": 6.5
+      },
+      "i18n": {
+        "es": {
+          "name": "Tortada de almendra, azafrán y chocolate intenso",
+          "description": "Una tortada de almendra que tras el horneado la bañamos con un almíbar de azafrán, naranja y agua de azahar. Lo servimos sobre una sopa de chocolate negro de alta intensidad y finalizamos con toques de menta y almendra tostada."
+        },
+        "en": {
+          "name": "Almond, saffron and rich chocolate cake",
+          "description": "An almond cake that, after baking, is soaked in a syrup of saffron, orange, and orange blossom water. We serve it on a bed of rich, dark chocolate soup and finish it with hints of mint and toasted almond."
+        },
+        "fr": {
+          "name": "Gâteau aux amandes, au safran et au chocolat riche",
+          "description": "Un gâteau aux amandes imbibé, après cuisson, d'un sirop de safran, d'orange et d'eau de fleur d'oranger. Servi sur un lit de soupe au chocolat noir onctueuse, il est agrémenté de notes de menthe et d'amandes grillées."
+        }
+      }
+    },
+    {
+      "id": 16,
+      "category": "postres",
+      "price": 60.0,
+      "is_chef_choice": false,
+      "allergens": [
+        {
+          "code": 1,
+          "name": {
+            "es": "Gluten",
+            "en": "Gluten",
+            "fr": "Gluten"
+          },
+          "icon": "./img/icons/icons_small/gluten.png"
+        },
+        {
+          "code": 9,
+          "name": {
+            "es": "Lácteos",
+            "en": "Dairy / Milk",
+            "fr": "Produits laitiers"
+          },
+          "icon": "./img/icons/icons_small/milk.png"
+        },
+        {
+          "code": 11,
+          "name": {
+            "es": "Huevo",
+            "en": "Egg",
+            "fr": "Œuf"
+          },
+          "icon": "./img/icons/icons_small/egg.png"
+        }
+      ],
+      "image": "./img/platos/tarta_queso.webp",
+      "video": {
+        "src": "./img/videos/vid2_25fps.mp4",
+        "poster": "./img/videos/vid2_25fps_poster.webp",
+        "duration": 11.5
+      },
+      "i18n": {
+        "es": {
+          "name": "Tarta de queso, khobz y aove",
+          "description": "Presentamos la Tarta de queso con unas Migas Caramelizadas de Pan Tradicional (Khobz). El postre se corona con un AOVE de intensidad media."
+        },
+        "en": {
+          "name": "Cheesecake, khobz and olive oil",
+          "description": "We present the Cheesecake with Caramelized Crumbs of Traditional Bread (Khobz). The dessert is topped with a medium-intensity extra virgin olive oil."
+        },
+        "fr": {
+          "name": "Cheesecake, khobz et huile d'olive",
+          "description": "Nous vous présentons le cheesecake aux miettes caramélisées de pain traditionnel (khobz). Ce dessert est nappé d'un filet d'huile d'olive extra vierge d'intensité moyenne."
+        }
+      }
+    },
+    {
+      "id": 17,
+      "category": "postres",
+      "price": 50.0,
+      "is_chef_choice": true,
+      "allergens": [
+        {
+          "code": 1,
+          "name": {
+            "es": "Gluten",
+            "en": "Gluten",
+            "fr": "Gluten"
+          },
+          "icon": "./img/icons/icons_small/gluten.png"
+        },
+        {
+          "code": 9,
+          "name": {
+            "es": "Lácteos",
+            "en": "Dairy / Milk",
+            "fr": "Produits laitiers"
+          },
+          "icon": "./img/icons/icons_small/milk.png"
+        }
+      ],
+      "image": "./img/platos/pastela_pera.webp",
+      "video": {
+        "src": "./img/videos/vid4_30fps.mp4",
+        "poster": "./img/videos/vid4_30fps_poster.webp",
+        "duration": 7.1
+      },
+      "i18n": {
+        "es": {
+          "name": "Pastela de pera al ras al hanout dulce",
+          "description": "El plato consta de una pequeña pastela individual horneada, con un exterior de masa hojaldrada (Warqa) y un interior relleno de compota de pera caramelizada con especias y Ras Al Hanout."
+        },
+        "en": {
+          "name": "Pear pastilla with sweet ras el hanout",
+          "description": "The dish consists of a small individual baked pastilla, with an exterior of puff pastry (Warqa) and an interior filled with caramelized pear compote with spices and Ras Al Hanout."
+        },
+        "fr": {
+          "name": "Pastilla aux poires et ras el hanout sucré",
+          "description": "Le plat consiste en une petite pastilla individuelle cuite au four, avec un extérieur de pâte feuilletée (Warqa) et un intérieur rempli de compote de poires caramélisées aux épices et au Ras Al Hanout."
+        }
+      }
+    }
+  ]
+}
+
+
+============================================================
+ARCHIVO: scripts/sync.py
+============================================================
+
+#!/usr/bin/env python3
+"""
+Sincronizador Menú QR + Procesador de Video
+"""
+
+import io
+import json
+import os
+import shutil
+import subprocess
+import sys
+import traceback
+from datetime import datetime
+from pathlib import Path
+
+from google.oauth2.service_account import Credentials
+from googleapiclient.discovery import build
+from googleapiclient.http import MediaIoBaseDownload
+from PIL import Image
+
+
+def cargar_variables_entorno(ruta_archivo='.env'):
+    """Lee un archivo .env y carga sus variables en os.environ"""
+    try:
+        with open(ruta_archivo, 'r', encoding='utf-8') as archivo:
+            for linea in archivo:
+                linea = linea.strip()
+                if not linea or linea.startswith('#'):
+                    continue
+                if '=' in linea:
+                    clave, valor = linea.split('=', 1)
+                    os.environ[clave.strip()] = valor.strip().strip('\'"')
+    except FileNotFoundError:
+        pass
+
+
+# --- CONFIGURACIÓN DE RUTAS ---
+DIRECTORIO_BASE = Path(__file__).resolve().parent.parent
+ARCHIVO_ENV = DIRECTORIO_BASE / 'scripts' / '.env'
+DIRECTORIO_COPIAS_SEGURIDAD = DIRECTORIO_BASE / 'backups'
+ARCHIVO_JSON_SALIDA = DIRECTORIO_BASE / 'docs' / 'menu-data.json'
+ARCHIVO_JSON_TEMPORAL = DIRECTORIO_BASE / 'docs' / 'temp_menu-data.json'
+ARCHIVO_CREDENCIALES_GOOGLE = DIRECTORIO_BASE / 'scripts' / 'credentials.json'
+ARCHIVO_REGISTRO_HASHES = DIRECTORIO_BASE / 'scripts' / 'image_hashes.json'
+
+DIRECTORIO_IMAGENES_PLATOS = DIRECTORIO_BASE / 'docs' / 'img' / 'platos'
+DIRECTORIO_VIDEOS_PLATOS = DIRECTORIO_BASE / 'docs' / 'img' / 'videos'
+
+cargar_variables_entorno(ARCHIVO_ENV)
+IDENTIFICADOR_HOJA_CALCULO = os.environ.get('SHEET_ID')
+
+
+# --- FUNCIONES AUXILIARES Y NORMALIZACIÓN ---
+def evaluar_booleano(valor):
+    if isinstance(valor, bool):
+        return valor
+    return str(valor).strip().lower() in ['true', '1', 'verdadero', 'sí', 'si', 'yes', 'v']
+
+
+def procesar_precio_numerico(valor):
+    try:
+        if isinstance(valor, (int, float)):
+            return float(valor)
+        return float(str(valor).replace(',', '.').strip())
+    except (ValueError, TypeError):
+        return 0.0
+
+
+def procesar_numero_entero(valor, valor_por_defecto=999):
+    try:
+        if not valor:
+            return valor_por_defecto
+        return int(float(str(valor).replace(',', '.').strip()))
+    except (ValueError, TypeError):
+        return valor_por_defecto
+
+
+def convertir_rgb_a_hexadecimal(diccionario_color):
+    """Convierte el formato RGB de Google al formato Hexagonal Web. Si está vacío, asume negro."""
+    if not diccionario_color or (
+        'red' not in diccionario_color
+        and 'green' not in diccionario_color
+        and 'blue' not in diccionario_color
+    ):
+        return '#000000'  # Corrección del bug: celdas con fondo negro devuelven dict vacío.
+
+    rojo = int(diccionario_color.get('red', 0) * 255)
+    verde = int(diccionario_color.get('green', 0) * 255)
+    azul = int(diccionario_color.get('blue', 0) * 255)
+    return f'#{rojo:02x}{verde:02x}{azul:02x}'
+
+
+# --- FUNCIONES DE MEDIOS (VIDEO E IMAGEN) ---
+def ejecutar_subproceso_ffmpeg(comando_texto):
+    """Ejecuta FFmpeg con límite de tiempo para evitar bloqueos del servidor."""
+    try:
+        subprocess.run(
+            comando_texto, shell=True, check=True, capture_output=True, text=True, timeout=120
+        )
+        return True
+    except subprocess.TimeoutExpired:
+        print('Error: FFmpeg excedió el tiempo límite (120s).')
+        return False
+    except subprocess.CalledProcessError as error:
+        print(f'Error en FFmpeg: {error.stderr}')
+        return False
+
+
+def extraer_duracion_video_segundos(ruta_archivo_video):
+    try:
+        comando = [
+            'ffprobe',
+            '-v',
+            'error',
+            '-show_entries',
+            'format=duration',
+            '-of',
+            'json',
+            str(ruta_archivo_video),
+        ]
+        resultado = subprocess.run(comando, capture_output=True, text=True, check=True, timeout=10)
+        return float(json.loads(resultado.stdout)['format']['duration'])
+    except Exception:
+        return 0.0
+
+
+def comprimir_video_h264(ruta_origen, ruta_destino, tasa_bits_mbps, resolucion_vertical):
+    parametro_tasa_bits = f'{tasa_bits_mbps}M'
+    comando = [
+        'ffmpeg',
+        '-y',
+        '-i',
+        str(ruta_origen),
+        '-c:v',
+        'libx264',
+        '-profile:v',
+        'baseline',
+        '-level',
+        '3.0',
+        '-pix_fmt',
+        'yuv420p',
+        '-movflags',
+        '+faststart',
+        '-b:v',
+        parametro_tasa_bits,
+        '-maxrate',
+        parametro_tasa_bits,
+        '-bufsize',
+        '5M',
+        '-an',  # Eliminar pista de audio
+        '-vf',
+        f'scale={resolucion_vertical}:-2',
+        str(ruta_destino),
+    ]
+    return ejecutar_subproceso_ffmpeg(' '.join(comando))
+
+
+def optimizar_imagen_webp(objeto_imagen_pil, ruta_guardado, maximo_ancho_px, porcentaje_calidad):
+    if objeto_imagen_pil.mode in ('RGBA', 'LA') or (
+        objeto_imagen_pil.mode == 'P' and 'transparency' in objeto_imagen_pil.info
+    ):
+        objeto_imagen_pil = objeto_imagen_pil.convert('RGBA')
+    elif objeto_imagen_pil.mode != 'RGB':
+        objeto_imagen_pil = objeto_imagen_pil.convert('RGB')
+
+    if objeto_imagen_pil.width > maximo_ancho_px:
+        nuevo_alto = int(objeto_imagen_pil.height * (maximo_ancho_px / objeto_imagen_pil.width))
+        objeto_imagen_pil = objeto_imagen_pil.resize(
+            (maximo_ancho_px, nuevo_alto), Image.Resampling.LANCZOS
+        )
+
+    objeto_imagen_pil.save(ruta_guardado, 'WEBP', quality=porcentaje_calidad, method=6)
+
+
+def generar_poster_video(
+    ruta_archivo_video, ruta_imagen_salida, maximo_ancho_px, porcentaje_calidad
+):
+    try:
+        archivo_jpg_temporal = ruta_imagen_salida.with_suffix('.jpg')
+        comando = [
+            'ffmpeg',
+            '-y',
+            '-i',
+            str(ruta_archivo_video),
+            '-ss',
+            '00:00:00',
+            '-vframes',
+            '1',
+            '-q:v',
+            '2',
+            str(archivo_jpg_temporal),
+        ]
+        subprocess.run(comando, check=True, capture_output=True, timeout=30)
+
+        if archivo_jpg_temporal.exists():
+            with Image.open(archivo_jpg_temporal) as imagen_capturada:
+                optimizar_imagen_webp(
+                    imagen_capturada, ruta_imagen_salida, maximo_ancho_px, porcentaje_calidad
+                )
+            archivo_jpg_temporal.unlink()
+            return True
+    except Exception as error_proceso:
+        print(f'Fallo al extraer fotograma: {error_proceso}')
+    return False
+
+
+# --- EXTRACCIÓN Y LÓGICA DE NEGOCIO ---
+def obtener_configuracion_con_tematica_visual(servicio_api_sheets):
+    """Extrae las variables de configuración y lee el color real de fondo de la celda."""
+    respuesta_api = (
+        servicio_api_sheets.spreadsheets()
+        .get(
+            spreadsheetId=IDENTIFICADOR_HOJA_CALCULO, ranges=['Config!A2:B30'], includeGridData=True
+        )
+        .execute()
+    )
+
+    diccionario_configuracion = {}
+    filas_datos = respuesta_api['sheets'][0]['data'][0].get('rowData', [])
+
+    for fila in filas_datos:
+        valores_celdas = fila.get('values', [])
+        if len(valores_celdas) >= 2 and valores_celdas[0].get('formattedValue'):
+            clave_configuracion = valores_celdas[0]['formattedValue'].strip()
+            valor_texto_celda = valores_celdas[1].get('formattedValue', '').strip()
+
+            if clave_configuracion.startswith('theme_'):
+                propiedades_fondo = (
+                    valores_celdas[1].get('effectiveFormat', {}).get('backgroundColor', {})
+                )
+                valor_texto_celda = convertir_rgb_a_hexadecimal(propiedades_fondo)
+
+            diccionario_configuracion[clave_configuracion] = valor_texto_celda
+
+    return diccionario_configuracion
+
+
+def gestionar_rotacion_copias_seguridad():
+    if ARCHIVO_JSON_SALIDA.exists():
+        DIRECTORIO_COPIAS_SEGURIDAD.mkdir(exist_ok=True)
+        marca_temporal = datetime.now().strftime('%Y%m%d_%H%M%S')
+        shutil.copy2(
+            ARCHIVO_JSON_SALIDA, DIRECTORIO_COPIAS_SEGURIDAD / f'menu-data_{marca_temporal}.json'
+        )
+
+        historial_backups = sorted(DIRECTORIO_COPIAS_SEGURIDAD.glob('*.json'), key=os.path.getmtime)
+        while len(historial_backups) > 5:
+            os.remove(historial_backups.pop(0))
+
+
+def ejecutar_sincronizacion_maestra():
+    if not IDENTIFICADOR_HOJA_CALCULO:
+        raise ValueError('CRÍTICO: Variable de entorno SHEET_ID no definida.')
+
+    print('🚀 Iniciando orquestación de datos del Menú...')
+    alcances_seguridad = [
+        'https://www.googleapis.com/auth/spreadsheets.readonly',
+        'https://www.googleapis.com/auth/drive.readonly',
+    ]
+    credenciales_acceso = Credentials.from_service_account_file(
+        str(ARCHIVO_CREDENCIALES_GOOGLE), scopes=alcances_seguridad
+    )
+    cliente_sheets = build('sheets', 'v4', credentials=credenciales_acceso)
+    cliente_drive = build('drive', 'v3', credentials=credenciales_acceso)
+
+    configuracion_general = obtener_configuracion_con_tematica_visual(cliente_sheets)
+
+    nombre_usuario_github = configuracion_general.get('github_username', '')
+    repositorio_github = configuracion_general.get('github_repo', '')
+    id_carpeta_nube = configuracion_general.get('image_drive_folder_id', '')
+    simbolo_divisa = configuracion_general.get('moneda_simbolo', '')
+
+    if not all([nombre_usuario_github, repositorio_github, id_carpeta_nube, simbolo_divisa]):
+        raise ValueError('CRÍTICO: Existen campos vitales vacíos en la pestaña Configuración.')
+
+    url_base_proyecto = f'https://{nombre_usuario_github}.github.io/{repositorio_github}'
+
+    config_ancho_imagen = procesar_numero_entero(configuracion_general.get('image_max_width', 1200))
+    config_calidad_imagen = procesar_numero_entero(configuracion_general.get('image_quality', 90))
+    config_tasa_bits_video = float(
+        str(configuracion_general.get('video_bitrate_Mbps', '2')).replace(',', '.')
+    )
+    config_resolucion_video = procesar_numero_entero(
+        configuracion_general.get('video_v_resolution', 720)
+    )
+
+    DIRECTORIO_IMAGENES_PLATOS.mkdir(parents=True, exist_ok=True)
+    DIRECTORIO_VIDEOS_PLATOS.mkdir(parents=True, exist_ok=True)
+
+    # Buscar archivos disponibles en Google Drive
+    mapa_archivos_nube = {}
+    token_paginacion = None
+    while True:
+        respuesta_drive = (
+            cliente_drive.files()
+            .list(
+                q=f"'{id_carpeta_nube}' in parents and trashed=false",
+                fields='nextPageToken, files(id, name, md5Checksum)',
+                pageToken=token_paginacion,
+                pageSize=1000,
+            )
+            .execute()
+        )
+
+        for meta_archivo in respuesta_drive.get('files', []):
+            mapa_archivos_nube[meta_archivo['name'].strip().lower()] = meta_archivo
+
+        token_paginacion = respuesta_drive.get('nextPageToken')
+        if not token_paginacion:
+            break
+
+    registro_hashes_locales = (
+        json.load(open(ARCHIVO_REGISTRO_HASHES, 'r', encoding='utf-8'))
+        if ARCHIVO_REGISTRO_HASHES.exists()
+        else {}
+    )
+    conjunto_imagenes_activas, conjunto_videos_activos = set(), set()
+
+    # Descargar información tabular en lote
+    datos_hojas_calculo = (
+        cliente_sheets.spreadsheets()
+        .values()
+        .batchGet(
+            spreadsheetId=IDENTIFICADOR_HOJA_CALCULO,
+            ranges=['Categorias!A:Z', 'Alergenos!A:Z', 'Menu_INT!A:Z', 'Menu_ES!A:Z'],
+        )
+        .execute()
+        .get('valueRanges', [])
+    )
+
+    def transformar_matriz_a_diccionarios(matriz_cruda):
+        if not matriz_cruda or len(matriz_cruda) < 2:
+            return []
+        nombres_columnas = [str(columna).strip() for columna in matriz_cruda[0]]
+        return [dict(zip(nombres_columnas, fila)) for fila in matriz_cruda[1:]]
+
+    # Construcción de Categorías
+    coleccion_categorias = [
+        {
+            'id': str(cat.get('id', '')).strip(),
+            'order': procesar_numero_entero(cat.get('orden', 999)),
+            'label': {
+                'es': str(cat.get('label_es', '')).strip(),
+                'en': str(cat.get('label_en', '')).strip(),
+                'fr': str(cat.get('label_fr', '')).strip(),
+            },
+        }
+        for cat in transformar_matriz_a_diccionarios(datos_hojas_calculo[0].get('values', []))
+        if cat.get('id')
+    ]
+
+    # Mapa de ordenamiento rápido para el Frontend
+    indice_orden_categorias = {
+        categoria['id']: categoria['order'] for categoria in coleccion_categorias
+    }
+
+    # Construcción Diccionario de Alérgenos
+    diccionario_maestro_alergenos = {}
+    mapa_busqueda_alergenos = {}
+    for registro_alergeno in transformar_matriz_a_diccionarios(
+        datos_hojas_calculo[1].get('values', [])
+    ):
+        id_alergeno = procesar_numero_entero(registro_alergeno.get('Codigo'))
+        nombre_base_es = str(registro_alergeno.get('Nombre_Es', '')).strip()
+        mapa_busqueda_alergenos[nombre_base_es.lower()] = id_alergeno
+        diccionario_maestro_alergenos[id_alergeno] = {
+            'code': id_alergeno,
+            'name': {
+                'es': nombre_base_es,
+                'en': str(registro_alergeno.get('Nombre_En') or nombre_base_es).strip(),
+                'fr': str(registro_alergeno.get('Nombre_Fr') or nombre_base_es).strip(),
+            },
+            'icon': f'./img/icons/icons_small/{registro_alergeno.get("Icono")}',
+        }
+
+    diccionario_traducciones = {
+        str(trad['id']).strip(): trad
+        for trad in transformar_matriz_a_diccionarios(datos_hojas_calculo[2].get('values', []))
+        if trad.get('id')
+    }
+    filas_menu_principal = transformar_matriz_a_diccionarios(
+        datos_hojas_calculo[3].get('values', [])
+    )
+    cabeceras_menu_principal = [
+        str(header).strip() for header in (datos_hojas_calculo[3].get('values', [[]])[0])
+    ]
+    lista_columnas_alergenos = [
+        columna
+        for columna in cabeceras_menu_principal
+        if columna.lower() in mapa_busqueda_alergenos
+    ]
+
+    coleccion_platos_finales = []
+
+    # Iteración Principal de Platos
+    for datos_plato in filas_menu_principal:
+        if not datos_plato.get('id') or not evaluar_booleano(datos_plato.get('activo')):
+            continue
+
+        identificador_unico = str(datos_plato['id']).strip()
+        textos_internacionales = diccionario_traducciones.get(identificador_unico, {})
+        identificador_categoria = str(datos_plato.get('categoria', '')).strip()
+
+        # Proceso Imagen Principal
+        url_imagen_plato = ''
+        nombre_archivo_imagen = str(datos_plato.get('img_filename', '')).strip()
+
+        if nombre_archivo_imagen:
+            llave_busqueda_imagen = nombre_archivo_imagen.lower()
+            nombre_final_webp = f'{os.path.splitext(llave_busqueda_imagen)[0]}.webp'
+            conjunto_imagenes_activas.add(nombre_final_webp)
+            url_imagen_plato = f'./img/platos/{nombre_final_webp}'
+
+            if llave_busqueda_imagen in mapa_archivos_nube:
+                metadatos_nube = mapa_archivos_nube[llave_busqueda_imagen]
+                if (
+                    registro_hashes_locales.get(llave_busqueda_imagen)
+                    != metadatos_nube['md5Checksum']
+                    or not (DIRECTORIO_IMAGENES_PLATOS / nombre_final_webp).exists()
+                ):
+                    buffer_memoria = io.BytesIO()
+                    proceso_descarga = MediaIoBaseDownload(
+                        buffer_memoria, cliente_drive.files().get_media(fileId=metadatos_nube['id'])
+                    )
+                    descarga_finalizada = False
+                    while not descarga_finalizada:
+                        _, descarga_finalizada = proceso_descarga.next_chunk()
+                    buffer_memoria.seek(0)
+                    with Image.open(buffer_memoria) as imagen_cruda:
+                        optimizar_imagen_webp(
+                            imagen_cruda,
+                            DIRECTORIO_IMAGENES_PLATOS / nombre_final_webp,
+                            config_ancho_imagen,
+                            config_calidad_imagen,
+                        )
+                    registro_hashes_locales[llave_busqueda_imagen] = metadatos_nube['md5Checksum']
+
+        # Proceso Video Secundario
+        estructura_datos_video = None
+        nombre_archivo_video = str(datos_plato.get('video_filename', '')).strip()
+
+        if nombre_archivo_video and nombre_archivo_video.lower() in mapa_archivos_nube:
+            llave_busqueda_video = nombre_archivo_video.lower()
+            nombre_base_sin_extension = os.path.splitext(llave_busqueda_video)[0]
+            nombre_final_mp4 = f'{nombre_base_sin_extension}.mp4'
+            nombre_final_poster = f'{nombre_base_sin_extension}_poster.webp'
+
+            conjunto_videos_activos.update([nombre_final_mp4, nombre_final_poster])
+            ruta_fisica_mp4 = DIRECTORIO_VIDEOS_PLATOS / nombre_final_mp4
+            ruta_fisica_poster = DIRECTORIO_VIDEOS_PLATOS / nombre_final_poster
+            metadatos_video_nube = mapa_archivos_nube[llave_busqueda_video]
+            clave_hash_video = f'video_{llave_busqueda_video}'
+
+            if (
+                registro_hashes_locales.get(clave_hash_video) != metadatos_video_nube['md5Checksum']
+                or not ruta_fisica_mp4.exists()
+                or not ruta_fisica_poster.exists()
+            ):
+                ruta_video_temporal = DIRECTORIO_VIDEOS_PLATOS / f'temp_{nombre_archivo_video}'
+                buffer_video = io.BytesIO()
+                descargador_video = MediaIoBaseDownload(
+                    buffer_video, cliente_drive.files().get_media(fileId=metadatos_video_nube['id'])
+                )
+                video_descargado = False
+                while not video_descargado:
+                    _, video_descargado = descargador_video.next_chunk()
+                with open(ruta_video_temporal, 'wb') as archivo_temp_escritura:
+                    archivo_temp_escritura.write(buffer_video.getbuffer())
+
+                if (
+                    comprimir_video_h264(
+                        ruta_video_temporal,
+                        ruta_fisica_mp4,
+                        config_tasa_bits_video,
+                        config_resolucion_video,
+                    )
+                    and ruta_fisica_mp4.exists()
+                ):
+                    generar_poster_video(
+                        ruta_fisica_mp4,
+                        ruta_fisica_poster,
+                        config_ancho_imagen,
+                        config_calidad_imagen,
+                    )
+                    registro_hashes_locales[clave_hash_video] = metadatos_video_nube['md5Checksum']
+                    estructura_datos_video = {
+                        'src': f'./img/videos/{nombre_final_mp4}',
+                        'poster': f'./img/videos/{nombre_final_poster}',
+                        'duration': round(extraer_duracion_video_segundos(ruta_fisica_mp4), 1),
+                    }
+                if ruta_video_temporal.exists():
+                    ruta_video_temporal.unlink()
+            else:
+                estructura_datos_video = {
+                    'src': f'./img/videos/{nombre_final_mp4}',
+                    'poster': f'./img/videos/{nombre_final_poster}',
+                    'duration': round(extraer_duracion_video_segundos(ruta_fisica_mp4), 1),
+                }
+
+        # Enriquecimiento de Alérgenos (Objetos completos, no solo IDs)
+        alergenos_enriquecidos = []
+        for columna_alergeno in lista_columnas_alergenos:
+            if evaluar_booleano(datos_plato.get(columna_alergeno)):
+                codigo_alergeno = mapa_busqueda_alergenos[columna_alergeno.strip().lower()]
+                alergenos_enriquecidos.append(diccionario_maestro_alergenos[codigo_alergeno])
+
+        coleccion_platos_finales.append(
+            {
+                'id': procesar_numero_entero(identificador_unico),
+                'category': identificador_categoria,
+                'price': procesar_precio_numerico(datos_plato.get('precio')),
+                # Claves temporales para el algoritmo de ordenamiento estricto
+                '_peso_categoria': indice_orden_categorias.get(identificador_categoria, 999),
+                '_peso_plato': procesar_numero_entero(datos_plato.get('orden', 999)),
+                'is_chef_choice': evaluar_booleano(datos_plato.get('sugerencia_chef')),
+                'allergens': alergenos_enriquecidos,
+                'image': url_imagen_plato,
+                'video': estructura_datos_video,
+                'i18n': {
+                    'es': {
+                        'name': str(datos_plato.get('nombre', '')),
+                        'description': str(datos_plato.get('descripcion', '')),
+                    },
+                    'en': {
+                        'name': str(
+                            textos_internacionales.get('nombre_en') or datos_plato.get('nombre', '')
+                        ),
+                        'description': str(
+                            textos_internacionales.get('descripcion_en')
+                            or datos_plato.get('descripcion', '')
+                        ),
+                    },
+                    'fr': {
+                        'name': str(
+                            textos_internacionales.get('nombre_fr') or datos_plato.get('nombre', '')
+                        ),
+                        'description': str(
+                            textos_internacionales.get('descripcion_fr')
+                            or datos_plato.get('descripcion', '')
+                        ),
+                    },
+                },
+            }
+        )
+
+    # Ordenamiento Topológico Estricto (Backend asume la responsabilidad)
+    coleccion_platos_finales.sort(
+        key=lambda plato: (plato['_peso_categoria'], plato['_peso_plato'])
+    )
+
+    # Limpiar variables temporales de la estructura JSON
+    for plato_individual in coleccion_platos_finales:
+        del plato_individual['_peso_categoria']
+        del plato_individual['_peso_plato']
+
+    # Recolección de Basura: Borrar huérfanos locales
+    for ruta_img_local in DIRECTORIO_IMAGENES_PLATOS.glob('*.webp'):
+        if ruta_img_local.name not in conjunto_imagenes_activas:
+            os.remove(ruta_img_local)
+    for ruta_vid_local in DIRECTORIO_VIDEOS_PLATOS.glob('*'):
+        if (
+            ruta_vid_local.name not in conjunto_videos_activos
+            and not ruta_vid_local.name.startswith('temp_')
+        ):
+            os.remove(ruta_vid_local)
+
+    registro_hashes_locales = {
+        clave: valor
+        for clave, valor in registro_hashes_locales.items()
+        if not clave.startswith('video_')
+        or clave.replace('video_', '') in [v.lower() for v in conjunto_videos_activos]
+    }
+    json.dump(
+        registro_hashes_locales, open(ARCHIVO_REGISTRO_HASHES, 'w', encoding='utf-8'), indent=2
+    )
+
+    # === PROCESAR LOGO DEL RESTAURANTE ===
+    restaurant_logo = ''
+    nombre_logo = str(configuracion_general.get('restaurante_image', '')).strip()
+    restaurant_url = str(configuracion_general.get('restaurante_url', '')).strip()
+
+    if nombre_logo and nombre_logo.lower() in mapa_archivos_nube:
+        llave_logo = nombre_logo.lower()
+        nombre_final_logo = 'logo_restaurante.webp'
+
+        metadatos_logo = mapa_archivos_nube[llave_logo]
+        ruta_logo_local = DIRECTORIO_BASE / 'docs' / 'img' / nombre_final_logo
+
+        # Si el logo es nuevo o ha cambiado
+        if (
+            registro_hashes_locales.get(f'logo_{llave_logo}') != metadatos_logo['md5Checksum']
+            or not ruta_logo_local.exists()
+        ):
+            buffer_memoria = io.BytesIO()
+            proceso_descarga = MediaIoBaseDownload(
+                buffer_memoria, cliente_drive.files().get_media(fileId=metadatos_logo['id'])
+            )
+            descarga_finalizada = False
+            while not descarga_finalizada:
+                _, descarga_finalizada = proceso_descarga.next_chunk()
+            buffer_memoria.seek(0)
+            with Image.open(buffer_memoria) as imagen_cruda:
+                # 400px es suficiente para un logo de navbar
+                optimizar_imagen_webp(imagen_cruda, ruta_logo_local, 400, 95)
+            registro_hashes_locales[f'logo_{llave_logo}'] = metadatos_logo['md5Checksum']
+
+        restaurant_logo = f'./img/{nombre_final_logo}'
+
+    # Compilar JSON Maestro
+    estructura_datos_final = {
+        'meta': {
+            'restaurant': configuracion_general.get('restaurante_nombre', 'Menú'),
+            'restaurant_url': restaurant_url,
+            'restaurant_logo': restaurant_logo,
+            'currency': simbolo_divisa,
+            'currency_position': str(configuracion_general.get('moneda_posicion', 'derecha'))
+            .strip()
+            .lower(),
+            'default_lang': configuracion_general.get('idioma_por_defecto', 'es'),
+            'order_lang': str(configuracion_general.get('idioma_comanda', 'fr')).strip().lower(),
+            'default_table': configuracion_general.get('mesa_texto_por_defecto', 'No'),
+            'theme_primary': configuracion_general.get('theme_primary', '#ff6a00'),
+            'theme_background': configuracion_general.get('theme_background', '#000000'),
+            'theme_text': configuracion_general.get('theme_text', '#ffffff'),
+            'theme_notification': configuracion_general.get('theme_notification', '#ef4444'),
+            'allow_orders': evaluar_booleano(configuracion_general.get('permitir_pedidos')),
+            'limpiar_carrito_tras_hora': procesar_numero_entero(
+                configuracion_general.get('limpiar_carrito_tras_hora', 1)
+            ),
+            'toast_timeout': procesar_numero_entero(configuracion_general.get('toast_timeout', 4)),
+            'vibrar_al_enviar': evaluar_booleano(
+                configuracion_general.get('vibrar_al_enviar', True)
+            ),
+            'swipe_margen_seguridad': procesar_numero_entero(
+                configuracion_general.get('swipe_margen_seguridad', 30)
+            ),
+            'generated_at': datetime.now().isoformat(),
+            'base_url': url_base_proyecto,
+            'enable_video_feed': evaluar_booleano(
+                configuracion_general.get('enable_video_feed', True)
+            ),
+            'modal_uses_video': evaluar_booleano(
+                configuracion_general.get('modal_uses_video', False)
+            ),
+            'gas_webapp_url': str(configuracion_general.get('gas_webapp_url', '')).strip(),
+        },
+        'categories': sorted(coleccion_categorias, key=lambda c: c['order']),
+        'allergens': list(diccionario_maestro_alergenos.values()),
+        'items': coleccion_platos_finales,
+    }
+
+    ARCHIVO_JSON_SALIDA.parent.mkdir(exist_ok=True)
+    json.dump(
+        estructura_datos_final,
+        open(ARCHIVO_JSON_TEMPORAL, 'w', encoding='utf-8'),
+        ensure_ascii=False,
+        indent=2,
+    )
+    gestionar_rotacion_copias_seguridad()
+    os.replace(ARCHIVO_JSON_TEMPORAL, ARCHIVO_JSON_SALIDA)
+    print('✅ Orquestación finalizada exitosamente. JSON Listo para Producción.')
+
+
+if __name__ == '__main__':
+    try:
+        ejecutar_sincronizacion_maestra()
+    except Exception as excepcion_critica:
+        traceback.print_exc()
+        with open('error_telegram.txt', 'w', encoding='utf-8') as archivo_log_error:
+            archivo_log_error.write(f'{type(excepcion_critica).__name__}: {str(excepcion_critica)}')
+        sys.exit(1)
+

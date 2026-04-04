@@ -17,11 +17,12 @@
     "toast_timeout": 4,
     "vibrar_al_enviar": true,
     "swipe_margen_seguridad": 30,
-    "generated_at": "2026-04-03T01:40:44.749633",
+    "generated_at": "2026-04-04T17:34:51.483096",
     "base_url": "https://GerNarGar.github.io/web_menu_alalba",
     "enable_video_feed": false,
     "modal_uses_video": true,
-    "gas_webapp_url": "https://script.google.com/macros/s/AKfycby6Nk5iq1CT6Nh7r-xpqR8ddJM8MiTVTi1s2pk3HRLeTVgIAbHKwdkEV1393je_NhRx/exec"
+    "gas_webapp_url": "https://script.google.com/macros/s/AKfycby6Nk5iq1CT6Nh7r-xpqR8ddJM8MiTVTi1s2pk3HRLeTVgIAbHKwdkEV1393je_NhRx/exec",
+    "finalizar_pedido_telegram": false
   },
   "categories": [
     {

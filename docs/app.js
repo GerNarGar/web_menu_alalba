@@ -13,6 +13,7 @@ const CONFIG_UI = {
   cartExpireHours: 1,
   animationCardDelayMax: 0.3,
   vibratePattern: [100, 50, 100],
+  confirm_order_by_staff: 2500,
 };
 
 // =========================== UTILIDADES ===========================
@@ -52,6 +53,40 @@ const formatMoney = (value) => {
   return posicion === "izquierda"
     ? `${simbolo} ${cadenaNumerica}`
     : `${cadenaNumerica} ${simbolo}`;
+};
+
+const showGenericToast = (message) => {
+  let toast = document.getElementById("toast-generico");
+  if (!toast) {
+    toast = document.createElement("div");
+    toast.id = "toast-generico";
+    // Usamos panel-toast y lo centramos exactamente en el medio de la pantalla
+    toast.className =
+      "fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 panel-toast shadow-2xl rounded-2xl p-6 z-[70] transition-all duration-300 opacity-0 scale-150 pointer-events-none flex flex-col items-center text-center max-w-[80%]";
+    document.body.appendChild(toast);
+  }
+
+  // Icono SVG de "Campana de Recepción" o "Check"
+  toast.innerHTML = `
+        <div class="w-12 h-12 bg-tema-acento/10 rounded-full flex items-center justify-center mb-3">
+            <svg class="w-6 h-6 text-tema-acento" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+            </svg>
+        </div>
+        <p class="text-sm font-bold text-tema-texto">${message}</p>
+    `;
+
+  // Animación de entrada
+  requestAnimationFrame(() => {
+    toast.classList.remove("opacity-0", "scale-95");
+    toast.classList.add("opacity-100", "scale-100");
+  });
+
+  // Animación de salida a los 3.5 segundos
+  setTimeout(() => {
+    toast.classList.remove("opacity-100", "scale-100");
+    toast.classList.add("opacity-0", "scale-95");
+  }, 3500);
 };
 
 // =========================== ESTADO REACTIVO ===========================
@@ -188,6 +223,10 @@ const dictionary = {
     order_error: "Error al enviar el pedido.",
     success_msg: "Muchas gracias, en breve le atenderá un camarero.",
     success_btn: "Cerrar",
+    waiter_instruction:
+      "Muchas gracias, por favor enseñe su pedido al camarero.",
+    waiter_confirming: "Confirmando pedido...",
+    waiter_success: "Pedido confirmado por el camarero.",
   },
   en: {
     menu: "Menu",
@@ -209,8 +248,12 @@ const dictionary = {
     order_phone: "Your phone",
     error_form: "Please fill in your name and phone.",
     order_error: "Error sending the order.",
-    success_msg: "Thank you very much, a waiter will be with you shortly.",
+    success_msg: "Thank you very much, a server will be with you shortly.",
     success_btn: "Close",
+    waiter_instruction:
+      "Thank you very much, please show your order to the server.",
+    waiter_confirming: "Confirming order...",
+    waiter_success: "Order confirmed by the waiter.",
   },
   fr: {
     menu: "Menu",
@@ -234,6 +277,10 @@ const dictionary = {
     order_error: "Erreur lors de l'envoi de la commande.",
     success_msg: "Merci beaucoup, un serveur s'occupera de vous sous peu.",
     success_btn: "Fermer",
+    waiter_instruction:
+      "Merci beaucoup, veuillez montrer votre commande au serveur.",
+    waiter_confirming: "Confirmation de la commande...",
+    waiter_success: "Commande confirmée par le serveur.",
   },
 };
 
@@ -407,13 +454,15 @@ const renderDetailModal = (platoId) => {
   if (!dish) return;
   const texts = getLocalizedText(dish);
   const useVideo = state.menuData.meta.modal_uses_video && dish.video;
+  // CAMBIO 1: Sustituimos 'h-96' por 'aspect-[4/5]' para una proporción más natural
   let contentHtml = `
-        <div class="relative h-96 bg-black rounded-b-[2rem] overflow-hidden ${useVideo ? "cursor-pointer" : ""}" id="modal-imagen-container">
+        <div class="relative h-96 w-full bg-black rounded-b-[2rem] overflow-hidden ${useVideo ? "cursor-pointer" : ""}" id="modal-imagen-container">
             <img src="${sanitizeUrl(dish.image)}" class="absolute inset-0 w-full h-full object-cover transition-opacity duration-300" draggable="false" oncontextmenu="return false;" id="modal-img">
             ${
               useVideo
                 ? `<div class="absolute inset-0 flex items-center justify-center transition-opacity duration-300" id="modal-play-btn"><div class="w-16 h-16 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center border border-white/30 text-white shadow-xl"><svg class="w-8 h-8 drop-shadow-lg relative right-0.25" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div></div>
-                <video id="modal-video" class="w-full h-full object-cover hidden" src="${sanitizeUrl(dish.video.src)}" playsinline loop oncontextmenu="return false;" disablePictureInPicture controlsList="nodownload"></video>`
+                <!-- CAMBIO 2: Añadido preload="auto" para que cargue en segundo plano -->
+                <video id="modal-video" class="w-full h-full object-cover hidden" src="${sanitizeUrl(dish.video.src)}" preload="auto" playsinline loop oncontextmenu="return false;" disablePictureInPicture controlsList="nodownload"></video>`
                 : ""
             }
         </div>
@@ -573,16 +622,86 @@ const showOrderConfirm = (total) => {
     `;
   container.scrollTop = 0;
   const footer = document.getElementById("area-pie-carrito");
+  // Novedad: Añadimos 'select-none' para que no se seleccione el texto al dejar pulsado
   footer.innerHTML = `
         <div class="flex space-x-3 w-full">
             <button class="flex-1 btn-secundario font-bold py-4 rounded-2xl text-lg" id="btn-modificar-pedido">${t("modify")}</button>
-            <button class="flex-1 btn-primario font-bold py-4 rounded-2xl text-lg flex justify-center items-center" id="btn-confirmar-pedido">${t("confirm_order")}</button>
+            <button class="flex-1 btn-primario font-bold py-4 rounded-2xl text-lg flex justify-center items-center select-none" id="btn-confirmar-pedido" style="touch-action: manipulation; -webkit-touch-callout: none;">${t("confirm_order")}</button>
         </div>
     `;
+
   document.getElementById("btn-modificar-pedido").onclick = () =>
-    renderCartModal();
-  document.getElementById("btn-confirmar-pedido").onclick = () =>
-    sendOrder(total);
+    // renderCartModal();
+    // 1. Botón modificar ahora cierra el modal y vuelve al menú directamente
+    closeCartModal();
+
+  const btnConfirm = document.getElementById("btn-confirmar-pedido");
+
+  const enviaTelegram =
+    state.menuData?.meta?.finalizar_pedido_telegram !== false;
+
+  if (enviaTelegram) {
+    btnConfirm.onclick = () => sendOrder(total);
+  } else {
+    let pressTimer;
+    let isLongPress = false;
+
+    const confirmOrderWaiter = () => {
+      triggerAnalyticsOrder(total); // <-- Función placeholder
+      state.cart = {};
+      saveCart();
+      updateCartBadge();
+
+      container.innerHTML = `<div class="flex flex-col items-center justify-center h-full text-center py-20 px-4 entrada-tarjeta"><div class="w-24 h-24 bg-green-100 rounded-full flex items-center justify-center mb-6"><svg class="w-12 h-12 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg></div><h2 class="text-2xl font-bold text-tema-texto mb-2 leading-tight">${t("waiter_success")}</h2></div>`;
+      footer.innerHTML = `<button id="btn-cerrar-exito" class="w-full btn-secundario font-bold py-4 rounded-2xl text-lg">${t("success_btn")}</button>`;
+
+      document.getElementById("btn-cerrar-exito").onclick = () => {
+        closeCartModal();
+        renderDishList();
+        if (state.currentView === "video") renderFeedVideo();
+      };
+    };
+
+    const startPress = (e) => {
+      isLongPress = false;
+      // Pequeño feedback visual de que se está pulsando
+      btnConfirm.style.transform = "scale(0.97)";
+      pressTimer = setTimeout(() => {
+        isLongPress = true;
+        btnConfirm.style.transform = "scale(1)";
+        confirmOrderWaiter();
+      }, 3000);
+    };
+
+    const cancelPress = () => {
+      clearTimeout(pressTimer);
+      btnConfirm.style.transform = "scale(1)";
+    };
+
+    btnConfirm.addEventListener("touchstart", startPress, { passive: true });
+    btnConfirm.addEventListener("touchend", cancelPress);
+    btnConfirm.addEventListener("mousedown", startPress);
+    btnConfirm.addEventListener("mouseup", cancelPress);
+    btnConfirm.addEventListener("mouseleave", cancelPress);
+
+    // Si hacen click normal (sueltan rápido) lanzamos EL TOAST
+    btnConfirm.addEventListener("click", (e) => {
+      if (!isLongPress) {
+        showGenericToast(t("waiter_instruction"));
+      }
+    });
+  }
+};
+
+// =========================== ANALYTICS PLACEHOLDER ===========================
+const triggerAnalyticsOrder = (total) => {
+  console.log(
+    "Analytics preparado. Pedido confirmado por camarero:",
+    state.cart,
+    "Total:",
+    total,
+  );
+  // Aquí integraremos el "ESTUDIO 3" de tus notas en el futuro.
 };
 
 const updateCartBadge = () => {

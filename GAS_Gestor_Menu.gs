@@ -219,15 +219,34 @@ function extraerValidarConfiguracion(hoja_conf) {
     "github_repo",
     "image_drive_folder_id",
     "moneda_simbolo",
+    "finalizar_pedido_telegram", // <-- NUEVO PARAMETRO
   ];
+
   for (let campo of requeridos) {
     if (
-      !configuracion[campo] ||
+      configuracion[campo] === undefined ||
       configuracion[campo].toString().trim() === ""
     ) {
-      errores.push(`Falta parámetro en Config: "${campo}"`);
+      errores.push(`Falta parámetro obligatorio en Config: "${campo}"`);
     }
   }
+
+  // Validación Condicional: La URL de Apps Script solo es obligatoria si hay envío a Telegram
+  const enviaTelegram =
+    configuracion["finalizar_pedido_telegram"] === true ||
+    configuracion["finalizar_pedido_telegram"].toString().toUpperCase() ===
+      "TRUE";
+
+  if (
+    enviaTelegram &&
+    (!configuracion["gas_webapp_url"] ||
+      configuracion["gas_webapp_url"].toString().trim() === "")
+  ) {
+    errores.push(
+      `Falta URL de Apps Script en Config: "gas_webapp_url" (Necesaria porque enviar a Telegram está activado)`,
+    );
+  }
+
   return { configuracion, errores };
 }
 
